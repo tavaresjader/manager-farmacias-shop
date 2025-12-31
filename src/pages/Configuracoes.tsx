@@ -44,11 +44,23 @@ const mockIntegracoes = [
   { id: "3", nome: "API Email", clientId: "email_11223344", clientSecret: "sk_email_aabbccdd1122" },
 ];
 
+const mockColaboradores = [
+  { id: "1", nome: "João Silva", email: "joao.silva@empresa.com", situacao: "ativo" },
+  { id: "2", nome: "Maria Santos", email: "maria.santos@empresa.com", situacao: "ativo" },
+  { id: "3", nome: "Carlos Oliveira", email: "carlos.oliveira@empresa.com", situacao: "inativo" },
+  { id: "4", nome: "Ana Costa", email: "ana.costa@empresa.com", situacao: "ativo" },
+];
+
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   paga: { label: "Paga", variant: "default" },
   a_vencer: { label: "A vencer", variant: "secondary" },
   vencida: { label: "Vencida", variant: "destructive" },
   excluida: { label: "Excluída", variant: "outline" },
+};
+
+const colaboradorStatusConfig: Record<string, { label: string; variant: "default" | "secondary" }> = {
+  ativo: { label: "Ativo", variant: "default" },
+  inativo: { label: "Inativo", variant: "secondary" },
 };
 
 const Configuracoes = () => {
@@ -284,8 +296,37 @@ const Configuracoes = () => {
 
           {activeTab === "colaboradores" && (
             <div>
-              <h2 className="text-lg font-semibold text-foreground mb-4">Colaboradores</h2>
-              <p className="text-muted-foreground">Gerencie os membros da sua equipe e permissões.</p>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-foreground">Colaboradores</h2>
+                <Button onClick={() => console.log("Adicionar colaborador")}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Adicionar colaborador
+                </Button>
+              </div>
+              <div className="border border-border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>E-mail</TableHead>
+                      <TableHead>Situação</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockColaboradores.map((colaborador) => (
+                      <TableRow key={colaborador.id}>
+                        <TableCell className="font-medium">{colaborador.nome}</TableCell>
+                        <TableCell>{colaborador.email}</TableCell>
+                        <TableCell>
+                          <Badge variant={colaboradorStatusConfig[colaborador.situacao].variant}>
+                            {colaboradorStatusConfig[colaborador.situacao].label}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )}
         </main>
