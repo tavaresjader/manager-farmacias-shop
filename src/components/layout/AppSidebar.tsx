@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTheme } from "next-themes";
 import {
@@ -9,8 +8,6 @@ import {
   Settings,
   HelpCircle,
   Bell,
-  Menu,
-  ChevronLeft,
   Radio,
   Route,
   AppWindow,
@@ -36,7 +33,6 @@ const bottomNavItems = [
 ];
 
 export function AppSidebar() {
-  const [collapsed, setCollapsed] = useState(true);
   const location = useLocation();
   const { theme, setTheme } = useTheme();
 
@@ -45,37 +41,17 @@ export function AppSidebar() {
   };
 
   return (
-    <aside
-      className={cn(
-        "flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300",
-        collapsed ? "w-16" : "w-60"
-      )}
-    >
+    <aside className="flex flex-col h-screen w-60 bg-sidebar border-r border-sidebar-border">
       {/* Logo */}
       <div className="flex items-center h-16 px-4 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <Megaphone className="w-4 h-4 text-primary-foreground" />
           </div>
-          {!collapsed && (
-            <span className="font-heading font-semibold text-foreground">
-              MarketHub
-            </span>
-          )}
+          <span className="font-heading font-semibold text-foreground">
+            MarketHub
+          </span>
         </div>
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className={cn(
-            "ml-auto p-1.5 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors",
-            collapsed && "mx-auto"
-          )}
-        >
-          {collapsed ? (
-            <Menu className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
-        </button>
       </div>
 
       {/* Main Navigation */}
@@ -90,14 +66,11 @@ export function AppSidebar() {
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
                 isActive
                   ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-sidebar-foreground hover:bg-accent hover:text-foreground",
-                collapsed && "justify-center px-2"
+                  : "text-sidebar-foreground hover:bg-accent hover:text-foreground"
               )}
             >
               <item.icon className="w-5 h-5 flex-shrink-0" />
-              {!collapsed && (
-                <span className="font-medium text-sm">{item.label}</span>
-              )}
+              <span className="font-medium text-sm">{item.label}</span>
             </NavLink>
           );
         })}
@@ -115,14 +88,11 @@ export function AppSidebar() {
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
                 isActive
                   ? "bg-accent text-foreground"
-                  : "text-sidebar-foreground hover:bg-accent hover:text-foreground",
-                collapsed && "justify-center px-2"
+                  : "text-sidebar-foreground hover:bg-accent hover:text-foreground"
               )}
             >
               <item.icon className="w-5 h-5 flex-shrink-0" />
-              {!collapsed && (
-                <span className="font-medium text-sm">{item.label}</span>
-              )}
+              <span className="font-medium text-sm">{item.label}</span>
             </NavLink>
           );
         })}
@@ -130,22 +100,16 @@ export function AppSidebar() {
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full",
-            "text-sidebar-foreground hover:bg-accent hover:text-foreground",
-            collapsed && "justify-center px-2"
-          )}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full text-sidebar-foreground hover:bg-accent hover:text-foreground"
         >
           {theme === "dark" ? (
             <Sun className="w-5 h-5 flex-shrink-0" />
           ) : (
             <Moon className="w-5 h-5 flex-shrink-0" />
           )}
-          {!collapsed && (
-            <span className="font-medium text-sm">
-              {theme === "dark" ? "Tema Claro" : "Tema Escuro"}
-            </span>
-          )}
+          <span className="font-medium text-sm">
+            {theme === "dark" ? "Tema Claro" : "Tema Escuro"}
+          </span>
         </button>
       </div>
     </aside>
