@@ -15,13 +15,11 @@ const Configuracoes = () => {
 
   return (
     <MainLayout>
-      <div className="p-6">
-        <h1 className="text-2xl font-semibold text-foreground mb-6">Configurações</h1>
-        
-        <div className="flex gap-6">
-          {/* Submenu lateral */}
-          <aside className="w-64 shrink-0">
-            <nav className="space-y-1">
+      <div className="flex h-full">
+        {/* Submenu lateral */}
+        <aside className="w-48 shrink-0 border-r border-border bg-card p-4">
+          <h1 className="text-lg font-semibold text-foreground mb-4">Configurações</h1>
+          <nav className="space-y-1">
               {menuItems.map((item) => {
                 const isActive = activeTab === item.id;
                 return (
@@ -29,22 +27,22 @@ const Configuracoes = () => {
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
                     className={cn(
-                      "flex items-center gap-3 w-full px-4 py-3 rounded-lg text-left transition-all duration-200",
+                      "flex items-center gap-2 w-full px-3 py-2 rounded-lg text-left text-sm transition-all duration-200",
                       isActive
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     )}
                   >
-                    <item.icon className="w-5 h-5" />
+                    <item.icon className="w-4 h-4" />
                     <span className="font-medium">{item.label}</span>
                   </button>
                 );
               })}
             </nav>
-          </aside>
+        </aside>
 
-          {/* Conteúdo */}
-          <main className="flex-1 bg-card border border-border rounded-lg p-6">
+        {/* Conteúdo */}
+        <main className="flex-1 p-6">
             {activeTab === "conta" && (
               <div>
                 <h2 className="text-lg font-semibold text-foreground mb-4">Minha conta</h2>
@@ -66,14 +64,13 @@ const Configuracoes = () => {
               </div>
             )}
             
-            {activeTab === "colaboradores" && (
-              <div>
-                <h2 className="text-lg font-semibold text-foreground mb-4">Colaboradores</h2>
-                <p className="text-muted-foreground">Gerencie os membros da sua equipe e permissões.</p>
-              </div>
-            )}
-          </main>
-        </div>
+          {activeTab === "colaboradores" && (
+            <div>
+              <h2 className="text-lg font-semibold text-foreground mb-4">Colaboradores</h2>
+              <p className="text-muted-foreground">Gerencie os membros da sua equipe e permissões.</p>
+            </div>
+          )}
+        </main>
       </div>
     </MainLayout>
   );
