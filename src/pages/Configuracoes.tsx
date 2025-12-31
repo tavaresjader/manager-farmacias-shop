@@ -358,6 +358,7 @@ const Configuracoes = () => {
                       <TableHead>Nome</TableHead>
                       <TableHead>E-mail</TableHead>
                       <TableHead>Situação</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -369,6 +370,17 @@ const Configuracoes = () => {
                           <Badge variant={colaboradorStatusConfig[colaborador.situacao].variant}>
                             {colaboradorStatusConfig[colaborador.situacao].label}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            onClick={() => console.log("Visualizar colaborador:", colaborador.id)}
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            Visualizar
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
