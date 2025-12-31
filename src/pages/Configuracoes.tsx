@@ -172,7 +172,7 @@ const Configuracoes = () => {
               </form>
 
               <div className="mt-12 pt-6 border-t border-border">
-                <h3 className="text-lg font-semibold text-destructive mb-2">Zona de perigo</h3>
+                <h3 className="text-lg font-semibold text-destructive mb-2">Cuidado</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   Ao excluir sua conta, todos os seus dados serão permanentemente removidos e não poderão ser recuperados.
                 </p>
