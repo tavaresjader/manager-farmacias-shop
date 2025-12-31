@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff, Copy } from "lucide-react";
+import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff, Copy, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -210,7 +210,13 @@ const Configuracoes = () => {
 
           {activeTab === "integracoes" && (
             <div>
-              <h2 className="text-lg font-semibold text-foreground mb-6">Integrações</h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-foreground">Integrações</h2>
+                <Button onClick={() => console.log("Adicionar integração")}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Adicionar integração
+                </Button>
+              </div>
               <div className="border border-border rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader>
