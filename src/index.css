@@ -77,6 +77,64 @@
     --shadow-elevated: 0 4px 6px -1px hsl(220 13% 91% / 0.4), 0 2px 4px -2px hsl(220 13% 91% / 0.4);
   }
 
+  .dark {
+    /* Core backgrounds - Dark slate */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    /* Cards and surfaces */
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary - Blue for actions and highlights */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary */
+    --secondary: 217 33% 22%;
+    --secondary-foreground: 210 40% 98%;
+
+    /* Muted elements */
+    --muted: 217 33% 22%;
+    --muted-foreground: 215 20% 65%;
+
+    /* Accent */
+    --accent: 217 33% 22%;
+    --accent-foreground: 210 40% 98%;
+
+    /* Status colors */
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    /* Form elements */
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 217 91% 60%;
+
+    /* Sidebar */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 215 20% 65%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 25%;
+    --sidebar-ring: 217 91% 60%;
+
+    /* Custom shadows for dark mode */
+    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.3), 0 1px 2px -1px hsl(0 0% 0% / 0.3);
+    --shadow-elevated: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -2px hsl(0 0% 0% / 0.4);
+  }
+
   * {
     @apply border-border;
   }
