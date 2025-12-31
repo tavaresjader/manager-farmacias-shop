@@ -10,6 +10,9 @@ import {
   Bell,
   Menu,
   ChevronLeft,
+  Radio,
+  Route,
+  AppWindow,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +20,9 @@ const mainNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: Megaphone, label: "Campanhas", path: "/campanhas" },
   { icon: Users, label: "Clientes", path: "/clientes" },
+  { icon: Radio, label: "Canais", path: "/canais" },
+  { icon: Route, label: "Jornadas", path: "/jornadas" },
+  { icon: AppWindow, label: "Aplicativos", path: "/aplicativos" },
   { icon: BarChart3, label: "Relatórios", path: "/relatorios" },
 ];
 
