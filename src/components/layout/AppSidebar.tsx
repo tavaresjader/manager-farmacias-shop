@@ -34,7 +34,6 @@ const mainNavItems = [
 const bottomNavItems = [
   { icon: Settings, label: "Configurações", path: "/configuracoes" },
   { icon: HelpCircle, label: "Ajuda", path: "/ajuda" },
-  { icon: Bell, label: "Notificações", path: "/notificacoes" },
 ];
 
 export function AppSidebar() {
