@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 
 const mainNavItems = [
-  { icon: LayoutDashboard, label: "Visão Geral", path: "/" },
+  { icon: LayoutDashboard, label: "Início", path: "/" },
   { icon: Megaphone, label: "Campanhas", path: "/campanhas" },
   { icon: Users, label: "Clientes", path: "/clientes" },
   { icon: Radio, label: "Canais", path: "/canais" },
@@ -48,11 +48,11 @@ export function AppSidebar() {
   return (
     <aside className="flex flex-col h-screen w-16 bg-sidebar border-r border-sidebar-border">
       {/* Logo */}
-      <div className="flex items-center justify-center h-16 border-b border-sidebar-border">
+      <NavLink to="/" className="flex items-center justify-center h-16 border-b border-sidebar-border">
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
           <Megaphone className="w-4 h-4 text-primary-foreground" />
         </div>
-      </div>
+      </NavLink>
 
       {/* Main Navigation */}
       <nav className="flex-1 py-4 px-2 space-y-1">
