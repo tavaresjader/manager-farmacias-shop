@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { User, CreditCard, Puzzle, Users } from "lucide-react";
+import { User, CreditCard, Puzzle, Users, FileText, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -140,6 +140,7 @@ const Configuracoes = () => {
                       <TableHead>Nº Fatura</TableHead>
                       <TableHead>Valor</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -156,6 +157,28 @@ const Configuracoes = () => {
                           <Badge variant={statusConfig[fatura.status].variant}>
                             {statusConfig[fatura.status].label}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                              onClick={() => console.log("Baixar PDF:", fatura.id)}
+                            >
+                              <FileText className="w-4 h-4 mr-1" />
+                              PDF
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                              onClick={() => console.log("Baixar NF:", fatura.id)}
+                            >
+                              <Receipt className="w-4 h-4 mr-1" />
+                              NF
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
