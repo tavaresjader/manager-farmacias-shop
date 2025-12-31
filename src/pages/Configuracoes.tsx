@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { User, CreditCard, Puzzle, Users, FileText, Receipt } from "lucide-react";
+import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +37,12 @@ const mockFaturas = [
   { id: "FAT-005", valor: 1500.0, status: "paga" },
 ];
 
+const mockIntegracoes = [
+  { id: "1", nome: "API WhatsApp", clientId: "wa_12345678", clientSecret: "sk_wa_abcdef123456789" },
+  { id: "2", nome: "API SMS", clientId: "sms_87654321", clientSecret: "sk_sms_987654321fedcba" },
+  { id: "3", nome: "API Email", clientId: "email_11223344", clientSecret: "sk_email_aabbccdd1122" },
+];
+
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   paga: { label: "Paga", variant: "default" },
   a_vencer: { label: "A vencer", variant: "secondary" },
@@ -46,11 +52,16 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
 
 const Configuracoes = () => {
   const [activeTab, setActiveTab] = useState("conta");
+  const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
   const [empresa, setEmpresa] = useState({
     cnpj: "",
     nome: "",
     situacao: "ativo",
   });
+
+  const toggleSecretVisibility = (id: string) => {
+    setVisibleSecrets((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const handleEmpresaChange = (field: string, value: string) => {
     setEmpresa((prev) => ({ ...prev, [field]: value }));
@@ -190,8 +201,51 @@ const Configuracoes = () => {
 
           {activeTab === "integracoes" && (
             <div>
-              <h2 className="text-lg font-semibold text-foreground mb-4">Integrações</h2>
-              <p className="text-muted-foreground">Conecte suas ferramentas e serviços favoritos.</p>
+              <h2 className="text-lg font-semibold text-foreground mb-6">Integrações</h2>
+              <div className="border border-border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Client ID</TableHead>
+                      <TableHead>Client Secret</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockIntegracoes.map((integracao) => (
+                      <TableRow key={integracao.id}>
+                        <TableCell className="font-medium">{integracao.nome}</TableCell>
+                        <TableCell>
+                          <code className="text-sm bg-muted px-2 py-1 rounded">
+                            {integracao.clientId}
+                          </code>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <code className="text-sm bg-muted px-2 py-1 rounded">
+                              {visibleSecrets[integracao.id]
+                                ? integracao.clientSecret
+                                : "••••••••••••••••"}
+                            </code>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                              onClick={() => toggleSecretVisibility(integracao.id)}
+                            >
+                              {visibleSecrets[integracao.id] ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )}
 
