@@ -375,11 +375,10 @@ const Configuracoes = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                             onClick={() => console.log("Visualizar colaborador:", colaborador.id)}
                           >
-                            <Eye className="w-4 h-4 mr-1" />
-                            Visualizar
+                            <Eye className="w-4 h-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
