@@ -15,6 +15,11 @@ import {
   Sun,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const mainNavItems = [
   { icon: LayoutDashboard, label: "Visão Geral", path: "/" },
@@ -41,16 +46,11 @@ export function AppSidebar() {
   };
 
   return (
-    <aside className="flex flex-col h-screen w-60 bg-sidebar border-r border-sidebar-border">
+    <aside className="flex flex-col h-screen w-16 bg-sidebar border-r border-sidebar-border">
       {/* Logo */}
-      <div className="flex items-center h-16 px-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Megaphone className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <span className="font-heading font-semibold text-foreground">
-            MarketHub
-          </span>
+      <div className="flex items-center justify-center h-16 border-b border-sidebar-border">
+        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+          <Megaphone className="w-4 h-4 text-primary-foreground" />
         </div>
       </div>
 
@@ -59,19 +59,24 @@ export function AppSidebar() {
         {mainNavItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-sidebar-foreground hover:bg-accent hover:text-foreground"
-              )}
-            >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
-              <span className="font-medium text-sm">{item.label}</span>
-            </NavLink>
+            <Tooltip key={item.path} delayDuration={0}>
+              <TooltipTrigger asChild>
+                <NavLink
+                  to={item.path}
+                  className={cn(
+                    "flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200",
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-sidebar-foreground hover:bg-accent hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="w-5 h-5" />
+                </NavLink>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={10}>
+                {item.label}
+              </TooltipContent>
+            </Tooltip>
           );
         })}
       </nav>
@@ -81,36 +86,45 @@ export function AppSidebar() {
         {bottomNavItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                isActive
-                  ? "bg-accent text-foreground"
-                  : "text-sidebar-foreground hover:bg-accent hover:text-foreground"
-              )}
-            >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
-              <span className="font-medium text-sm">{item.label}</span>
-            </NavLink>
+            <Tooltip key={item.path} delayDuration={0}>
+              <TooltipTrigger asChild>
+                <NavLink
+                  to={item.path}
+                  className={cn(
+                    "flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200",
+                    isActive
+                      ? "bg-accent text-foreground"
+                      : "text-sidebar-foreground hover:bg-accent hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="w-5 h-5" />
+                </NavLink>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={10}>
+                {item.label}
+              </TooltipContent>
+            </Tooltip>
           );
         })}
 
         {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full text-sidebar-foreground hover:bg-accent hover:text-foreground"
-        >
-          {theme === "dark" ? (
-            <Sun className="w-5 h-5 flex-shrink-0" />
-          ) : (
-            <Moon className="w-5 h-5 flex-shrink-0" />
-          )}
-          <span className="font-medium text-sm">
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
+            <button
+              onClick={toggleTheme}
+              className="flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-accent hover:text-foreground"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right" sideOffset={10}>
             {theme === "dark" ? "Tema Claro" : "Tema Escuro"}
-          </span>
-        </button>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </aside>
   );
