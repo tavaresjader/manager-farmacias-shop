@@ -33,7 +33,7 @@ const mainNavItems = [
 
 const bottomNavItems = [
   { icon: Settings, label: "Configurações", path: "/configuracoes" },
-  { icon: HelpCircle, label: "Ajuda", path: "/ajuda" },
+  { icon: HelpCircle, label: "Ajuda", path: "/ajuda", external: "https://ajuda.goengange.com.br?UTM_SOURCE=MANAGER" },
 ];
 
 export function AppSidebar() {
@@ -84,6 +84,30 @@ export function AppSidebar() {
       <div className="py-4 px-2 border-t border-sidebar-border space-y-1">
         {bottomNavItems.map((item) => {
           const isActive = location.pathname === item.path;
+          
+          if (item.external) {
+            return (
+              <Tooltip key={item.path} delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <a
+                    href={item.external}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      "flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200",
+                      "text-sidebar-foreground hover:bg-accent hover:text-foreground"
+                    )}
+                  >
+                    <item.icon className="w-5 h-5" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="right" sideOffset={10}>
+                  {item.label}
+                </TooltipContent>
+              </Tooltip>
+            );
+          }
+          
           return (
             <Tooltip key={item.path} delayDuration={0}>
               <TooltipTrigger asChild>
