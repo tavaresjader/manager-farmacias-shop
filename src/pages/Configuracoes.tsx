@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff } from "lucide-react";
+import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 const menuItems = [
   { id: "conta", label: "Minha conta", icon: User },
@@ -51,6 +52,7 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
 };
 
 const Configuracoes = () => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("conta");
   const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
   const [empresa, setEmpresa] = useState({
@@ -61,6 +63,13 @@ const Configuracoes = () => {
 
   const toggleSecretVisibility = (id: string) => {
     setVisibleSecrets((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      description: `${label} copiado para a área de transferência`,
+    });
   };
 
   const handleEmpresaChange = (field: string, value: string) => {
@@ -216,9 +225,19 @@ const Configuracoes = () => {
                       <TableRow key={integracao.id}>
                         <TableCell className="font-medium">{integracao.nome}</TableCell>
                         <TableCell>
-                          <code className="text-sm bg-muted px-2 py-1 rounded">
-                            {integracao.clientId}
-                          </code>
+                          <div className="flex items-center gap-2">
+                            <code className="text-sm bg-muted px-2 py-1 rounded">
+                              {integracao.clientId}
+                            </code>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                              onClick={() => copyToClipboard(integracao.clientId, "Client ID")}
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -238,6 +257,14 @@ const Configuracoes = () => {
                               ) : (
                                 <Eye className="w-4 h-4" />
                               )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                              onClick={() => copyToClipboard(integracao.clientSecret, "Client Secret")}
+                            >
+                              <Copy className="w-4 h-4" />
                             </Button>
                           </div>
                         </TableCell>
