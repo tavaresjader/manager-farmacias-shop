@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff, Copy, Plus } from "lucide-react";
+import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff, Copy, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
@@ -159,6 +170,43 @@ const Configuracoes = () => {
                   Salvar alterações
                 </Button>
               </form>
+
+              <div className="mt-12 pt-6 border-t border-border">
+                <h3 className="text-lg font-semibold text-destructive mb-2">Zona de perigo</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Ao excluir sua conta, todos os seus dados serão permanentemente removidos e não poderão ser recuperados.
+                </p>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Excluir minha conta
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Tem certeza que deseja excluir sua conta?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta ação não pode ser desfeita. Todos os seus dados, incluindo faturas, integrações e colaboradores, serão permanentemente removidos.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        onClick={() => {
+                          toast({
+                            description: "Conta excluída com sucesso",
+                            variant: "destructive",
+                          });
+                        }}
+                      >
+                        Excluir conta
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           )}
 
