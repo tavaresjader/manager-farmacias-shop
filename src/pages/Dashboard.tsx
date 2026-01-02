@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { MetricCard } from "@/components/ui/metric-card";
 import { SearchBar } from "@/components/ui/search-bar";
@@ -151,6 +152,7 @@ const columns: Column<Campaign>[] = [
 ];
 
 const Dashboard = () => {
+  usePageTitle("Início");
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 

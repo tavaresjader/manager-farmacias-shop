@@ -6,6 +6,7 @@ import { TabsFilter } from "@/components/ui/tabs-filter";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Plus, Download, Printer } from "lucide-react";
 
 interface Campaign {
@@ -202,6 +203,7 @@ const columns: Column<Campaign>[] = [
 ];
 
 const Campanhas = () => {
+  usePageTitle("Campanhas");
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 

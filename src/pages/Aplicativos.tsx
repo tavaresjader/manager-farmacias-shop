@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/ui/search-bar";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Plus, ExternalLink, Zap, Database, CreditCard, Mail, BarChart3, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -80,6 +81,7 @@ const getAppIcon = (icon: Aplicativo["icon"]) => {
 };
 
 const Aplicativos = () => {
+  usePageTitle("Aplicativos");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredApps = mockAplicativos.filter(
