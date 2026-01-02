@@ -103,7 +103,7 @@ const Configuracoes = () => {
     <MainLayout>
       <div className="flex h-full">
         {/* Submenu lateral */}
-        <aside className="w-48 shrink-0 border-r border-border bg-card p-4">
+        <aside className="w-48 shrink-0 border-r border-border p-4">
           <h1 className="text-lg font-semibold text-foreground mb-4">Configurações</h1>
           <nav className="space-y-1">
             {menuItems.map((item) => {
