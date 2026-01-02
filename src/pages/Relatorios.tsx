@@ -16,7 +16,6 @@ const Relatorios = () => {
       <PageHeader
         title="Relatórios"
         breadcrumbs={[
-          { label: "marketing", path: "/" },
           { label: "relatórios" },
         ]}
       />

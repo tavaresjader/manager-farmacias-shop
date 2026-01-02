@@ -165,7 +165,6 @@ const Jornadas = () => {
       <PageHeader
         title="Jornadas"
         breadcrumbs={[
-          { label: "marketing", path: "/" },
           { label: "jornadas" },
         ]}
         actions={

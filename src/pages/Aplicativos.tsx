@@ -93,7 +93,6 @@ const Aplicativos = () => {
       <PageHeader
         title="Aplicativos"
         breadcrumbs={[
-          { label: "marketing", path: "/" },
           { label: "aplicativos" },
         ]}
         actions={

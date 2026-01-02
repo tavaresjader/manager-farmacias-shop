@@ -146,7 +146,6 @@ const Canais = () => {
       <PageHeader
         title="Canais"
         breadcrumbs={[
-          { label: "marketing", path: "/" },
           { label: "canais" },
         ]}
         actions={

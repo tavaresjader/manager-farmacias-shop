@@ -219,7 +219,6 @@ const Clientes = () => {
       <PageHeader
         title="Clientes"
         breadcrumbs={[
-          { label: "marketing", path: "/" },
           { label: "clientes" },
         ]}
         actions={
