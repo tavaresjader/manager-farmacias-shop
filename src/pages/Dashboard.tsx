@@ -168,12 +168,6 @@ const Dashboard = () => {
       <PageHeader
         title="Início"
         breadcrumbs={[]}
-        actions={
-          <Button className="gap-2">
-            <Plus className="w-4 h-4" />
-            Nova Campanha
-          </Button>
-        }
       />
 
       {/* Metrics Grid */}
