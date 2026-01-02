@@ -130,7 +130,7 @@ const Configuracoes = () => {
         {/* Conteúdo */}
         <main className="flex-1 p-6">
           {activeTab === "conta" && (
-            <div>
+            <div className="bg-card border border-border rounded-lg p-6">
               <h2 className="text-lg font-semibold text-foreground mb-6">Dados da empresa</h2>
               <form className="space-y-4 max-w-md">
                 <div className="space-y-2">
@@ -211,7 +211,7 @@ const Configuracoes = () => {
           )}
 
           {activeTab === "fatura" && (
-            <div>
+            <div className="bg-card border border-border rounded-lg p-6">
               <h2 className="text-lg font-semibold text-foreground mb-6">Minhas faturas</h2>
               <div className="border border-border rounded-lg overflow-hidden">
                 <Table>
@@ -269,7 +269,7 @@ const Configuracoes = () => {
           )}
 
           {activeTab === "integracoes" && (
-            <div>
+            <div className="bg-card border border-border rounded-lg p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-foreground">Integrações</h2>
                 <Button onClick={() => console.log("Adicionar integração")}>
@@ -343,7 +343,7 @@ const Configuracoes = () => {
           )}
 
           {activeTab === "colaboradores" && (
-            <div>
+            <div className="bg-card border border-border rounded-lg p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-foreground">Colaboradores</h2>
                 <Button onClick={() => console.log("Adicionar colaborador")}>
