@@ -1,6 +1,7 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { MetricCard } from "@/components/ui/metric-card";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   BarChart3,
   TrendingUp,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 
 const Relatorios = () => {
+  usePageTitle("Relatórios");
   return (
     <MainLayout>
       <PageHeader

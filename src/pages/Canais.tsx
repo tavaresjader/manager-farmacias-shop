@@ -5,6 +5,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Plus, Mail, MessageSquare, Instagram, Facebook, Linkedin } from "lucide-react";
 
 interface Canal {
@@ -135,6 +136,7 @@ const columns: Column<Canal>[] = [
 ];
 
 const Canais = () => {
+  usePageTitle("Canais");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredCanais = mockCanais.filter((canal) =>

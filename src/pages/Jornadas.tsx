@@ -7,13 +7,8 @@ import { TabsFilter } from "@/components/ui/tabs-filter";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Plus, GitBranch, MoreHorizontal, Eye, Pencil, Trash2 } from "lucide-react";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { Plus, GitBranch } from "lucide-react";
 
 interface Jornada {
   id: string;
@@ -93,6 +88,7 @@ const tabs = [
 ];
 
 const Jornadas = () => {
+  usePageTitle("Jornadas");
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");

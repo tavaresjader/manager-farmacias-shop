@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   Select,
   SelectContent,
@@ -91,6 +92,7 @@ const JornadaDetalhe = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isNew = id === "nova";
+  usePageTitle(isNew ? "Nova Jornada" : "Detalhe da Jornada");
 
   const existingJornada = id && id !== "nova" ? mockJornadas[id] : null;
 

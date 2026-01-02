@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff, Copy, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -75,6 +76,7 @@ const colaboradorStatusConfig: Record<string, { label: string; variant: "default
 };
 
 const Configuracoes = () => {
+  usePageTitle("Configurações");
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("conta");
   const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});

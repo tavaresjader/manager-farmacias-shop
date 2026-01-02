@@ -6,6 +6,7 @@ import { TabsFilter } from "@/components/ui/tabs-filter";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Plus, Download, Printer, Mail, Phone } from "lucide-react";
 
 interface Client {
@@ -202,6 +203,7 @@ const columns: Column<Client>[] = [
 ];
 
 const Clientes = () => {
+  usePageTitle("Clientes");
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
