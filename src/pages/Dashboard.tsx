@@ -167,7 +167,7 @@ const Dashboard = () => {
     <MainLayout>
       <PageHeader
         title="Início"
-        breadcrumbs={[{ label: "Início" }]}
+        breadcrumbs={[]}
         actions={
           <Button className="gap-2">
             <Plus className="w-4 h-4" />
