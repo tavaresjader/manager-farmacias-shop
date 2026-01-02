@@ -148,12 +148,6 @@ const Canais = () => {
         breadcrumbs={[
           { label: "canais" },
         ]}
-        actions={
-          <Button className="gap-2">
-            <Plus className="w-4 h-4" />
-            Novo Canal
-          </Button>
-        }
       />
 
       <div className="space-y-4">
