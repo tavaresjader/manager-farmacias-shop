@@ -13,6 +13,7 @@ interface Jornada {
   name: string;
   description: string;
   status: "active" | "draft" | "inactive";
+  trigger: "agendamento" | "recorrencia" | "api" | "manual";
   steps: number;
   contacts: number;
   conversions: number;
@@ -25,6 +26,7 @@ const mockJornadas: Jornada[] = [
     name: "Onboarding Novos Clientes",
     description: "Jornada de boas-vindas para novos clientes",
     status: "active",
+    trigger: "api",
     steps: 5,
     contacts: 1234,
     conversions: 456,
@@ -35,6 +37,7 @@ const mockJornadas: Jornada[] = [
     name: "Recuperação de Carrinho",
     description: "Fluxo para recuperar carrinhos abandonados",
     status: "active",
+    trigger: "agendamento",
     steps: 3,
     contacts: 890,
     conversions: 234,
@@ -45,6 +48,7 @@ const mockJornadas: Jornada[] = [
     name: "Reengajamento",
     description: "Jornada para clientes inativos",
     status: "draft",
+    trigger: "recorrencia",
     steps: 4,
     contacts: 0,
     conversions: 0,
@@ -55,6 +59,7 @@ const mockJornadas: Jornada[] = [
     name: "Pós-Venda",
     description: "Acompanhamento após compra",
     status: "active",
+    trigger: "manual",
     steps: 6,
     contacts: 2100,
     conversions: 678,
@@ -65,6 +70,7 @@ const mockJornadas: Jornada[] = [
     name: "Upsell Premium",
     description: "Ofertas de upgrade para clientes ativos",
     status: "inactive",
+    trigger: "recorrencia",
     steps: 4,
     contacts: 450,
     conversions: 89,
@@ -111,6 +117,21 @@ const columns: Column<Jornada>[] = [
         }
       />
     ),
+  },
+  {
+    key: "trigger",
+    label: "Gatilho",
+    render: (item) => {
+      const triggerLabels: Record<string, string> = {
+        agendamento: "Agendamento",
+        recorrencia: "Recorrência",
+        api: "API",
+        manual: "Manual",
+      };
+      return (
+        <span className="text-foreground">{triggerLabels[item.trigger]}</span>
+      );
+    },
   },
   {
     key: "steps",
