@@ -11,6 +11,7 @@ import Campanhas from "./pages/Campanhas";
 import Clientes from "./pages/Clientes";
 import Canais from "./pages/Canais";
 import Jornadas from "./pages/Jornadas";
+import JornadaDetalhe from "./pages/JornadaDetalhe";
 import Aplicativos from "./pages/Aplicativos";
 import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/canais" element={<Canais />} />
             <Route path="/jornadas" element={<Jornadas />} />
+            <Route path="/jornadas/:id" element={<JornadaDetalhe />} />
             <Route path="/aplicativos" element={<Aplicativos />} />
             <Route path="/relatorios" element={<Relatorios />} />
             <Route path="/configuracoes" element={<Configuracoes />} />

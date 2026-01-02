@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/ui/search-bar";
@@ -6,7 +7,13 @@ import { TabsFilter } from "@/components/ui/tabs-filter";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
-import { Plus, GitBranch } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Plus, GitBranch, MoreHorizontal, Eye, Pencil, Trash2 } from "lucide-react";
 
 interface Jornada {
   id: string;
@@ -84,6 +91,11 @@ const tabs = [
   { id: "draft", label: "Rascunhos", count: 1 },
   { id: "inactive", label: "Inativas", count: 1 },
 ];
+
+const Jornadas = () => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
 const columns: Column<Jornada>[] = [
   {
@@ -167,11 +179,34 @@ const columns: Column<Jornada>[] = [
       </span>
     ),
   },
+  {
+    key: "actions",
+    label: "",
+    render: (item) => (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => navigate(`/jornadas/${item.id}`)}>
+            <Eye className="w-4 h-4 mr-2" />
+            Visualizar
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate(`/jornadas/${item.id}`)}>
+            <Pencil className="w-4 h-4 mr-2" />
+            Editar
+          </DropdownMenuItem>
+          <DropdownMenuItem className="text-destructive">
+            <Trash2 className="w-4 h-4 mr-2" />
+            Excluir
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
+  },
 ];
-
-const Jornadas = () => {
-  const [activeTab, setActiveTab] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredJornadas = mockJornadas.filter((jornada) => {
     const matchesSearch =
@@ -189,7 +224,7 @@ const Jornadas = () => {
           { label: "jornadas" },
         ]}
         actions={
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={() => navigate("/jornadas/nova")}>
             <Plus className="w-4 h-4" />
             Nova Jornada
           </Button>
