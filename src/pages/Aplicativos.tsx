@@ -95,12 +95,6 @@ const Aplicativos = () => {
         breadcrumbs={[
           { label: "aplicativos" },
         ]}
-        actions={
-          <Button className="gap-2">
-            <Plus className="w-4 h-4" />
-            Adicionar Aplicativo
-          </Button>
-        }
       />
 
       <div className="space-y-6">
