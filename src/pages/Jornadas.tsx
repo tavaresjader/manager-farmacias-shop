@@ -179,33 +179,6 @@ const columns: Column<Jornada>[] = [
       </span>
     ),
   },
-  {
-    key: "actions",
-    label: "",
-    render: (item) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => navigate(`/jornadas/${item.id}`)}>
-            <Eye className="w-4 h-4 mr-2" />
-            Visualizar
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate(`/jornadas/${item.id}`)}>
-            <Pencil className="w-4 h-4 mr-2" />
-            Editar
-          </DropdownMenuItem>
-          <DropdownMenuItem className="text-destructive">
-            <Trash2 className="w-4 h-4 mr-2" />
-            Excluir
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
 ];
 
   const filteredJornadas = mockJornadas.filter((jornada) => {
