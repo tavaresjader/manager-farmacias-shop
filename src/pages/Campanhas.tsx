@@ -90,9 +90,9 @@ const mockCampaigns: Campaign[] = [
   },
   {
     id: "6",
-    name: "Captação Leads B2B",
+    name: "Captação Contatos B2B",
     client: "Consultoria XYZ",
-    type: "Lead Gen",
+    type: "Contato Gen",
     status: "draft",
     budget: 12000,
     spent: 0,
@@ -175,7 +175,7 @@ const columns: Column<Campaign>[] = [
   },
   {
     key: "leads",
-    label: "Leads",
+    label: "Contatos",
     sortable: true,
     render: (item) => (
       <span className="text-primary font-medium">{item.leads}</span>

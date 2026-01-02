@@ -118,7 +118,7 @@ const columns: Column<Canal>[] = [
   },
   {
     key: "leads",
-    label: "Leads",
+    label: "Contatos",
     sortable: true,
     render: (item) => (
       <span className="text-primary font-medium">{item.leads.toLocaleString("pt-BR")}</span>

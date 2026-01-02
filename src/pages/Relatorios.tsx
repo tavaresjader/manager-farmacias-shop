@@ -30,7 +30,7 @@ const Relatorios = () => {
             icon={DollarSign}
           />
           <MetricCard
-            title="Leads Gerados"
+            title="Contatos Gerados"
             value="2.847"
             change={{ value: 23, type: "positive" }}
             icon={Target}

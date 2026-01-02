@@ -132,7 +132,7 @@ const columns: Column<Campaign>[] = [
   },
   {
     key: "leads",
-    label: "Leads",
+    label: "Contatos",
     sortable: true,
     render: (item) => (
       <span className="text-primary font-medium">{item.leads}</span>
@@ -191,7 +191,7 @@ const Dashboard = () => {
           icon={Users}
         />
         <MetricCard
-          title="Leads Gerados"
+          title="Contatos Gerados"
           value="1.521"
           change={{ value: 23, type: "positive" }}
           icon={Target}
