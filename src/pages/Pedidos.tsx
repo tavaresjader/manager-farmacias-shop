@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { TabsFilter } from "@/components/ui/tabs-filter";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { PedidoDetailsModal } from "@/components/pedidos/PedidoDetailsModal";
 import { PedidoFilterModal, PedidoFilters } from "@/components/pedidos/PedidoFilterModal";
-
 interface Pedido {
   id: string;
   numero: string;
@@ -131,11 +131,34 @@ const Pedidos = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<PedidoFilters>(initialFilters);
+  const [activeTab, setActiveTab] = useState("all");
+
+  const statusCounts = useMemo(() => {
+    return {
+      all: mockPedidos.length,
+      pending: mockPedidos.filter(p => p.status === "pending").length,
+      processing: mockPedidos.filter(p => p.status === "processing").length,
+      active: mockPedidos.filter(p => p.status === "active").length,
+      inactive: mockPedidos.filter(p => p.status === "inactive").length,
+      cancelled: mockPedidos.filter(p => p.status === "cancelled").length,
+    };
+  }, []);
+
+  const statusTabs = [
+    { id: "all", label: "Todos", count: statusCounts.all },
+    { id: "pending", label: "Pendentes", count: statusCounts.pending },
+    { id: "processing", label: "Em andamento", count: statusCounts.processing },
+    { id: "active", label: "Concluídos", count: statusCounts.active },
+    { id: "inactive", label: "Inativos", count: statusCounts.inactive },
+    { id: "cancelled", label: "Cancelados", count: statusCounts.cancelled },
+  ];
 
   const filteredPedidos = mockPedidos.filter((pedido) => {
     const matchesSearch =
       pedido.numero.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pedido.cliente.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesTab = activeTab === "all" || pedido.status === activeTab;
 
     const matchesStatus =
       filters.status === "all" || pedido.status === filters.status;
@@ -144,7 +167,7 @@ const Pedidos = () => {
       !filters.cliente ||
       pedido.cliente.toLowerCase().includes(filters.cliente.toLowerCase());
 
-    return matchesSearch && matchesStatus && matchesCliente;
+    return matchesSearch && matchesTab && matchesStatus && matchesCliente;
   });
 
   const handleRowClick = (pedido: Pedido) => {
@@ -164,6 +187,12 @@ const Pedidos = () => {
       />
 
       <div className="space-y-4">
+        <TabsFilter
+          tabs={statusTabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+
         <SearchBar
           placeholder="Pesquisar por número ou cliente..."
           onSearch={setSearchQuery}
