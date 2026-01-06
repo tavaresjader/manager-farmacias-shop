@@ -14,7 +14,7 @@ import {
   LogOut,
   ShoppingCart,
   Package,
-  Megaphone,
+  SquarePlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -65,7 +65,7 @@ export function AppSidebar() {
       {/* Logo */}
       <NavLink to="/" className="flex items-center justify-center h-16 border-b border-sidebar-border">
         <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
-          <Megaphone className="w-4 h-4 text-background" />
+          <SquarePlus className="w-4 h-4 text-background" />
         </div>
       </NavLink>
 
