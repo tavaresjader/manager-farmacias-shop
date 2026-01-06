@@ -135,8 +135,16 @@ const Dashboard = () => {
   usePageTitle("Início");
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showWhatsAppModal, setShowWhatsAppModal] = useState(true);
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(() => {
+    return !localStorage.getItem("whatsapp-modal-dismissed");
+  });
 
+  const handleCloseWhatsAppModal = (open: boolean) => {
+    if (!open) {
+      localStorage.setItem("whatsapp-modal-dismissed", "true");
+    }
+    setShowWhatsAppModal(open);
+  };
 
   const filteredOrders = mockOrders.filter((order) => {
     const matchesSearch =
@@ -151,7 +159,7 @@ const Dashboard = () => {
     <MainLayout>
       <WhatsAppConfigModal 
         open={showWhatsAppModal} 
-        onOpenChange={setShowWhatsAppModal} 
+        onOpenChange={handleCloseWhatsAppModal} 
       />
       <PageHeader
         title="Início"
