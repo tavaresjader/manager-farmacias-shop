@@ -11,7 +11,7 @@ import {
   ShoppingCart,
   Users,
   TrendingUp,
-  Package,
+  DollarSign,
 } from "lucide-react";
 
 // Mock data for recent orders
@@ -169,7 +169,7 @@ const Dashboard = () => {
           title="Ticket Médio"
           value="R$ 89,50"
           change={{ value: 5, type: "positive" }}
-          icon={Package}
+          icon={DollarSign}
         />
         <MetricCard
           title="Faturamento Mensal"
