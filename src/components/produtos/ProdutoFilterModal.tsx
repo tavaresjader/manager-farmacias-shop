@@ -1,0 +1,147 @@
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export interface ProdutoFilters {
+  categoria: string;
+  nome: string;
+  sku: string;
+  ean: string;
+}
+
+interface ProdutoFilterModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  filters: ProdutoFilters;
+  onApplyFilters: (filters: ProdutoFilters) => void;
+}
+
+const categoriaOptions = [
+  { value: "all", label: "Todas as categorias" },
+  { value: "Vestuário", label: "Vestuário" },
+  { value: "Calçados", label: "Calçados" },
+  { value: "Acessórios", label: "Acessórios" },
+  { value: "Eletrônicos", label: "Eletrônicos" },
+  { value: "Alimentos", label: "Alimentos" },
+];
+
+export function ProdutoFilterModal({
+  open,
+  onOpenChange,
+  filters,
+  onApplyFilters,
+}: ProdutoFilterModalProps) {
+  const [localFilters, setLocalFilters] = useState<ProdutoFilters>(filters);
+
+  const handleApply = () => {
+    onApplyFilters(localFilters);
+    onOpenChange(false);
+  };
+
+  const handleClear = () => {
+    const clearedFilters: ProdutoFilters = {
+      categoria: "all",
+      nome: "",
+      sku: "",
+      ean: "",
+    };
+    setLocalFilters(clearedFilters);
+    onApplyFilters(clearedFilters);
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Filtrar Produtos</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          {/* Categoria */}
+          <div className="space-y-2">
+            <Label>Categoria</Label>
+            <Select
+              value={localFilters.categoria}
+              onValueChange={(value) =>
+                setLocalFilters((prev) => ({ ...prev, categoria: value }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione a categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {categoriaOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Nome do produto */}
+          <div className="space-y-2">
+            <Label htmlFor="nome">Nome do produto</Label>
+            <Input
+              id="nome"
+              placeholder="Digite o nome do produto..."
+              value={localFilters.nome}
+              onChange={(e) =>
+                setLocalFilters((prev) => ({ ...prev, nome: e.target.value }))
+              }
+            />
+          </div>
+
+          {/* SKU */}
+          <div className="space-y-2">
+            <Label htmlFor="sku">SKU</Label>
+            <Input
+              id="sku"
+              placeholder="Digite o SKU..."
+              value={localFilters.sku}
+              onChange={(e) =>
+                setLocalFilters((prev) => ({ ...prev, sku: e.target.value }))
+              }
+            />
+          </div>
+
+          {/* EAN */}
+          <div className="space-y-2">
+            <Label htmlFor="ean">EAN</Label>
+            <Input
+              id="ean"
+              placeholder="Digite o código EAN..."
+              value={localFilters.ean}
+              onChange={(e) =>
+                setLocalFilters((prev) => ({ ...prev, ean: e.target.value }))
+              }
+            />
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="outline" onClick={handleClear}>
+            Limpar filtros
+          </Button>
+          <Button onClick={handleApply}>Aplicar filtros</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
