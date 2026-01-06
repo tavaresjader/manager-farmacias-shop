@@ -144,16 +144,6 @@ const columns: Column<Client>[] = [
     ),
   },
   {
-    key: "segment",
-    label: "Segmento",
-    sortable: true,
-    render: (item) => (
-      <span className="px-2 py-1 text-xs font-medium bg-secondary rounded-md">
-        {item.segment}
-      </span>
-    ),
-  },
-  {
     key: "status",
     label: "Status",
     render: (item) => (
@@ -167,14 +157,6 @@ const columns: Column<Client>[] = [
             : "Pendente"
         }
       />
-    ),
-  },
-  {
-    key: "campaigns",
-    label: "Campanhas",
-    sortable: true,
-    render: (item) => (
-      <span className="text-primary font-medium">{item.campaigns}</span>
     ),
   },
   {
