@@ -78,32 +78,32 @@
   }
 
   .dark {
-    /* Core backgrounds - Dark slate */
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    /* Core backgrounds - Dark neutral gray #212121 */
+    --background: 0 0% 13%;
+    --foreground: 0 0% 98%;
 
     /* Cards and surfaces */
-    --card: 217 33% 17%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 18%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 217 33% 17%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 18%;
+    --popover-foreground: 0 0% 98%;
 
     /* Primary - Red for actions and highlights */
     --primary: 348 100% 55%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary */
-    --secondary: 217 33% 22%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 22%;
+    --secondary-foreground: 0 0% 98%;
 
     /* Muted elements */
-    --muted: 217 33% 22%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 0 0% 22%;
+    --muted-foreground: 0 0% 65%;
 
     /* Accent */
-    --accent: 217 33% 22%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 22%;
+    --accent-foreground: 0 0% 98%;
 
     /* Status colors */
     --destructive: 0 62% 50%;
@@ -116,18 +116,18 @@
     --warning-foreground: 0 0% 100%;
 
     /* Form elements */
-    --border: 217 33% 25%;
-    --input: 217 33% 25%;
+    --border: 0 0% 25%;
+    --input: 0 0% 25%;
     --ring: 348 100% 55%;
 
     /* Sidebar */
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 215 20% 65%;
+    --sidebar-background: 0 0% 13%;
+    --sidebar-foreground: 0 0% 65%;
     --sidebar-primary: 348 100% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 25%;
+    --sidebar-accent: 0 0% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 25%;
     --sidebar-ring: 348 100% 55%;
 
     /* Custom shadows for dark mode */
