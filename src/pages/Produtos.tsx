@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Package } from "lucide-react";
 import { ProdutoFilterModal, ProdutoFilters } from "@/components/produtos/ProdutoFilterModal";
+import { ProdutoDetailsModal } from "@/components/produtos/ProdutoDetailsModal";
 
 interface Produto {
   id: string;
@@ -138,6 +139,8 @@ const Produtos = () => {
   const [pageSize, setPageSize] = useState(10);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<ProdutoFilters>(initialFilters);
+  const [selectedProduto, setSelectedProduto] = useState<Produto | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
   const filteredProdutos = mockProdutos.filter((produto) => {
     const matchesSearch =
@@ -183,6 +186,11 @@ const Produtos = () => {
     setCurrentPage(1);
   };
 
+  const handleRowClick = (produto: Produto) => {
+    setSelectedProduto(produto);
+    setDetailsModalOpen(true);
+  };
+
   return (
     <MainLayout>
       <PageHeader
@@ -205,6 +213,7 @@ const Produtos = () => {
           columns={columns}
           data={paginatedProdutos}
           emptyMessage="Nenhum produto encontrado"
+          onRowClick={handleRowClick}
           pagination={{
             currentPage,
             totalPages,
@@ -221,6 +230,12 @@ const Produtos = () => {
         onOpenChange={setFilterModalOpen}
         filters={filters}
         onApplyFilters={handleApplyFilters}
+      />
+
+      <ProdutoDetailsModal
+        produto={selectedProduto}
+        open={detailsModalOpen}
+        onOpenChange={setDetailsModalOpen}
       />
     </MainLayout>
   );
