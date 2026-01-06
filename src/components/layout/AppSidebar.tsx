@@ -64,7 +64,7 @@ export function AppSidebar() {
     <aside className="flex flex-col h-screen w-16 bg-white dark:bg-background border-r border-sidebar-border fixed left-0 top-0 z-40">
       {/* Logo */}
       <NavLink to="/" className="flex items-center justify-center h-16 border-b border-sidebar-border">
-        <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
+        <div className="w-8 h-8 rounded-lg bg-[#ff0033] flex items-center justify-center">
           <SquarePlus className="w-4 h-4 text-background" />
         </div>
       </NavLink>
