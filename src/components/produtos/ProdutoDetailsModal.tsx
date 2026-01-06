@@ -6,6 +6,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,6 +50,7 @@ export function ProdutoDetailsModal({
 }: ProdutoDetailsModalProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProduto, setEditedProduto] = useState<Produto | null>(null);
+  const [showInactivateConfirm, setShowInactivateConfirm] = useState(false);
 
   if (!produto) return null;
 
@@ -62,12 +73,17 @@ export function ProdutoDetailsModal({
   };
 
   const handleToggleStatus = () => {
-    const newStatus = produto.status === "active" ? "inactive" : "active";
-    toast.success(
-      newStatus === "active"
-        ? `Produto "${produto.nome}" ativado com sucesso!`
-        : `Produto "${produto.nome}" inativado com sucesso!`
-    );
+    if (produto.status === "active") {
+      setShowInactivateConfirm(true);
+    } else {
+      toast.success(`Produto "${produto.nome}" ativado com sucesso!`);
+      onOpenChange(false);
+    }
+  };
+
+  const handleConfirmInactivate = () => {
+    toast.success(`Produto "${produto.nome}" inativado com sucesso!`);
+    setShowInactivateConfirm(false);
     onOpenChange(false);
   };
 
@@ -296,6 +312,24 @@ export function ProdutoDetailsModal({
           )}
         </DialogFooter>
       </DialogContent>
+
+      <AlertDialog open={showInactivateConfirm} onOpenChange={setShowInactivateConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar inativação</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja inativar o produto "{produto.nome}"? 
+              Esta ação pode ser revertida posteriormente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmInactivate}>
+              Inativar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
