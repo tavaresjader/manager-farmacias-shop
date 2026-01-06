@@ -120,12 +120,29 @@ const columns: Column<Produto>[] = [
 const Produtos = () => {
   usePageTitle("Produtos");
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filteredProdutos = mockProdutos.filter((produto) =>
     produto.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
     produto.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
     produto.categoria.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const totalPages = Math.ceil(filteredProdutos.length / pageSize);
+  const paginatedProdutos = filteredProdutos.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
 
   return (
     <MainLayout>
@@ -137,15 +154,26 @@ const Produtos = () => {
       <div className="space-y-4">
         <SearchBar
           placeholder="Pesquisar por nome, SKU ou categoria..."
-          onSearch={setSearchQuery}
+          onSearch={(value) => {
+            setSearchQuery(value);
+            setCurrentPage(1);
+          }}
           onFilter={() => {}}
           className="max-w-md"
         />
 
         <DataTable
           columns={columns}
-          data={filteredProdutos}
+          data={paginatedProdutos}
           emptyMessage="Nenhum produto encontrado"
+          pagination={{
+            currentPage,
+            totalPages,
+            pageSize,
+            totalItems: filteredProdutos.length,
+            onPageChange: handlePageChange,
+            onPageSizeChange: handlePageSizeChange,
+          }}
         />
       </div>
     </MainLayout>
