@@ -166,8 +166,8 @@ const Dashboard = () => {
           icon={Users}
         />
         <MetricCard
-          title="Produtos Ativos"
-          value="342"
+          title="Ticket Médio"
+          value="R$ 89,50"
           change={{ value: 5, type: "positive" }}
           icon={Package}
         />
