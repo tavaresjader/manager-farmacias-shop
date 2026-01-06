@@ -25,8 +25,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 20%;
 
-    /* Primary - Blue for actions and highlights */
-    --primary: 217 91% 55%;
+    /* Primary - Red for actions and highlights */
+    --primary: 348 100% 50%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - Soft blue gray */
@@ -54,19 +54,19 @@
     /* Form elements */
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 217 91% 55%;
+    --ring: 348 100% 50%;
 
     --radius: 0.625rem;
 
     /* Sidebar */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 16% 46%;
-    --sidebar-primary: 217 91% 55%;
+    --sidebar-primary: 348 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 14% 91%;
     --sidebar-accent-foreground: 220 20% 20%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 55%;
+    --sidebar-ring: 348 100% 50%;
 
     /* Typography */
     --font-heading: 'Outfit', sans-serif;
@@ -89,8 +89,8 @@
     --popover: 217 33% 17%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary - Blue for actions and highlights */
-    --primary: 217 91% 60%;
+    /* Primary - Red for actions and highlights */
+    --primary: 348 100% 55%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary */
@@ -118,17 +118,17 @@
     /* Form elements */
     --border: 217 33% 25%;
     --input: 217 33% 25%;
-    --ring: 217 91% 60%;
+    --ring: 348 100% 55%;
 
     /* Sidebar */
     --sidebar-background: 222 47% 11%;
     --sidebar-foreground: 215 20% 65%;
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary: 348 100% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 217 33% 17%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 217 33% 25%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-ring: 348 100% 55%;
 
     /* Custom shadows for dark mode */
     --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.3), 0 1px 2px -1px hsl(0 0% 0% / 0.3);
