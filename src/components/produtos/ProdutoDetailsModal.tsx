@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Pencil, Save, Power, PowerOff, Package } from "lucide-react";
 
@@ -23,6 +24,7 @@ interface Produto {
   preco: number;
   estoque: number;
   status: "active" | "inactive" | "pending";
+  controlado: boolean;
 }
 
 interface ProdutoDetailsModalProps {
@@ -229,6 +231,29 @@ export function ProdutoDetailsModal({
               <div>
                 <StatusBadge status={currentProduto.status} />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Produto Controlado</Label>
+              {isEditing ? (
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={editedProduto?.controlado || false}
+                    onCheckedChange={(checked) =>
+                      setEditedProduto((prev) =>
+                        prev ? { ...prev, controlado: checked } : null
+                      )
+                    }
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    {editedProduto?.controlado ? "Sim" : "Não"}
+                  </span>
+                </div>
+              ) : (
+                <p className={`text-sm font-medium ${currentProduto.controlado ? "text-amber-600" : "text-foreground"}`}>
+                  {currentProduto.controlado ? "Sim" : "Não"}
+                </p>
+              )}
             </div>
           </div>
         </div>
