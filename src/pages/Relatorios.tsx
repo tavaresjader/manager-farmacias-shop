@@ -87,39 +87,78 @@ const Relatorios = () => {
           </div>
         </div>
 
-        {/* Top Campaigns */}
-        <div className="card-elevated p-6">
-          <h3 className="font-heading text-lg font-semibold mb-4">
-            Top 5 Campanhas por ROI
-          </h3>
-          <div className="space-y-3">
-            {[
-              { name: "Black Friday 2024", roi: "4.5x", client: "Loja Virtual ABC" },
-              { name: "Lançamento Produto X", roi: "4.2x", client: "Tech Solutions" },
-              { name: "Awareness Brand", roi: "3.8x", client: "StartUp Inc" },
-              { name: "Remarketing Q4", roi: "3.2x", client: "E-commerce Plus" },
-              { name: "Campanha Verão", roi: "2.9x", client: "Moda Express" },
-            ].map((campaign, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
-                    {index + 1}
-                  </span>
-                  <div>
-                    <span className="font-medium text-foreground">
-                      {campaign.name}
+        {/* Top Products */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Top 10 Produtos Mais Comprados */}
+          <div className="card-elevated p-6">
+            <h3 className="font-heading text-lg font-semibold mb-4">
+              Top 10 Produtos Mais Comprados
+            </h3>
+            <div className="space-y-2">
+              {[
+                { name: "Dipirona 500mg", qty: 1250 },
+                { name: "Paracetamol 750mg", qty: 1180 },
+                { name: "Ibuprofeno 400mg", qty: 985 },
+                { name: "Vitamina C 1g", qty: 870 },
+                { name: "Omeprazol 20mg", qty: 756 },
+                { name: "Loratadina 10mg", qty: 680 },
+                { name: "Dorflex", qty: 645 },
+                { name: "Buscopan Composto", qty: 590 },
+                { name: "Neosaldina", qty: 520 },
+                { name: "Rivotril 2mg", qty: 485 },
+              ].map((product, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 bg-muted/30 rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
+                      {index + 1}
                     </span>
-                    <p className="text-xs text-muted-foreground">
-                      {campaign.client}
-                    </p>
+                    <span className="font-medium text-foreground text-sm">
+                      {product.name}
+                    </span>
                   </div>
+                  <span className="text-success font-semibold text-sm">{product.qty} un</span>
                 </div>
-                <span className="text-success font-semibold">{campaign.roi}</span>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Top 10 Produtos Mais Pesquisados Sem Disponibilidade */}
+          <div className="card-elevated p-6">
+            <h3 className="font-heading text-lg font-semibold mb-4">
+              Top 10 Produtos Pesquisados Sem Estoque
+            </h3>
+            <div className="space-y-2">
+              {[
+                { name: "Ozempic 1mg", searches: 890 },
+                { name: "Wegovy 2.4mg", searches: 756 },
+                { name: "Mounjaro 5mg", searches: 680 },
+                { name: "Saxenda 6mg/ml", searches: 540 },
+                { name: "Rybelsus 14mg", searches: 485 },
+                { name: "Victoza 6mg/ml", searches: 420 },
+                { name: "Trulicity 1.5mg", searches: 380 },
+                { name: "Jardiance 25mg", searches: 320 },
+                { name: "Forxiga 10mg", searches: 290 },
+                { name: "Glifage XR 500mg", searches: 265 },
+              ].map((product, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 bg-muted/30 rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-6 h-6 rounded-full bg-destructive/10 flex items-center justify-center text-xs font-medium text-destructive">
+                      {index + 1}
+                    </span>
+                    <span className="font-medium text-foreground text-sm">
+                      {product.name}
+                    </span>
+                  </div>
+                  <span className="text-muted-foreground font-semibold text-sm">{product.searches} buscas</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
