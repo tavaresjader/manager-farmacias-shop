@@ -101,13 +101,13 @@ const Relatorios = () => {
         {/* Overview Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <MetricCard
-            title="Investimento Total"
+            title="Faturamento"
             value="R$ 175.000"
             change={{ value: 15, type: "positive" }}
             icon={DollarSign}
           />
           <MetricCard
-            title="Contatos Gerados"
+            title="Novos Clientes"
             value="2.847"
             change={{ value: 23, type: "positive" }}
             icon={Target}
@@ -119,20 +119,20 @@ const Relatorios = () => {
             icon={TrendingUp}
           />
           <MetricCard
-            title="Campanhas Realizadas"
+            title="Cancelamentos"
             value="24"
             change={{ value: 8, type: "positive" }}
             icon={Megaphone}
           />
           <MetricCard
-            title="Clientes Atendidos"
+            title="Clientes"
             value="18"
             change={{ value: 3, type: "positive" }}
             icon={Users}
           />
           <MetricCard
-            title="ROI Médio"
-            value="3.8x"
+            title="Ticket Médio"
+            value="R$ 89,50"
             change={{ value: 12, type: "positive" }}
             icon={BarChart3}
           />
