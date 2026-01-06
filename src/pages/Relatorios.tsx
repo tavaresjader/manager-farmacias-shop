@@ -142,21 +142,21 @@ const Relatorios = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
-              Performance Mensal
+              Vendas (Diária)
             </h3>
             <div className="h-64 flex items-center justify-center bg-muted/30 rounded-lg">
               <p className="text-muted-foreground">
-                Gráfico de performance em breve
+                Gráfico de vendas diárias em breve
               </p>
             </div>
           </div>
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
-              Distribuição por Segmento
+              Vendas (Horário)
             </h3>
             <div className="h-64 flex items-center justify-center bg-muted/30 rounded-lg">
               <p className="text-muted-foreground">
-                Gráfico de segmentos em breve
+                Gráfico de vendas por horário em breve
               </p>
             </div>
           </div>
