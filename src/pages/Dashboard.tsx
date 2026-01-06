@@ -8,95 +8,87 @@ import { TabsFilter } from "@/components/ui/tabs-filter";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import {
-  Megaphone,
+  ShoppingCart,
   Users,
   TrendingUp,
-  Target,
-  Plus,
+  Package,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-// Mock data for recent campaigns
-interface Campaign {
+// Mock data for recent orders
+interface Order {
   id: string;
-  name: string;
-  client: string;
-  status: "active" | "pending" | "completed" | "draft";
-  budget: number;
-  spent: number;
-  leads: number;
-  startDate: string;
+  orderNumber: string;
+  customer: string;
+  status: "pending" | "processing" | "completed" | "cancelled";
+  total: number;
+  items: number;
+  date: string;
 }
 
-const mockCampaigns: Campaign[] = [
+const mockOrders: Order[] = [
   {
     id: "1",
-    name: "Black Friday 2024",
-    client: "Loja Virtual ABC",
-    status: "active",
-    budget: 15000,
-    spent: 8500,
-    leads: 342,
-    startDate: "2024-11-01",
+    orderNumber: "#001234",
+    customer: "Maria Silva",
+    status: "completed",
+    total: 245.90,
+    items: 5,
+    date: "2024-01-05",
   },
   {
     id: "2",
-    name: "Lançamento Produto X",
-    client: "Tech Solutions",
-    status: "active",
-    budget: 25000,
-    spent: 12000,
-    leads: 567,
-    startDate: "2024-10-15",
+    orderNumber: "#001233",
+    customer: "João Santos",
+    status: "processing",
+    total: 189.50,
+    items: 3,
+    date: "2024-01-05",
   },
   {
     id: "3",
-    name: "Campanha Natal",
-    client: "Moda Express",
+    orderNumber: "#001232",
+    customer: "Ana Oliveira",
     status: "pending",
-    budget: 8000,
-    spent: 0,
-    leads: 0,
-    startDate: "2024-12-01",
+    total: 78.00,
+    items: 2,
+    date: "2024-01-04",
   },
   {
     id: "4",
-    name: "Remarketing Q4",
-    client: "E-commerce Plus",
-    status: "active",
-    budget: 5000,
-    spent: 3200,
-    leads: 189,
-    startDate: "2024-09-01",
+    orderNumber: "#001231",
+    customer: "Carlos Pereira",
+    status: "completed",
+    total: 456.30,
+    items: 8,
+    date: "2024-01-04",
   },
   {
     id: "5",
-    name: "Awareness Brand",
-    client: "StartUp Inc",
-    status: "completed",
-    budget: 10000,
-    spent: 9800,
-    leads: 423,
-    startDate: "2024-08-01",
+    orderNumber: "#001230",
+    customer: "Fernanda Costa",
+    status: "cancelled",
+    total: 125.00,
+    items: 2,
+    date: "2024-01-03",
   },
 ];
 
 const tabs = [
-  { id: "all", label: "Todas", count: 12 },
-  { id: "active", label: "Ativas", count: 5 },
-  { id: "pending", label: "Pendentes", count: 3 },
-  { id: "completed", label: "Concluídas", count: 4 },
+  { id: "all", label: "Todos", count: 156 },
+  { id: "pending", label: "Pendentes", count: 12 },
+  { id: "processing", label: "Processando", count: 8 },
+  { id: "completed", label: "Concluídos", count: 130 },
 ];
 
-const columns: Column<Campaign>[] = [
+const columns: Column<Order>[] = [
   {
-    key: "name",
-    label: "Campanha",
+    key: "orderNumber",
+    label: "Pedido",
     sortable: true,
     render: (item) => (
       <div>
-        <span className="font-medium text-foreground">{item.name}</span>
-        <p className="text-xs text-muted-foreground mt-0.5">{item.client}</p>
+        <span className="font-medium text-foreground">{item.orderNumber}</span>
+        <p className="text-xs text-muted-foreground mt-0.5">{item.customer}</p>
       </div>
     ),
   },
@@ -106,12 +98,20 @@ const columns: Column<Campaign>[] = [
     render: (item) => <StatusBadge status={item.status} />,
   },
   {
-    key: "budget",
-    label: "Orçamento",
+    key: "items",
+    label: "Itens",
     sortable: true,
     render: (item) => (
-      <span className="text-foreground">
-        {item.budget.toLocaleString("pt-BR", {
+      <span className="text-muted-foreground">{item.items}</span>
+    ),
+  },
+  {
+    key: "total",
+    label: "Total",
+    sortable: true,
+    render: (item) => (
+      <span className="text-primary font-medium">
+        {item.total.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         })}
@@ -119,33 +119,12 @@ const columns: Column<Campaign>[] = [
     ),
   },
   {
-    key: "spent",
-    label: "Gasto",
+    key: "date",
+    label: "Data",
     sortable: true,
     render: (item) => (
       <span className="text-muted-foreground">
-        {item.spent.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        })}
-      </span>
-    ),
-  },
-  {
-    key: "leads",
-    label: "Contatos",
-    sortable: true,
-    render: (item) => (
-      <span className="text-primary font-medium">{item.leads}</span>
-    ),
-  },
-  {
-    key: "startDate",
-    label: "Início",
-    sortable: true,
-    render: (item) => (
-      <span className="text-muted-foreground">
-        {new Date(item.startDate).toLocaleDateString("pt-BR")}
+        {new Date(item.date).toLocaleDateString("pt-BR")}
       </span>
     ),
   },
@@ -156,12 +135,12 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredCampaigns = mockCampaigns.filter((campaign) => {
+  const filteredOrders = mockOrders.filter((order) => {
     const matchesSearch =
-      campaign.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      campaign.client.toLowerCase().includes(searchQuery.toLowerCase());
+      order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.customer.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab =
-      activeTab === "all" || campaign.status === activeTab;
+      activeTab === "all" || order.status === activeTab;
     return matchesSearch && matchesTab;
   });
 
@@ -175,41 +154,41 @@ const Dashboard = () => {
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <MetricCard
-          title="Campanhas Ativas"
-          value="12"
-          change={{ value: 8, type: "positive" }}
-          icon={Megaphone}
+          title="Pedidos Hoje"
+          value="24"
+          change={{ value: 12, type: "positive" }}
+          icon={ShoppingCart}
         />
         <MetricCard
           title="Total de Clientes"
-          value="48"
-          change={{ value: 12, type: "positive" }}
+          value="1.248"
+          change={{ value: 8, type: "positive" }}
           icon={Users}
         />
         <MetricCard
-          title="Contatos Gerados"
-          value="1.521"
-          change={{ value: 23, type: "positive" }}
-          icon={Target}
+          title="Produtos Ativos"
+          value="342"
+          change={{ value: 5, type: "positive" }}
+          icon={Package}
         />
         <MetricCard
-          title="ROI Médio"
-          value="3.2x"
-          change={{ value: 5, type: "positive" }}
+          title="Faturamento Mensal"
+          value="R$ 45.8k"
+          change={{ value: 18, type: "positive" }}
           icon={TrendingUp}
         />
       </div>
 
-      {/* Recent Campaigns Section */}
+      {/* Recent Orders Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-lg font-semibold text-foreground">
-            Campanhas Recentes
+            Pedidos Recentes
           </h2>
         </div>
 
         <SearchBar
-          placeholder="Pesquisar por nome ou cliente..."
+          placeholder="Pesquisar por número ou cliente..."
           onSearch={setSearchQuery}
           onFilter={() => {}}
           className="max-w-2xl"
@@ -223,8 +202,8 @@ const Dashboard = () => {
 
         <DataTable
           columns={columns}
-          data={filteredCampaigns}
-          emptyMessage="Nenhuma campanha encontrada"
+          data={filteredOrders}
+          emptyMessage="Nenhum pedido encontrado"
         />
       </div>
     </MainLayout>
