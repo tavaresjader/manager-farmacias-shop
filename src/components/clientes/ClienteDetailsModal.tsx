@@ -112,7 +112,7 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
               <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
                 <Building2 className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Segmento</p>
+                  <p className="text-xs text-muted-foreground">Cidade / UF</p>
                   <p className="text-sm text-foreground">{client.segment}</p>
                 </div>
               </div>
