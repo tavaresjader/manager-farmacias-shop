@@ -81,7 +81,7 @@ export function AppSidebar() {
                   className={cn(
                     "flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200",
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-sm"
+                      ? "bg-[#212121] text-white shadow-sm"
                       : "text-sidebar-foreground hover:bg-accent hover:text-foreground"
                   )}
                 >
