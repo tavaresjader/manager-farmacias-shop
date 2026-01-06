@@ -187,17 +187,17 @@ const Pedidos = () => {
       />
 
       <div className="space-y-4">
-        <TabsFilter
-          tabs={statusTabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-
         <SearchBar
           placeholder="Pesquisar por número ou cliente..."
           onSearch={setSearchQuery}
           onFilter={() => setFilterModalOpen(true)}
           className="max-w-md"
+        />
+
+        <TabsFilter
+          tabs={statusTabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
         />
 
         <DataTable
