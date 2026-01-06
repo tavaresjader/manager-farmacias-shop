@@ -5,13 +5,14 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { PedidoDetailsModal } from "@/components/pedidos/PedidoDetailsModal";
 
 interface Pedido {
   id: string;
   numero: string;
   cliente: string;
   data: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive" | "pending" | "processing" | "cancelled";
   total: number;
   itens: number;
 }
@@ -22,7 +23,7 @@ const mockPedidos: Pedido[] = [
     numero: "#001234",
     cliente: "João Silva",
     data: "05/01/2026",
-    status: "active",
+    status: "pending",
     total: 459.90,
     itens: 3,
   },
@@ -31,7 +32,7 @@ const mockPedidos: Pedido[] = [
     numero: "#001235",
     cliente: "Maria Santos",
     data: "05/01/2026",
-    status: "pending",
+    status: "processing",
     total: 189.50,
     itens: 2,
   },
@@ -58,7 +59,7 @@ const mockPedidos: Pedido[] = [
     numero: "#001238",
     cliente: "Pedro Mendes",
     data: "03/01/2026",
-    status: "active",
+    status: "cancelled",
     total: 567.80,
     itens: 4,
   },
@@ -117,11 +118,18 @@ const columns: Column<Pedido>[] = [
 const Pedidos = () => {
   usePageTitle("Pedidos");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const filteredPedidos = mockPedidos.filter((pedido) =>
     pedido.numero.toLowerCase().includes(searchQuery.toLowerCase()) ||
     pedido.cliente.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleRowClick = (pedido: Pedido) => {
+    setSelectedPedido(pedido);
+    setModalOpen(true);
+  };
 
   return (
     <MainLayout>
@@ -142,8 +150,15 @@ const Pedidos = () => {
           columns={columns}
           data={filteredPedidos}
           emptyMessage="Nenhum pedido encontrado"
+          onRowClick={handleRowClick}
         />
       </div>
+
+      <PedidoDetailsModal
+        pedido={selectedPedido}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+      />
     </MainLayout>
   );
 };

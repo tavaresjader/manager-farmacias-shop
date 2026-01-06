@@ -13,6 +13,7 @@ interface DataTableProps<T> {
   columns: Column<T>[];
   data: T[];
   onRowAction?: (item: T) => void;
+  onRowClick?: (item: T) => void;
   emptyMessage?: string;
 }
 
@@ -20,6 +21,7 @@ export function DataTable<T extends { id: string | number }>({
   columns,
   data,
   onRowAction,
+  onRowClick,
   emptyMessage = "Nenhum registro encontrado",
 }: DataTableProps<T>) {
   return (
@@ -69,9 +71,11 @@ export function DataTable<T extends { id: string | number }>({
                   key={item.id}
                   className={cn(
                     "border-b border-border last:border-0 hover:bg-accent/50 transition-colors",
-                    "animate-fade-in"
+                    "animate-fade-in",
+                    onRowClick && "cursor-pointer"
                   )}
                   style={{ animationDelay: `${index * 50}ms` }}
+                  onClick={() => onRowClick?.(item)}
                 >
                   <td className="px-4 py-3">
                     <input
