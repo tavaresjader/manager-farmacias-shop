@@ -6,6 +6,7 @@ import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { PedidoDetailsModal } from "@/components/pedidos/PedidoDetailsModal";
+import { PedidoFilterModal, PedidoFilters } from "@/components/pedidos/PedidoFilterModal";
 
 interface Pedido {
   id: string;
@@ -115,20 +116,44 @@ const columns: Column<Pedido>[] = [
   },
 ];
 
+const initialFilters: PedidoFilters = {
+  dataInicio: undefined,
+  dataFim: undefined,
+  cliente: "",
+  status: "all",
+  unidade: "all",
+};
+
 const Pedidos = () => {
   usePageTitle("Pedidos");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [filters, setFilters] = useState<PedidoFilters>(initialFilters);
 
-  const filteredPedidos = mockPedidos.filter((pedido) =>
-    pedido.numero.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    pedido.cliente.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPedidos = mockPedidos.filter((pedido) => {
+    const matchesSearch =
+      pedido.numero.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      pedido.cliente.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesStatus =
+      filters.status === "all" || pedido.status === filters.status;
+
+    const matchesCliente =
+      !filters.cliente ||
+      pedido.cliente.toLowerCase().includes(filters.cliente.toLowerCase());
+
+    return matchesSearch && matchesStatus && matchesCliente;
+  });
 
   const handleRowClick = (pedido: Pedido) => {
     setSelectedPedido(pedido);
     setModalOpen(true);
+  };
+
+  const handleApplyFilters = (newFilters: PedidoFilters) => {
+    setFilters(newFilters);
   };
 
   return (
@@ -142,7 +167,7 @@ const Pedidos = () => {
         <SearchBar
           placeholder="Pesquisar por número ou cliente..."
           onSearch={setSearchQuery}
-          onFilter={() => {}}
+          onFilter={() => setFilterModalOpen(true)}
           className="max-w-md"
         />
 
@@ -158,6 +183,13 @@ const Pedidos = () => {
         pedido={selectedPedido}
         open={modalOpen}
         onOpenChange={setModalOpen}
+      />
+
+      <PedidoFilterModal
+        open={filterModalOpen}
+        onOpenChange={setFilterModalOpen}
+        filters={filters}
+        onApplyFilters={handleApplyFilters}
       />
     </MainLayout>
   );
