@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff, Copy, Plus, Trash2 } from "lucide-react";
+import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff, Copy, Plus, Trash2, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +36,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
 const menuItems = [
+  { id: "unidades", label: "Unidades", icon: Building2 },
   { id: "conta", label: "Minha conta", icon: User },
   { id: "fatura", label: "Minha fatura", icon: CreditCard },
   { id: "integracoes", label: "Integrações", icon: Puzzle },
@@ -78,7 +79,7 @@ const colaboradorStatusConfig: Record<string, { label: string; variant: "default
 const Configuracoes = () => {
   usePageTitle("Configurações");
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("conta");
+  const [activeTab, setActiveTab] = useState("unidades");
   const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
   const [empresa, setEmpresa] = useState({
     cnpj: "",
@@ -131,6 +132,80 @@ const Configuracoes = () => {
 
         {/* Conteúdo */}
         <main className="flex-1 p-6">
+          {activeTab === "unidades" && (
+            <div className="bg-card border border-border rounded-lg p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-foreground">Unidades</h2>
+                <Button onClick={() => console.log("Adicionar unidade")}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Adicionar unidade
+                </Button>
+              </div>
+              <div className="border border-border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Endereço</TableHead>
+                      <TableHead>Situação</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-medium">Matriz</TableCell>
+                      <TableCell>Av. Paulista, 1000 - São Paulo/SP</TableCell>
+                      <TableCell>
+                        <Badge variant="default">Ativa</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">Filial Centro</TableCell>
+                      <TableCell>Rua XV de Novembro, 500 - Curitiba/PR</TableCell>
+                      <TableCell>
+                        <Badge variant="default">Ativa</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">Filial Shopping</TableCell>
+                      <TableCell>Shopping Center Norte, Loja 45 - São Paulo/SP</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">Inativa</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
+
           {activeTab === "conta" && (
             <div className="bg-card border border-border rounded-lg p-6">
               <h2 className="text-lg font-semibold text-foreground mb-6">Dados da empresa</h2>
