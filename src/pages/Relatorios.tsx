@@ -11,6 +11,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { cn } from "@/lib/utils";
 import {
@@ -24,9 +31,18 @@ import {
   Filter,
 } from "lucide-react";
 
+const unidadeOptions = [
+  { value: "todas", label: "Todas as unidades" },
+  { value: "matriz", label: "Matriz" },
+  { value: "filial-1", label: "Filial 1" },
+  { value: "filial-2", label: "Filial 2" },
+  { value: "filial-3", label: "Filial 3" },
+];
+
 const Relatorios = () => {
   usePageTitle("Relatórios");
   
+  const [unidade, setUnidade] = useState<string>("todas");
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
     new Date(new Date().setDate(new Date().getDate() - 30))
   );
@@ -42,9 +58,22 @@ const Relatorios = () => {
       />
 
       <div className="space-y-6">
-        {/* Period Filter */}
+        {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
-          <span className="text-sm font-medium text-muted-foreground">Período:</span>
+          <span className="text-sm font-medium text-muted-foreground">Unidade:</span>
+          <Select value={unidade} onValueChange={setUnidade}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Selecione a unidade" />
+            </SelectTrigger>
+            <SelectContent>
+              {unidadeOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <span className="text-sm font-medium text-muted-foreground ml-2">Período:</span>
           <Popover>
             <PopoverTrigger asChild>
               <Button
