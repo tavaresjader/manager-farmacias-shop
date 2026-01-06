@@ -161,7 +161,7 @@ const columns: Column<Client>[] = [
   },
   {
     key: "totalSpent",
-    label: "Total Investido",
+    label: "Total Compras",
     sortable: true,
     render: (item) => (
       <span className="text-foreground font-medium">
