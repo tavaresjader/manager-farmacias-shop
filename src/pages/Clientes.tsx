@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Download, Printer, Mail, Phone } from "lucide-react";
 import { ClienteFilterModal, ClienteFilters } from "@/components/clientes/ClienteFilterModal";
+import { ClienteDetailsModal } from "@/components/clientes/ClienteDetailsModal";
 
 interface Client {
   id: string;
@@ -190,12 +191,19 @@ const Clientes = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [filters, setFilters] = useState<ClienteFilters>({
     nome: "",
     status: "all",
     email: "",
     dataCadastro: undefined,
   });
+
+  const handleRowClick = (client: Client) => {
+    setSelectedClient(client);
+    setDetailsModalOpen(true);
+  };
 
   const filteredClients = mockClients.filter((client) => {
     const matchesSearch =
@@ -251,6 +259,7 @@ const Clientes = () => {
           columns={columns}
           data={filteredClients}
           emptyMessage="Nenhum cliente encontrado"
+          onRowClick={handleRowClick}
         />
 
         <ClienteFilterModal
@@ -258,6 +267,12 @@ const Clientes = () => {
           onOpenChange={setFilterModalOpen}
           filters={filters}
           onApplyFilters={setFilters}
+        />
+
+        <ClienteDetailsModal
+          client={selectedClient}
+          open={detailsModalOpen}
+          onOpenChange={setDetailsModalOpen}
         />
       </div>
     </MainLayout>
