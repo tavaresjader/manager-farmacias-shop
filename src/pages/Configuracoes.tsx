@@ -52,9 +52,9 @@ const mockFaturas = [
 ];
 
 const mockIntegracoes = [
-  { id: "1", nome: "API WhatsApp", clientId: "wa_12345678", clientSecret: "sk_wa_abcdef123456789" },
-  { id: "2", nome: "API SMS", clientId: "sms_87654321", clientSecret: "sk_sms_987654321fedcba" },
-  { id: "3", nome: "API Email", clientId: "email_11223344", clientSecret: "sk_email_aabbccdd1122" },
+  { id: "1", nome: "API WhatsApp", clientId: "wa_12345678", clientSecret: "sk_wa_abcdef123456789", unidades: 3 },
+  { id: "2", nome: "API SMS", clientId: "sms_87654321", clientSecret: "sk_sms_987654321fedcba", unidades: 2 },
+  { id: "3", nome: "API Email", clientId: "email_11223344", clientSecret: "sk_email_aabbccdd1122", unidades: 5 },
 ];
 
 const mockColaboradores = [
@@ -361,6 +361,7 @@ const Configuracoes = () => {
                       <TableHead>Nome</TableHead>
                       <TableHead>Client ID</TableHead>
                       <TableHead>Client Secret</TableHead>
+                      <TableHead>Qtd. Unidades</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -410,6 +411,9 @@ const Configuracoes = () => {
                               <Copy className="w-4 h-4" />
                             </Button>
                           </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-medium">{integracao.unidades}</span>
                         </TableCell>
                       </TableRow>
                     ))}
