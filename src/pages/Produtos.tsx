@@ -4,9 +4,11 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Package } from "lucide-react";
 import { ProdutoFilterModal, ProdutoFilters } from "@/components/produtos/ProdutoFilterModal";
+import { toast } from "sonner";
 
 interface Produto {
   id: string;
@@ -128,6 +130,27 @@ const columns: Column<Produto>[] = [
     key: "status",
     label: "Status",
     render: (item) => <StatusBadge status={item.status} />,
+  },
+  {
+    key: "actions",
+    label: "Ações",
+    render: (item) => (
+      <Button
+        variant={item.status === "active" ? "outline" : "default"}
+        size="sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          const newStatus = item.status === "active" ? "inactive" : "active";
+          toast.success(
+            newStatus === "active"
+              ? `Produto "${item.nome}" ativado com sucesso!`
+              : `Produto "${item.nome}" inativado com sucesso!`
+          );
+        }}
+      >
+        {item.status === "active" ? "Inativar" : "Ativar"}
+      </Button>
+    ),
   },
 ];
 
