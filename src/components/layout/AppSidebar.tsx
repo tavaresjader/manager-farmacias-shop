@@ -4,17 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard,
-  Megaphone,
   Users,
   BarChart3,
   Settings,
   HelpCircle,
-  Radio,
-  Route,
   AppWindow,
   Moon,
   Sun,
   LogOut,
+  ShoppingCart,
+  Package,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -25,10 +25,9 @@ import {
 
 const mainNavItems = [
   { icon: LayoutDashboard, label: "Início", path: "/" },
-  { icon: Megaphone, label: "Campanhas", path: "/campanhas" },
+  { icon: ShoppingCart, label: "Pedidos", path: "/pedidos" },
+  { icon: Package, label: "Produtos", path: "/produtos" },
   { icon: Users, label: "Clientes", path: "/clientes" },
-  { icon: Radio, label: "Canais", path: "/canais" },
-  { icon: Route, label: "Jornadas", path: "/jornadas" },
   { icon: AppWindow, label: "Aplicativos", path: "/aplicativos" },
   { icon: BarChart3, label: "Insights", path: "/relatorios" },
 ];
