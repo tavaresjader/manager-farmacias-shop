@@ -18,6 +18,7 @@ interface Produto {
   preco: number;
   estoque: number;
   status: "active" | "inactive" | "pending";
+  controlado: boolean;
 }
 
 const mockProdutos: Produto[] = [
@@ -30,6 +31,7 @@ const mockProdutos: Produto[] = [
     preco: 59.90,
     estoque: 150,
     status: "active",
+    controlado: false,
   },
   {
     id: "2",
@@ -40,6 +42,7 @@ const mockProdutos: Produto[] = [
     preco: 299.90,
     estoque: 45,
     status: "active",
+    controlado: false,
   },
   {
     id: "3",
@@ -50,6 +53,7 @@ const mockProdutos: Produto[] = [
     preco: 189.90,
     estoque: 0,
     status: "inactive",
+    controlado: true,
   },
   {
     id: "4",
@@ -60,6 +64,7 @@ const mockProdutos: Produto[] = [
     preco: 459.90,
     estoque: 23,
     status: "active",
+    controlado: false,
   },
   {
     id: "5",
@@ -70,6 +75,7 @@ const mockProdutos: Produto[] = [
     preco: 349.90,
     estoque: 8,
     status: "pending",
+    controlado: true,
   },
 ];
 
