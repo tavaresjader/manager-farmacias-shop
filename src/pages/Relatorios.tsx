@@ -21,6 +21,7 @@ import {
   Target,
   Megaphone,
   CalendarIcon,
+  Filter,
 } from "lucide-react";
 
 const Relatorios = () => {
@@ -91,6 +92,10 @@ const Relatorios = () => {
               />
             </PopoverContent>
           </Popover>
+          <Button className="gap-2">
+            <Filter className="h-4 w-4" />
+            Filtrar
+          </Button>
         </div>
 
         {/* Overview Metrics */}
