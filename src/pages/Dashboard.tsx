@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -7,6 +7,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { TabsFilter } from "@/components/ui/tabs-filter";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
 import {
   ShoppingCart,
   Users,
@@ -134,6 +135,8 @@ const Dashboard = () => {
   usePageTitle("Início");
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(true);
+
 
   const filteredOrders = mockOrders.filter((order) => {
     const matchesSearch =
@@ -146,6 +149,10 @@ const Dashboard = () => {
 
   return (
     <MainLayout>
+      <WhatsAppConfigModal 
+        open={showWhatsAppModal} 
+        onOpenChange={setShowWhatsAppModal} 
+      />
       <PageHeader
         title="Início"
         breadcrumbs={[]}
