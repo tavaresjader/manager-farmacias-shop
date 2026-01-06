@@ -7,7 +7,8 @@ import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { Plus, Download, Printer, Mail, Phone } from "lucide-react";
+import { Download, Printer, Mail, Phone } from "lucide-react";
+import { ClienteFilterModal, ClienteFilters } from "@/components/clientes/ClienteFilterModal";
 
 interface Client {
   id: string;
@@ -188,6 +189,13 @@ const Clientes = () => {
   usePageTitle("Clientes");
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [filters, setFilters] = useState<ClienteFilters>({
+    nome: "",
+    status: "all",
+    email: "",
+    dataCadastro: undefined,
+  });
 
   const filteredClients = mockClients.filter((client) => {
     const matchesSearch =
@@ -195,7 +203,14 @@ const Clientes = () => {
       client.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
       client.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab = activeTab === "all" || client.status === activeTab;
-    return matchesSearch && matchesTab;
+    
+    // Filtros da modal
+    const matchesNome = !filters.nome || client.name.toLowerCase().includes(filters.nome.toLowerCase());
+    const matchesStatus = filters.status === "all" || client.status === filters.status;
+    const matchesEmail = !filters.email || client.email.toLowerCase().includes(filters.email.toLowerCase());
+    const matchesData = !filters.dataCadastro || client.createdAt === filters.dataCadastro.toISOString().split("T")[0];
+    
+    return matchesSearch && matchesTab && matchesNome && matchesStatus && matchesEmail && matchesData;
   });
 
   return (
@@ -223,7 +238,7 @@ const Clientes = () => {
         <SearchBar
           placeholder="Pesquisar por nome, empresa ou e-mail..."
           onSearch={setSearchQuery}
-          onFilter={() => {}}
+          onFilter={() => setFilterModalOpen(true)}
         />
 
         <TabsFilter
@@ -236,6 +251,13 @@ const Clientes = () => {
           columns={columns}
           data={filteredClients}
           emptyMessage="Nenhum cliente encontrado"
+        />
+
+        <ClienteFilterModal
+          open={filterModalOpen}
+          onOpenChange={setFilterModalOpen}
+          filters={filters}
+          onApplyFilters={setFilters}
         />
       </div>
     </MainLayout>
