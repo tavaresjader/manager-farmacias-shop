@@ -116,38 +116,14 @@ export function ProdutoDetailsModal({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="nome">Nome do Produto</Label>
-              {isEditing ? (
-                <Input
-                  id="nome"
-                  value={editedProduto?.nome || ""}
-                  onChange={(e) =>
-                    setEditedProduto((prev) =>
-                      prev ? { ...prev, nome: e.target.value } : null
-                    )
-                  }
-                />
-              ) : (
-                <p className="text-sm text-foreground font-medium">
-                  {currentProduto.nome}
-                </p>
-              )}
+              <p className="text-sm text-foreground font-medium">
+                {currentProduto.nome}
+              </p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="categoria">Categoria</Label>
-              {isEditing ? (
-                <Input
-                  id="categoria"
-                  value={editedProduto?.categoria || ""}
-                  onChange={(e) =>
-                    setEditedProduto((prev) =>
-                      prev ? { ...prev, categoria: e.target.value } : null
-                    )
-                  }
-                />
-              ) : (
-                <p className="text-sm text-foreground">{currentProduto.categoria}</p>
-              )}
+              <p className="text-sm text-foreground">{currentProduto.categoria}</p>
             </div>
           </div>
 
@@ -156,36 +132,12 @@ export function ProdutoDetailsModal({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="sku">SKU</Label>
-              {isEditing ? (
-                <Input
-                  id="sku"
-                  value={editedProduto?.sku || ""}
-                  onChange={(e) =>
-                    setEditedProduto((prev) =>
-                      prev ? { ...prev, sku: e.target.value } : null
-                    )
-                  }
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground">{currentProduto.sku}</p>
-              )}
+              <p className="text-sm text-muted-foreground">{currentProduto.sku}</p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="ean">EAN</Label>
-              {isEditing ? (
-                <Input
-                  id="ean"
-                  value={editedProduto?.ean || ""}
-                  onChange={(e) =>
-                    setEditedProduto((prev) =>
-                      prev ? { ...prev, ean: e.target.value } : null
-                    )
-                  }
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground">{currentProduto.ean}</p>
-              )}
+              <p className="text-sm text-muted-foreground">{currentProduto.ean}</p>
             </div>
           </div>
 
@@ -244,33 +196,35 @@ export function ProdutoDetailsModal({
 
             <div className="space-y-2">
               <Label>Status</Label>
-              <div>
-                <StatusBadge status={currentProduto.status} />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Produto Controlado</Label>
               {isEditing ? (
                 <div className="flex items-center gap-2">
                   <Switch
-                    checked={editedProduto?.controlado || false}
+                    checked={editedProduto?.status === "active"}
                     onCheckedChange={(checked) =>
                       setEditedProduto((prev) =>
-                        prev ? { ...prev, controlado: checked } : null
+                        prev ? { ...prev, status: checked ? "active" : "inactive" } : null
                       )
                     }
                   />
                   <span className="text-sm text-muted-foreground">
-                    {editedProduto?.controlado ? "Sim" : "Não"}
+                    {editedProduto?.status === "active" ? "Ativo" : "Inativo"}
                   </span>
                 </div>
               ) : (
-                <p className={`text-sm font-medium ${currentProduto.controlado ? "text-amber-600" : "text-foreground"}`}>
-                  {currentProduto.controlado ? "Sim" : "Não"}
-                </p>
+                <div>
+                  <StatusBadge status={currentProduto.status} />
+                </div>
               )}
             </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <Label>Produto Controlado</Label>
+            <p className={`text-sm font-medium ${currentProduto.controlado ? "text-amber-600" : "text-foreground"}`}>
+              {currentProduto.controlado ? "Sim" : "Não"}
+            </p>
           </div>
         </div>
 
