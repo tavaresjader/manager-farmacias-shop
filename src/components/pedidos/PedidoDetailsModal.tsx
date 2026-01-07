@@ -22,6 +22,7 @@ import {
   Store
 } from "lucide-react";
 import { toast } from "sonner";
+import { CancelOrderModal } from "./CancelOrderModal";
 
 import ifoodLogo from "@/assets/channels/ifood.webp";
 import keetaLogo from "@/assets/channels/keeta.png";
@@ -83,6 +84,7 @@ export function PedidoDetailsModal({
   onOpenChange 
 }: PedidoDetailsModalProps) {
   const [isTracking, setIsTracking] = useState(false);
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
 
   if (!pedido) return null;
 
@@ -92,6 +94,10 @@ export function PedidoDetailsModal({
   };
 
   const handleCancelar = () => {
+    setCancelModalOpen(true);
+  };
+
+  const handleConfirmCancel = (reason: string) => {
     toast.error(`Pedido ${pedido.numero} cancelado.`);
     onOpenChange(false);
   };
@@ -324,6 +330,13 @@ export function PedidoDetailsModal({
           {getActionButtons()}
         </DialogFooter>
       </DialogContent>
+
+      <CancelOrderModal
+        open={cancelModalOpen}
+        onOpenChange={setCancelModalOpen}
+        orderNumber={pedido.numero}
+        onConfirm={handleConfirmCancel}
+      />
     </Dialog>
   );
 }
