@@ -19,7 +19,8 @@ import {
   Calendar,
   ShoppingBag,
   DollarSign,
-  Store
+  Store,
+  FileDown
 } from "lucide-react";
 import { toast } from "sonner";
 import { CancelOrderModal } from "./CancelOrderModal";
@@ -52,6 +53,7 @@ interface PedidoItem {
   nome: string;
   quantidade: number;
   preco: number;
+  controlado?: boolean;
 }
 
 interface Pedido {
@@ -73,10 +75,12 @@ interface PedidoDetailsModalProps {
 
 // Mock items for the order
 const mockItems: PedidoItem[] = [
-  { nome: "Dipirona 500mg - 20 comprimidos", quantidade: 2, preco: 12.90 },
-  { nome: "Vitamina C 1g - 30 comprimidos", quantidade: 1, preco: 35.50 },
-  { nome: "Protetor Solar FPS 50", quantidade: 1, preco: 89.90 },
+  { nome: "Dipirona 500mg - 20 comprimidos", quantidade: 2, preco: 12.90, controlado: false },
+  { nome: "Clonazepam 2mg - 30 comprimidos", quantidade: 1, preco: 35.50, controlado: true },
+  { nome: "Protetor Solar FPS 50", quantidade: 1, preco: 89.90, controlado: false },
 ];
+
+const hasControlledProduct = mockItems.some(item => item.controlado);
 
 export function PedidoDetailsModal({ 
   pedido, 
@@ -117,11 +121,28 @@ export function PedidoDetailsModal({
     toast.info("Abrindo rastreamento em tempo real...");
   };
 
+  const handleDownloadReceita = () => {
+    toast.success("Download da receita iniciado!");
+    // In a real app, this would trigger a file download
+  };
+
+  const ReceitaButton = () => hasControlledProduct ? (
+    <Button
+      variant="outline"
+      onClick={handleDownloadReceita}
+      className="gap-2"
+    >
+      <FileDown className="w-4 h-4" />
+      Receita
+    </Button>
+  ) : null;
+
   const getActionButtons = () => {
     switch (pedido.status) {
       case "pending":
         return (
           <>
+            <ReceitaButton />
             <Button 
               variant="outline" 
               onClick={handleCancelar}
@@ -139,6 +160,7 @@ export function PedidoDetailsModal({
       case "active":
         return (
           <>
+            <ReceitaButton />
             <Button 
               variant="outline" 
               onClick={handleCancelar}
@@ -156,6 +178,7 @@ export function PedidoDetailsModal({
       case "processing":
         return (
           <>
+            <ReceitaButton />
             <Button 
               variant="outline" 
               onClick={handleAcompanhar}
@@ -172,10 +195,13 @@ export function PedidoDetailsModal({
         );
       case "inactive":
         return (
-          <Button variant="outline" disabled className="gap-2">
-            <CheckCircle className="w-4 h-4" />
-            Pedido Entregue
-          </Button>
+          <>
+            <ReceitaButton />
+            <Button variant="outline" disabled className="gap-2">
+              <CheckCircle className="w-4 h-4" />
+              Pedido Entregue
+            </Button>
+          </>
         );
       case "cancelled":
         return (
