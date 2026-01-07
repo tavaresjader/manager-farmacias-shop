@@ -18,9 +18,34 @@ import {
   User,
   Calendar,
   ShoppingBag,
-  DollarSign
+  DollarSign,
+  Store
 } from "lucide-react";
 import { toast } from "sonner";
+
+import ifoodLogo from "@/assets/channels/ifood.webp";
+import keetaLogo from "@/assets/channels/keeta.png";
+import farmaciaShopLogo from "@/assets/channels/farmacia-shop.png";
+import pedeProntoLogo from "@/assets/channels/pede-pronto.png";
+import aiqfomeLogo from "@/assets/channels/aiqfome.jfif";
+
+type Canal = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
+
+const channelLogos: Record<Canal, string> = {
+  ifood: ifoodLogo,
+  keeta: keetaLogo,
+  "farmacia-shop": farmaciaShopLogo,
+  "pede-pronto": pedeProntoLogo,
+  aiqfome: aiqfomeLogo,
+};
+
+const channelNames: Record<Canal, string> = {
+  ifood: "iFood",
+  keeta: "Keeta",
+  "farmacia-shop": "Farmácia Shop",
+  "pede-pronto": "Pede Pronto",
+  aiqfome: "aiqfome",
+};
 
 interface PedidoItem {
   nome: string;
@@ -36,6 +61,7 @@ interface Pedido {
   status: "active" | "inactive" | "pending" | "processing" | "cancelled";
   total: number;
   itens: number;
+  canal?: Canal;
 }
 
 interface PedidoDetailsModalProps {
@@ -191,6 +217,27 @@ export function PedidoDetailsModal({
           </div>
 
           <Separator />
+
+          {/* Canal de Origem */}
+          {pedido.canal && (
+            <>
+              <div className="space-y-3">
+                <h3 className="font-medium text-foreground flex items-center gap-2">
+                  <Store className="w-4 h-4 text-primary" />
+                  Canal de Origem
+                </h3>
+                <div className="bg-muted/50 rounded-lg p-4 flex items-center gap-3">
+                  <img 
+                    src={channelLogos[pedido.canal]} 
+                    alt={channelNames[pedido.canal]} 
+                    className="w-10 h-10 rounded-lg object-cover"
+                  />
+                  <span className="font-medium">{channelNames[pedido.canal]}</span>
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
 
           {/* Informações do Pedido */}
           <div className="space-y-3">
