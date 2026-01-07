@@ -8,6 +8,31 @@ import { TabsFilter } from "@/components/ui/tabs-filter";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { PedidoDetailsModal } from "@/components/pedidos/PedidoDetailsModal";
 import { PedidoFilterModal, PedidoFilters } from "@/components/pedidos/PedidoFilterModal";
+
+import ifoodLogo from "@/assets/channels/ifood.webp";
+import keetaLogo from "@/assets/channels/keeta.png";
+import farmaciaShopLogo from "@/assets/channels/farmacia-shop.png";
+import pedeProntoLogo from "@/assets/channels/pede-pronto.png";
+import aiqfomeLogo from "@/assets/channels/aiqfome.jfif";
+
+type Canal = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
+
+const channelLogos: Record<Canal, string> = {
+  ifood: ifoodLogo,
+  keeta: keetaLogo,
+  "farmacia-shop": farmaciaShopLogo,
+  "pede-pronto": pedeProntoLogo,
+  aiqfome: aiqfomeLogo,
+};
+
+const channelNames: Record<Canal, string> = {
+  ifood: "iFood",
+  keeta: "Keeta",
+  "farmacia-shop": "Farmácia Shop",
+  "pede-pronto": "Pede Pronto",
+  aiqfome: "aiqfome",
+};
+
 interface Pedido {
   id: string;
   numero: string;
@@ -16,6 +41,7 @@ interface Pedido {
   status: "active" | "inactive" | "pending" | "processing" | "cancelled";
   total: number;
   itens: number;
+  canal: Canal;
 }
 
 const mockPedidos: Pedido[] = [
@@ -27,6 +53,7 @@ const mockPedidos: Pedido[] = [
     status: "pending",
     total: 459.90,
     itens: 3,
+    canal: "ifood",
   },
   {
     id: "2",
@@ -36,6 +63,7 @@ const mockPedidos: Pedido[] = [
     status: "processing",
     total: 189.50,
     itens: 2,
+    canal: "keeta",
   },
   {
     id: "3",
@@ -45,6 +73,7 @@ const mockPedidos: Pedido[] = [
     status: "active",
     total: 1250.00,
     itens: 5,
+    canal: "farmacia-shop",
   },
   {
     id: "4",
@@ -54,6 +83,7 @@ const mockPedidos: Pedido[] = [
     status: "inactive",
     total: 89.90,
     itens: 1,
+    canal: "pede-pronto",
   },
   {
     id: "5",
@@ -63,6 +93,7 @@ const mockPedidos: Pedido[] = [
     status: "cancelled",
     total: 567.80,
     itens: 4,
+    canal: "aiqfome",
   },
 ];
 
@@ -73,6 +104,19 @@ const columns: Column<Pedido>[] = [
     sortable: true,
     render: (item) => (
       <span className="font-medium text-foreground">{item.numero}</span>
+    ),
+  },
+  {
+    key: "canal",
+    label: "Canal",
+    render: (item) => (
+      <div className="flex items-center gap-2">
+        <img 
+          src={channelLogos[item.canal]} 
+          alt={channelNames[item.canal]} 
+          className="w-6 h-6 rounded object-cover"
+        />
+      </div>
     ),
   },
   {
