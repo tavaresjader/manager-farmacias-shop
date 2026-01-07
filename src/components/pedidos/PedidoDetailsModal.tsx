@@ -185,7 +185,7 @@ export function PedidoDetailsModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <span>Pedido {pedido.numero}</span>
@@ -202,7 +202,7 @@ export function PedidoDetailsModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto space-y-6 pr-2">
           {/* Informações do Cliente */}
           <div className="space-y-3">
             <h3 className="font-medium text-foreground flex items-center gap-2">
@@ -316,7 +316,7 @@ export function PedidoDetailsModal({
           )}
         </div>
 
-        <DialogFooter className="mt-6 gap-2 sm:gap-0">
+        <DialogFooter className="mt-4 pt-4 border-t gap-2 sm:gap-0 flex-shrink-0">
           {getActionButtons()}
         </DialogFooter>
       </DialogContent>
