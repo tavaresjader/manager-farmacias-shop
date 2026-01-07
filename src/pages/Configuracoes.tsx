@@ -1,26 +1,26 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { User, CreditCard, Puzzle, Users, FileText, Receipt, Eye, EyeOff, Copy, Plus, Trash2, Building2 } from "lucide-react";
+import {
+  User,
+  CreditCard,
+  Puzzle,
+  Users,
+  FileText,
+  Receipt,
+  Eye,
+  EyeOff,
+  Copy,
+  Plus,
+  Trash2,
+  Building2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,9 +52,27 @@ const mockFaturas = [
 ];
 
 const mockIntegracoes = [
-  { id: "1", nome: "Matriz", clientId: "wa_12345678", clientSecret: "sk_wa_abcdef123456789", unidade: "Matriz" },
-  { id: "2", nome: "Filial Centro", clientId: "sms_87654321", clientSecret: "sk_sms_987654321fedcba", unidade: "Filial Centro" },
-  { id: "3", nome: "Filial Shopping", clientId: "email_11223344", clientSecret: "sk_email_aabbccdd1122", unidade: "Filial Shopping" },
+  {
+    id: "1",
+    nome: "Matriz",
+    clientId: "fd0710a7-e02d-44e1-8372-6df9c7c89ad7",
+    clientSecret: "5791f5b2-88ed-424c-a04b-88eb6eb682d1",
+    unidade: "Matriz",
+  },
+  {
+    id: "2",
+    nome: "Filial Centro",
+    clientId: "507bf29c-d2a2-4c72-a957-e32226699d12",
+    clientSecret: "2b741469-c65f-4107-9ecc-2355b270b74a",
+    unidade: "Filial Centro",
+  },
+  {
+    id: "3",
+    nome: "Filial Shopping",
+    clientId: "bb58bc68-51dc-480d-971c-c7439a59506c",
+    clientSecret: "ac779ab6-4b21-4786-8840-d8a4acfbfa09",
+    unidade: "Filial Shopping",
+  },
 ];
 
 const mockColaboradores = [
@@ -119,7 +137,7 @@ const Configuracoes = () => {
                     "flex items-center gap-2 w-full px-3 py-2 rounded-lg text-left text-sm transition-all duration-200",
                     isActive
                       ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground",
                   )}
                 >
                   <item.icon className="w-4 h-4" />
@@ -230,10 +248,7 @@ const Configuracoes = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="situacao">Situação</Label>
-                  <Select
-                    value={empresa.situacao}
-                    onValueChange={(value) => handleEmpresaChange("situacao", value)}
-                  >
+                  <Select value={empresa.situacao} onValueChange={(value) => handleEmpresaChange("situacao", value)}>
                     <SelectTrigger id="situacao">
                       <SelectValue placeholder="Selecione a situação" />
                     </SelectTrigger>
@@ -251,7 +266,8 @@ const Configuracoes = () => {
               <div className="mt-12 pt-6 border-t border-border">
                 <h3 className="text-lg font-semibold text-destructive mb-2">Cuidado</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Ao excluir sua conta, todos os seus dados serão permanentemente removidos e não poderão ser recuperados.
+                  Ao excluir sua conta, todos os seus dados serão permanentemente removidos e não poderão ser
+                  recuperados.
                 </p>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -264,7 +280,8 @@ const Configuracoes = () => {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Tem certeza que deseja excluir sua conta?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta ação não pode ser desfeita. Todos os seus dados, incluindo faturas, integrações e colaboradores, serão permanentemente removidos.
+                        Esta ação não pode ser desfeita. Todos os seus dados, incluindo faturas, integrações e
+                        colaboradores, serão permanentemente removidos.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -370,9 +387,7 @@ const Configuracoes = () => {
                         <TableCell className="font-medium">{integracao.nome}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <code className="text-sm bg-muted px-2 py-1 rounded">
-                              {integracao.clientId}
-                            </code>
+                            <code className="text-sm bg-muted px-2 py-1 rounded">{integracao.clientId}</code>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -386,9 +401,7 @@ const Configuracoes = () => {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <code className="text-sm bg-muted px-2 py-1 rounded">
-                              {visibleSecrets[integracao.id]
-                                ? integracao.clientSecret
-                                : "••••••••••••••••"}
+                              {visibleSecrets[integracao.id] ? integracao.clientSecret : "••••••••••••••••"}
                             </code>
                             <Button
                               variant="ghost"
