@@ -98,9 +98,7 @@ const Aplicativos = () => {
       />
       <PageHeader
         title="Aplicativos"
-        breadcrumbs={[
-          { label: "aplicativos" },
-        ]}
+        breadcrumbs={[]}
       />
 
       <div className="space-y-6">
