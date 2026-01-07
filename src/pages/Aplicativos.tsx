@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
-import { Plus, ExternalLink, Zap, Database, CreditCard, Mail, BarChart3, MessageSquare, MessageCircle } from "lucide-react";
+import { Plus, ExternalLink, Zap, Database, CreditCard, Mail, BarChart3, MessageSquare, MessageCircle, Monitor } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Aplicativo {
@@ -138,6 +138,34 @@ const Aplicativos = () => {
                 Mensagens
               </span>
               <button className="text-muted-foreground hover:text-[#25D366] transition-colors">
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Integrador Card */}
+          <div
+            className={cn(
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group"
+            )}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Monitor className="w-6 h-6 text-primary" />
+              </div>
+              <StatusBadge status="inactive" />
+            </div>
+            <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+              Integrador
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Integrador instalado em seu computador para sincronizar produtos, estoque e pedidos
+            </p>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
+                Sincronização
+              </span>
+              <button className="text-muted-foreground hover:text-primary transition-colors">
                 <ExternalLink className="w-4 h-4" />
               </button>
             </div>
