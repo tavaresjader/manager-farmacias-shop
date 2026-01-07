@@ -103,12 +103,6 @@ const Relatorios = () => {
       <PageHeader
         title="Relatórios"
         breadcrumbs={[]}
-        actions={
-          <Button variant="outline" size="sm" className="gap-2">
-            <Download className="w-4 h-4" />
-            Exportar
-          </Button>
-        }
       />
 
       <div className="space-y-6">
@@ -178,6 +172,10 @@ const Relatorios = () => {
           <Button className="gap-2">
             <Filter className="h-4 w-4" />
             Filtrar
+          </Button>
+          <Button variant="outline" className="gap-2">
+            <Download className="h-4 w-4" />
+            Exportar
           </Button>
         </div>
 
