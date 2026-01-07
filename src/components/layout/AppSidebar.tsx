@@ -14,7 +14,6 @@ import {
   LogOut,
   ShoppingCart,
   Package,
-  SquarePlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -22,6 +21,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 
 const mainNavItems = [
   { icon: LayoutDashboard, label: "Início", path: "/" },
@@ -64,9 +64,11 @@ export function AppSidebar() {
     <aside className="flex flex-col h-screen w-16 bg-white dark:bg-background border-r border-sidebar-border fixed left-0 top-0 z-40">
       {/* Logo */}
       <NavLink to="/" className="flex items-center justify-center h-16 border-b border-sidebar-border">
-        <div className="w-8 h-8 rounded-lg bg-[#ff0033] flex items-center justify-center">
-          <SquarePlus className="w-4 h-4 text-background" />
-        </div>
+        <img 
+          src={logoFarmaciaShop} 
+          alt="Farmácia Shop" 
+          className="w-8 h-8 rounded-lg object-cover"
+        />
       </NavLink>
 
       {/* Main Navigation */}
