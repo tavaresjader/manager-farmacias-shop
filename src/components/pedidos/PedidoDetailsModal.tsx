@@ -196,8 +196,12 @@ export function PedidoDetailsModal({
                   alt={channelNames[pedido.canal]} 
                   className="w-6 h-6 rounded object-cover"
                 />
+                <span className="text-sm font-normal text-muted-foreground">
+                  #{pedido.numero.slice(-4).padStart(4, '0')}
+                </span>
               </div>
             )}
+            <span className="text-muted-foreground">|</span>
             <StatusBadge status={pedido.status} />
           </DialogTitle>
         </DialogHeader>
