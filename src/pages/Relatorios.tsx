@@ -30,6 +30,55 @@ import {
   CalendarIcon,
   Filter,
 } from "lucide-react";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
+
+// Mock data for daily sales chart
+const dailySalesData = [
+  { day: "Seg", vendas: 4200 },
+  { day: "Ter", vendas: 3800 },
+  { day: "Qua", vendas: 5100 },
+  { day: "Qui", vendas: 4600 },
+  { day: "Sex", vendas: 6200 },
+  { day: "Sáb", vendas: 7800 },
+  { day: "Dom", vendas: 3200 },
+];
+
+// Mock data for hourly sales chart
+const hourlySalesData = [
+  { hora: "08h", vendas: 450 },
+  { hora: "09h", vendas: 780 },
+  { hora: "10h", vendas: 1200 },
+  { hora: "11h", vendas: 1450 },
+  { hora: "12h", vendas: 980 },
+  { hora: "13h", vendas: 650 },
+  { hora: "14h", vendas: 890 },
+  { hora: "15h", vendas: 1100 },
+  { hora: "16h", vendas: 1350 },
+  { hora: "17h", vendas: 1680 },
+  { hora: "18h", vendas: 1950 },
+  { hora: "19h", vendas: 1420 },
+  { hora: "20h", vendas: 980 },
+  { hora: "21h", vendas: 520 },
+];
+
+const dailyChartConfig = {
+  vendas: {
+    label: "Vendas",
+    color: "hsl(var(--primary))",
+  },
+};
+
+const hourlyChartConfig = {
+  vendas: {
+    label: "Vendas",
+    color: "hsl(var(--primary))",
+  },
+};
 
 const unidadeOptions = [
   { value: "todas", label: "Todas as unidades" },
@@ -167,27 +216,76 @@ const Relatorios = () => {
           />
         </div>
 
-        {/* Placeholder for Charts */}
+        {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
               Vendas (Diária)
             </h3>
-            <div className="h-64 flex items-center justify-center bg-muted/30 rounded-lg">
-              <p className="text-muted-foreground">
-                Gráfico de vendas diárias em breve
-              </p>
-            </div>
+            <ChartContainer config={dailyChartConfig} className="h-64 w-full">
+              <BarChart data={dailySalesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  dataKey="day" 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
+                  className="fill-muted-foreground"
+                />
+                <YAxis 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `R$${(value / 1000).toFixed(0)}k`}
+                  className="fill-muted-foreground"
+                />
+                <ChartTooltip 
+                  content={<ChartTooltipContent />}
+                  formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR')}`, 'Vendas']}
+                />
+                <Bar 
+                  dataKey="vendas" 
+                  fill="hsl(var(--primary))" 
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ChartContainer>
           </div>
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
               Vendas (Horário)
             </h3>
-            <div className="h-64 flex items-center justify-center bg-muted/30 rounded-lg">
-              <p className="text-muted-foreground">
-                Gráfico de vendas por horário em breve
-              </p>
-            </div>
+            <ChartContainer config={hourlyChartConfig} className="h-64 w-full">
+              <LineChart data={hourlySalesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  dataKey="hora" 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
+                  className="fill-muted-foreground"
+                />
+                <YAxis 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `R$${value}`}
+                  className="fill-muted-foreground"
+                />
+                <ChartTooltip 
+                  content={<ChartTooltipContent />}
+                  formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR')}`, 'Vendas']}
+                />
+                <Line 
+                  type="monotone"
+                  dataKey="vendas" 
+                  stroke="hsl(var(--primary))" 
+                  strokeWidth={2}
+                  dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ChartContainer>
           </div>
         </div>
 
