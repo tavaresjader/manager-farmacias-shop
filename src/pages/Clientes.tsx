@@ -7,7 +7,7 @@ import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { Download, Printer, Mail, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { ClienteFilterModal, ClienteFilters } from "@/components/clientes/ClienteFilterModal";
 import { ClienteDetailsModal } from "@/components/clientes/ClienteDetailsModal";
 
@@ -228,18 +228,6 @@ const Clientes = () => {
         breadcrumbs={[
           { label: "clientes" },
         ]}
-        actions={
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Printer className="w-4 h-4" />
-              Imprimir
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Download className="w-4 h-4" />
-              Exportar
-            </Button>
-          </div>
-        }
       />
 
       <div className="space-y-4">
