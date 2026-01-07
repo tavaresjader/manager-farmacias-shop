@@ -102,9 +102,7 @@ const Relatorios = () => {
     <MainLayout>
       <PageHeader
         title="Relatórios"
-        breadcrumbs={[
-          { label: "relatórios" },
-        ]}
+        breadcrumbs={[]}
         actions={
           <Button variant="outline" size="sm" className="gap-2">
             <Download className="w-4 h-4" />
