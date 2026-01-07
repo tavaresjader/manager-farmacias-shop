@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Copy, Check, MessageCircle } from "lucide-react";
@@ -18,9 +12,8 @@ Obrigado por entrar em contato conosco!
 Estamos verificando sua mensagem e retornaremos o mais breve possível.
 
 Enquanto isso, você pode:
-📦 Acompanhar seus pedidos em nosso site
-📞 Ligar para (11) 1234-5678 em horário comercial
-📧 Enviar um e-mail para contato@empresa.com
+📦 Compre online ou acompanhe seus pedidos pelo nosso site: https://demo.farmaciashop.com.br
+📞 Ligar para (11) 1234-5678 das 7h as 22h
 
 Atenciosamente,
 Equipe de Atendimento`;
@@ -70,12 +63,22 @@ export const WhatsAppConfigModal = ({ open, onOpenChange }: WhatsAppConfigModalP
 
         <div className="space-y-4 mt-2">
           <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-            <li>Abra o <strong>WhatsApp Business</strong> no seu celular</li>
-            <li>Acesse <strong>Configurações</strong> → <strong>Ferramentas comerciais</strong></li>
-            <li>Toque em <strong>Mensagem de ausência</strong></li>
-            <li>Ative a opção <strong>Enviar mensagem de ausência</strong></li>
+            <li>
+              Abra o <strong>WhatsApp Business</strong> no seu celular
+            </li>
+            <li>
+              Acesse <strong>Configurações</strong> → <strong>Ferramentas comerciais</strong>
+            </li>
+            <li>
+              Toque em <strong>Mensagem de ausência</strong>
+            </li>
+            <li>
+              Ative a opção <strong>Enviar mensagem de ausência</strong>
+            </li>
             <li>Cole a mensagem abaixo no campo de texto</li>
-            <li>Configure os <strong>horários</strong> e <strong>destinatários</strong></li>
+            <li>
+              Configure os <strong>horários</strong> e <strong>destinatários</strong>
+            </li>
           </ol>
 
           <div className="space-y-2">
@@ -87,11 +90,7 @@ export const WhatsAppConfigModal = ({ open, onOpenChange }: WhatsAppConfigModalP
             />
           </div>
 
-          <Button 
-            onClick={handleCopy} 
-            className="w-full gap-2"
-            variant={copied ? "outline" : "default"}
-          >
+          <Button onClick={handleCopy} className="w-full gap-2" variant={copied ? "outline" : "default"}>
             {copied ? (
               <>
                 <Check className="w-4 h-4" />
