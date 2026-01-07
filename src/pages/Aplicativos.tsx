@@ -6,8 +6,11 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
-import { Plus, ExternalLink, Zap, Database, CreditCard, Mail, BarChart3, MessageSquare, MessageCircle, Monitor } from "lucide-react";
+import { Plus, ExternalLink, BarChart3, MessageCircle, Monitor, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import ifoodLogo from "@/assets/channels/ifood.webp";
+import keetaLogo from "@/assets/channels/keeta.png";
 
 interface Aplicativo {
   id: string;
@@ -15,7 +18,8 @@ interface Aplicativo {
   description: string;
   category: string;
   status: "active" | "inactive" | "pending";
-  icon: "zap" | "database" | "creditcard" | "mail" | "chart" | "message";
+  logo?: string;
+  icon?: "chart" | "shopping";
 }
 
 const mockAplicativos: Aplicativo[] = [
@@ -29,54 +33,48 @@ const mockAplicativos: Aplicativo[] = [
   },
   {
     id: "2",
-    name: "Stripe",
-    description: "Processamento de pagamentos online",
-    category: "Pagamentos",
+    name: "iFood",
+    description: "Receba pedidos do maior marketplace de delivery",
+    category: "Marketplace",
     status: "active",
-    icon: "creditcard",
+    logo: ifoodLogo,
   },
   {
     id: "3",
-    name: "Mailchimp",
-    description: "Automação de e-mail marketing",
-    category: "E-mail",
-    status: "active",
-    icon: "mail",
+    name: "Rappi",
+    description: "Conecte-se ao aplicativo de entregas Rappi",
+    category: "Marketplace",
+    status: "pending",
   },
   {
     id: "4",
-    name: "HubSpot CRM",
-    description: "Gestão de relacionamento com clientes",
-    category: "CRM",
-    status: "pending",
-    icon: "database",
+    name: "Keeta",
+    description: "Integração com a plataforma Keeta",
+    category: "Marketplace",
+    status: "active",
+    logo: keetaLogo,
   },
   {
     id: "5",
-    name: "Zapier",
-    description: "Automação e integração de aplicativos",
-    category: "Automação",
-    status: "active",
-    icon: "zap",
+    name: "Amazon",
+    description: "Venda seus produtos na Amazon",
+    category: "Marketplace",
+    status: "inactive",
   },
   {
     id: "6",
-    name: "Intercom",
-    description: "Chat e suporte ao cliente",
-    category: "Suporte",
-    status: "inactive",
-    icon: "message",
+    name: "Mercado Livre",
+    description: "Integração com o Mercado Livre",
+    category: "Marketplace",
+    status: "pending",
   },
 ];
 
-const getAppIcon = (icon: Aplicativo["icon"]) => {
+const getAppIcon = (icon?: Aplicativo["icon"]) => {
+  if (!icon) return ShoppingBag;
   const icons = {
-    zap: Zap,
-    database: Database,
-    creditcard: CreditCard,
-    mail: Mail,
     chart: BarChart3,
-    message: MessageSquare,
+    shopping: ShoppingBag,
   };
   return icons[icon];
 };
@@ -182,8 +180,12 @@ const Aplicativos = () => {
                 )}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden">
+                    {app.logo ? (
+                      <img src={app.logo} alt={app.name} className="w-8 h-8 object-cover rounded" />
+                    ) : (
+                      <Icon className="w-6 h-6 text-primary" />
+                    )}
                   </div>
                   <StatusBadge status={app.status} />
                 </div>
