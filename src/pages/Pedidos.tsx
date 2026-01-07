@@ -99,14 +99,6 @@ const mockPedidos: Pedido[] = [
 
 const columns: Column<Pedido>[] = [
   {
-    key: "numero",
-    label: "Pedido",
-    sortable: true,
-    render: (item) => (
-      <span className="font-medium text-foreground">{item.numero}</span>
-    ),
-  },
-  {
     key: "canal",
     label: "Canal",
     render: (item) => (
@@ -117,6 +109,14 @@ const columns: Column<Pedido>[] = [
           className="w-6 h-6 rounded object-cover"
         />
       </div>
+    ),
+  },
+  {
+    key: "numero",
+    label: "Pedido",
+    sortable: true,
+    render: (item) => (
+      <span className="font-medium text-foreground">{item.numero}</span>
     ),
   },
   {
