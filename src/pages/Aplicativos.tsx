@@ -107,7 +107,6 @@ const Aplicativos = () => {
         <SearchBar
           placeholder="Pesquisar por nome ou categoria..."
           onSearch={setSearchQuery}
-          onFilter={() => {}}
           className="max-w-md"
         />
 
