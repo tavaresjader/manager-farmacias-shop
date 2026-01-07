@@ -8,6 +8,8 @@ import { TabsFilter } from "@/components/ui/tabs-filter";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { PedidoDetailsModal } from "@/components/pedidos/PedidoDetailsModal";
 import { PedidoFilterModal, PedidoFilters } from "@/components/pedidos/PedidoFilterModal";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import ifoodLogo from "@/assets/channels/ifood.webp";
 import keetaLogo from "@/assets/channels/keeta.png";
@@ -168,6 +170,8 @@ const initialFilters: PedidoFilters = {
   unidade: "all",
 };
 
+const ITEMS_PER_PAGE = 10;
+
 const Pedidos = () => {
   usePageTitle("Pedidos");
   const [searchQuery, setSearchQuery] = useState("");
@@ -176,6 +180,7 @@ const Pedidos = () => {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<PedidoFilters>(initialFilters);
   const [activeTab, setActiveTab] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const statusCounts = useMemo(() => {
     return {
@@ -214,6 +219,22 @@ const Pedidos = () => {
     return matchesSearch && matchesTab && matchesStatus && matchesCliente;
   });
 
+  const totalPages = Math.ceil(filteredPedidos.length / ITEMS_PER_PAGE);
+  const paginatedPedidos = filteredPedidos.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
   const handleRowClick = (pedido: Pedido) => {
     setSelectedPedido(pedido);
     setModalOpen(true);
@@ -233,7 +254,7 @@ const Pedidos = () => {
       <div className="space-y-4">
         <SearchBar
           placeholder="Pesquisar por número ou cliente..."
-          onSearch={setSearchQuery}
+          onSearch={handleSearch}
           onFilter={() => setFilterModalOpen(true)}
           className="max-w-md"
         />
@@ -241,15 +262,42 @@ const Pedidos = () => {
         <TabsFilter
           tabs={statusTabs}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
         />
 
         <DataTable
           columns={columns}
-          data={filteredPedidos}
+          data={paginatedPedidos}
           emptyMessage="Nenhum pedido encontrado"
           onRowClick={handleRowClick}
         />
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-border pt-4">
+            <span className="text-sm text-muted-foreground">
+              Página {currentPage} de {totalPages} ({filteredPedidos.length} pedidos)
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <PedidoDetailsModal
