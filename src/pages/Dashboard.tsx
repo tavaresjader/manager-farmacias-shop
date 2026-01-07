@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { MetricCard } from "@/components/ui/metric-card";
-import { SearchBar } from "@/components/ui/search-bar";
 import { TabsFilter } from "@/components/ui/tabs-filter";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -13,7 +12,34 @@ import {
   Users,
   TrendingUp,
   DollarSign,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+import ifoodLogo from "@/assets/channels/ifood.webp";
+import keetaLogo from "@/assets/channels/keeta.png";
+import farmaciaShopLogo from "@/assets/channels/farmacia-shop.png";
+import pedeProntoLogo from "@/assets/channels/pede-pronto.png";
+import aiqfomeLogo from "@/assets/channels/aiqfome.jfif";
+
+type Canal = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
+
+const channelLogos: Record<Canal, string> = {
+  ifood: ifoodLogo,
+  keeta: keetaLogo,
+  "farmacia-shop": farmaciaShopLogo,
+  "pede-pronto": pedeProntoLogo,
+  aiqfome: aiqfomeLogo,
+};
+
+const channelNames: Record<Canal, string> = {
+  ifood: "iFood",
+  keeta: "Keeta",
+  "farmacia-shop": "Farmácia Shop",
+  "pede-pronto": "Pede Pronto",
+  aiqfome: "aiqfome",
+};
 
 // Mock data for recent orders
 interface Order {
@@ -24,6 +50,7 @@ interface Order {
   total: number;
   items: number;
   date: string;
+  canal: Canal;
 }
 
 const mockOrders: Order[] = [
@@ -35,6 +62,7 @@ const mockOrders: Order[] = [
     total: 245.90,
     items: 5,
     date: "2024-01-05",
+    canal: "ifood",
   },
   {
     id: "2",
@@ -44,6 +72,7 @@ const mockOrders: Order[] = [
     total: 189.50,
     items: 3,
     date: "2024-01-05",
+    canal: "keeta",
   },
   {
     id: "3",
@@ -53,6 +82,7 @@ const mockOrders: Order[] = [
     total: 78.00,
     items: 2,
     date: "2024-01-04",
+    canal: "farmacia-shop",
   },
   {
     id: "4",
@@ -62,6 +92,7 @@ const mockOrders: Order[] = [
     total: 456.30,
     items: 8,
     date: "2024-01-04",
+    canal: "pede-pronto",
   },
   {
     id: "5",
@@ -71,6 +102,7 @@ const mockOrders: Order[] = [
     total: 125.00,
     items: 2,
     date: "2024-01-03",
+    canal: "aiqfome",
   },
 ];
 
@@ -81,7 +113,22 @@ const tabs = [
   { id: "completed", label: "Concluídos", count: 130 },
 ];
 
+const ITEMS_PER_PAGE = 5;
+
 const columns: Column<Order>[] = [
+  {
+    key: "canal",
+    label: "Canal",
+    render: (item) => (
+      <div className="flex items-center gap-2">
+        <img 
+          src={channelLogos[item.canal]} 
+          alt={channelNames[item.canal]} 
+          className="w-6 h-6 rounded object-cover"
+        />
+      </div>
+    ),
+  },
   {
     key: "orderNumber",
     label: "Pedido",
@@ -134,7 +181,7 @@ const columns: Column<Order>[] = [
 const Dashboard = () => {
   usePageTitle("Início");
   const [activeTab, setActiveTab] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(() => {
     return !localStorage.getItem("whatsapp-modal-dismissed");
   });
@@ -147,13 +194,21 @@ const Dashboard = () => {
   };
 
   const filteredOrders = mockOrders.filter((order) => {
-    const matchesSearch =
-      order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customer.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab =
       activeTab === "all" || order.status === activeTab;
-    return matchesSearch && matchesTab;
+    return matchesTab;
   });
+
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  };
 
   return (
     <MainLayout>
@@ -206,14 +261,41 @@ const Dashboard = () => {
         <TabsFilter
           tabs={tabs}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
         />
 
         <DataTable
           columns={columns}
-          data={filteredOrders}
+          data={paginatedOrders}
           emptyMessage="Nenhum pedido encontrado"
         />
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-border pt-4">
+            <span className="text-sm text-muted-foreground">
+              Página {currentPage} de {totalPages}
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </MainLayout>
   );
