@@ -189,6 +189,15 @@ export function PedidoDetailsModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <span>Pedido {pedido.numero}</span>
+            {pedido.canal && (
+              <div className="flex items-center gap-2">
+                <img 
+                  src={channelLogos[pedido.canal]} 
+                  alt={channelNames[pedido.canal]} 
+                  className="w-6 h-6 rounded object-cover"
+                />
+              </div>
+            )}
             <StatusBadge status={pedido.status} />
           </DialogTitle>
         </DialogHeader>
@@ -215,29 +224,6 @@ export function PedidoDetailsModal({
               </p>
             </div>
           </div>
-
-          <Separator />
-
-          {/* Canal de Origem */}
-          {pedido.canal && (
-            <>
-              <div className="space-y-3">
-                <h3 className="font-medium text-foreground flex items-center gap-2">
-                  <Store className="w-4 h-4 text-primary" />
-                  Canal de Origem
-                </h3>
-                <div className="bg-muted/50 rounded-lg p-4 flex items-center gap-3">
-                  <img 
-                    src={channelLogos[pedido.canal]} 
-                    alt={channelNames[pedido.canal]} 
-                    className="w-10 h-10 rounded-lg object-cover"
-                  />
-                  <span className="font-medium">{channelNames[pedido.canal]}</span>
-                </div>
-              </div>
-              <Separator />
-            </>
-          )}
 
           {/* Informações do Pedido */}
           <div className="space-y-3">
