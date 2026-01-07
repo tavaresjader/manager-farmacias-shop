@@ -248,7 +248,7 @@ const Pedidos = () => {
     <MainLayout>
       <PageHeader
         title="Pedidos"
-        breadcrumbs={[{ label: "pedidos" }]}
+        breadcrumbs={[]}
       />
 
       <div className="space-y-4">

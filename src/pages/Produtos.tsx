@@ -201,7 +201,7 @@ const Produtos = () => {
     <MainLayout>
       <PageHeader
         title="Produtos"
-        breadcrumbs={[{ label: "produtos" }]}
+        breadcrumbs={[]}
       />
 
       <div className="space-y-4">

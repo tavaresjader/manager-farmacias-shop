@@ -225,9 +225,7 @@ const Clientes = () => {
     <MainLayout>
       <PageHeader
         title="Clientes"
-        breadcrumbs={[
-          { label: "clientes" },
-        ]}
+        breadcrumbs={[]}
       />
 
       <div className="space-y-4">
