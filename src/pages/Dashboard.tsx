@@ -202,12 +202,6 @@ const Dashboard = () => {
           </h2>
         </div>
 
-        <SearchBar
-          placeholder="Pesquisar por número ou cliente..."
-          onSearch={setSearchQuery}
-          onFilter={() => {}}
-          className="max-w-2xl"
-        />
 
         <TabsFilter
           tabs={tabs}
