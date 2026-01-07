@@ -169,13 +169,13 @@ const Dashboard = () => {
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <MetricCard
-          title="Pedidos Hoje"
+          title="Pedidos"
           value="24"
           change={{ value: 12, type: "positive" }}
           icon={ShoppingCart}
         />
         <MetricCard
-          title="Total de Clientes"
+          title="Clientes"
           value="1.248"
           change={{ value: 8, type: "positive" }}
           icon={Users}
@@ -187,7 +187,7 @@ const Dashboard = () => {
           icon={DollarSign}
         />
         <MetricCard
-          title="Faturamento Mensal"
+          title="Faturamento"
           value="R$ 45.8k"
           change={{ value: 18, type: "positive" }}
           icon={TrendingUp}
