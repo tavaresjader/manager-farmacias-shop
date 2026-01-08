@@ -1,7 +1,5 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard,
   Users,
@@ -11,7 +9,6 @@ import {
   AppWindow,
   Moon,
   Sun,
-  LogOut,
   ShoppingCart,
   Package,
 } from "lucide-react";
@@ -39,25 +36,10 @@ const bottomNavItems = [
 
 export function AppSidebar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { toast } = useToast();
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
-  };
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Erro ao sair",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      navigate('/login');
-    }
   };
 
   return (
@@ -167,20 +149,6 @@ export function AppSidebar() {
           </TooltipContent>
         </Tooltip>
 
-        {/* Logout */}
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            <button
-              onClick={handleLogout}
-              className="flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-destructive hover:text-destructive-foreground"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={10}>
-            Sair
-          </TooltipContent>
-        </Tooltip>
       </div>
     </aside>
   );
