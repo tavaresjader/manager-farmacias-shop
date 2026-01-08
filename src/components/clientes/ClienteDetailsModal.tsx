@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AddressEditModal } from "./AddressEditModal";
 
 interface Address {
   id: string;
@@ -55,6 +56,8 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [editedClient, setEditedClient] = useState<Client | null>(null);
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
   useEffect(() => {
     if (client) {
@@ -91,11 +94,18 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
     onOpenChange(false);
   };
 
-  const handleEditAddress = (addressId: string) => {
-    toast({
-      title: "Editar endereço",
-      description: "Funcionalidade de edição de endereço será implementada em breve.",
-    });
+  const handleEditAddress = (address: Address) => {
+    setSelectedAddress(address);
+    setAddressModalOpen(true);
+  };
+
+  const handleSaveAddress = (updatedAddress: Address) => {
+    if (editedClient) {
+      const updatedAddresses = editedClient.addresses.map((addr) =>
+        addr.id === updatedAddress.id ? updatedAddress : addr
+      );
+      setEditedClient({ ...editedClient, addresses: updatedAddresses });
+    }
   };
 
   const handleDeleteAddress = (addressId: string) => {
@@ -253,7 +263,7 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => handleEditAddress(address.id)}
+                            onClick={() => handleEditAddress(address)}
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </Button>
@@ -344,6 +354,13 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
           </div>
         </ScrollArea>
       </DialogContent>
+
+      <AddressEditModal
+        address={selectedAddress}
+        open={addressModalOpen}
+        onOpenChange={setAddressModalOpen}
+        onSave={handleSaveAddress}
+      />
     </Dialog>
   );
 }
