@@ -5,6 +5,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -58,6 +68,8 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
   const [editedClient, setEditedClient] = useState<Client | null>(null);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (client) {
@@ -109,10 +121,23 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
   };
 
   const handleDeleteAddress = (addressId: string) => {
-    toast({
-      title: "Endereço removido",
-      description: "O endereço foi removido com sucesso.",
-    });
+    setAddressToDelete(addressId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteAddress = () => {
+    if (addressToDelete && editedClient) {
+      const updatedAddresses = editedClient.addresses.filter(
+        (addr) => addr.id !== addressToDelete
+      );
+      setEditedClient({ ...editedClient, addresses: updatedAddresses });
+      toast({
+        title: "Endereço removido",
+        description: "O endereço foi removido com sucesso.",
+      });
+    }
+    setDeleteConfirmOpen(false);
+    setAddressToDelete(null);
   };
 
   const getInitials = (name: string) => {
@@ -361,6 +386,26 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
         onOpenChange={setAddressModalOpen}
         onSave={handleSaveAddress}
       />
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover endereço</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover este endereço? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteAddress}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remover
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
