@@ -49,7 +49,7 @@ interface Client {
   phone: string;
   document: string;
   segment: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive";
   campaigns: number;
   totalSpent: number;
   createdAt: string;
@@ -172,7 +172,7 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
                   {isEditing ? (
                     <Select
                       value={editedClient.status}
-                      onValueChange={(value: "active" | "inactive" | "pending") =>
+                      onValueChange={(value: "active" | "inactive") =>
                         setEditedClient({ ...editedClient, status: value })
                       }
                     >
@@ -182,19 +182,12 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
                       <SelectContent>
                         <SelectItem value="active">Ativo</SelectItem>
                         <SelectItem value="inactive">Inativo</SelectItem>
-                        <SelectItem value="pending">Pendente</SelectItem>
                       </SelectContent>
                     </Select>
                   ) : (
                     <StatusBadge
                       status={editedClient.status}
-                      label={
-                        editedClient.status === "active"
-                          ? "Ativo"
-                          : editedClient.status === "inactive"
-                          ? "Inativo"
-                          : "Pendente"
-                      }
+                      label={editedClient.status === "active" ? "Ativo" : "Inativo"}
                     />
                   )}
                 </div>
