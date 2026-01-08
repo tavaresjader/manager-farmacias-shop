@@ -118,31 +118,24 @@ export function UnidadeDetailsModal({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {isEditing ? (
-                  <Input
-                    value={editedUnidade.nome}
-                    onChange={(e) =>
-                      setEditedUnidade({ ...editedUnidade, nome: e.target.value })
-                    }
-                    className="h-8 w-48"
-                  />
-                ) : (
-                  <span>{editedUnidade.nome}</span>
-                )}
-                <Badge variant={editedUnidade.situacao === "aberta" ? "default" : "secondary"}>
-                  {editedUnidade.situacao === "aberta" ? "Aberta" : "Fechada"}
-                </Badge>
-                <Badge variant={editedUnidade.status === "ativa" ? "default" : "secondary"}>
-                  {editedUnidade.status === "ativa" ? "Ativa" : "Inativa"}
-                </Badge>
-              </div>
-              {!isEditing && (
-                <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
-                  <Pencil className="w-4 h-4" />
-                </Button>
+            <DialogTitle className="flex items-center gap-3">
+              {isEditing ? (
+                <Input
+                  value={editedUnidade.nome}
+                  onChange={(e) =>
+                    setEditedUnidade({ ...editedUnidade, nome: e.target.value })
+                  }
+                  className="h-8 w-48"
+                />
+              ) : (
+                <span>{editedUnidade.nome}</span>
               )}
+              <Badge variant={editedUnidade.situacao === "aberta" ? "default" : "secondary"}>
+                {editedUnidade.situacao === "aberta" ? "Aberta" : "Fechada"}
+              </Badge>
+              <Badge variant={editedUnidade.status === "ativa" ? "default" : "secondary"}>
+                {editedUnidade.status === "ativa" ? "Ativa" : "Inativa"}
+              </Badge>
             </DialogTitle>
           </DialogHeader>
 
@@ -292,9 +285,15 @@ export function UnidadeDetailsModal({
                   </Button>
                 </>
               ) : (
-                <Button variant="outline" onClick={() => onOpenChange(false)}>
-                  Fechar
-                </Button>
+                <>
+                  <Button variant="outline" onClick={() => setIsEditing(true)}>
+                    <Pencil className="w-4 h-4 mr-2" />
+                    Editar
+                  </Button>
+                  <Button onClick={() => onOpenChange(false)}>
+                    Fechar
+                  </Button>
+                </>
               )}
             </div>
           </DialogFooter>
