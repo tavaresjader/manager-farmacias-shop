@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -5,10 +6,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { Mail, Phone, FileText, Calendar, ShoppingBag, Edit, UserX, UserCheck, MapPin, Trash2 } from "lucide-react";
+import { Mail, Phone, FileText, Calendar, ShoppingBag, Edit, UserX, UserCheck, MapPin, Trash2, Save, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Address {
   id: string;
@@ -44,21 +53,40 @@ interface ClienteDetailsModalProps {
 
 export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetailsModalProps) {
   const { toast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedClient, setEditedClient] = useState<Client | null>(null);
 
-  if (!client) return null;
+  useEffect(() => {
+    if (client) {
+      setEditedClient({ ...client });
+    }
+    setIsEditing(false);
+  }, [client]);
+
+  if (!client || !editedClient) return null;
 
   const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditedClient({ ...client });
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = () => {
     toast({
-      title: "Editar cliente",
-      description: "Funcionalidade de edição será implementada em breve.",
+      title: "Cliente atualizado",
+      description: `Os dados de ${editedClient.name} foram atualizados com sucesso.`,
     });
+    setIsEditing(false);
   };
 
   const handleToggleStatus = () => {
-    const newStatus = client.status === "active" ? "inativado" : "ativado";
+    const newStatus = editedClient.status === "active" ? "inativado" : "ativado";
     toast({
       title: `Cliente ${newStatus}`,
-      description: `O cliente ${client.name} foi ${newStatus} com sucesso.`,
+      description: `O cliente ${editedClient.name} foi ${newStatus} com sucesso.`,
     });
     onOpenChange(false);
   };
@@ -99,23 +127,41 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-xl font-semibold text-primary">
-                  {getInitials(client.name)}
+                  {getInitials(editedClient.name)}
                 </span>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-foreground">{client.name}</h3>
-                <p className="text-sm text-muted-foreground">{client.document}</p>
+                <h3 className="text-lg font-semibold text-foreground">{editedClient.name}</h3>
+                <p className="text-sm text-muted-foreground">{editedClient.document}</p>
                 <div className="mt-1">
-                  <StatusBadge
-                    status={client.status}
-                    label={
-                      client.status === "active"
-                        ? "Ativo"
-                        : client.status === "inactive"
-                        ? "Inativo"
-                        : "Pendente"
-                    }
-                  />
+                  {isEditing ? (
+                    <Select
+                      value={editedClient.status}
+                      onValueChange={(value: "active" | "inactive" | "pending") =>
+                        setEditedClient({ ...editedClient, status: value })
+                      }
+                    >
+                      <SelectTrigger className="w-32 h-7 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Ativo</SelectItem>
+                        <SelectItem value="inactive">Inativo</SelectItem>
+                        <SelectItem value="pending">Pendente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <StatusBadge
+                      status={editedClient.status}
+                      label={
+                        editedClient.status === "active"
+                          ? "Ativo"
+                          : editedClient.status === "inactive"
+                          ? "Inativo"
+                          : "Pendente"
+                      }
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -126,34 +172,57 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
               <div className="grid gap-3">
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
                   <Mail className="w-4 h-4 text-muted-foreground" />
-                  <div>
+                  <div className="flex-1">
                     <p className="text-xs text-muted-foreground">E-mail</p>
-                    <p className="text-sm text-foreground">{client.email}</p>
+                    {isEditing ? (
+                      <Input
+                        value={editedClient.email}
+                        onChange={(e) => setEditedClient({ ...editedClient, email: e.target.value })}
+                        className="h-7 text-sm mt-1"
+                      />
+                    ) : (
+                      <p className="text-sm text-foreground">{editedClient.email}</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
                   <Phone className="w-4 h-4 text-muted-foreground" />
-                  <div>
+                  <div className="flex-1">
                     <p className="text-xs text-muted-foreground">Telefone</p>
-                    <p className="text-sm text-foreground">{client.phone}</p>
+                    {isEditing ? (
+                      <Input
+                        value={editedClient.phone}
+                        onChange={(e) => setEditedClient({ ...editedClient, phone: e.target.value })}
+                        className="h-7 text-sm mt-1"
+                      />
+                    ) : (
+                      <p className="text-sm text-foreground">{editedClient.phone}</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
                   <FileText className="w-4 h-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Cidade / UF</p>
-                    <p className="text-sm text-foreground">{client.segment}</p>
+                  <div className="flex-1">
+                    <p className="text-xs text-muted-foreground">Documento</p>
+                    {isEditing ? (
+                      <Input
+                        value={editedClient.document}
+                        onChange={(e) => setEditedClient({ ...editedClient, document: e.target.value })}
+                        className="h-7 text-sm mt-1"
+                      />
+                    ) : (
+                      <p className="text-sm text-foreground">{editedClient.document}</p>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Endereços */}
             <div className="space-y-3">
               <h4 className="text-sm font-medium text-foreground">Endereços</h4>
-              {client.addresses && client.addresses.length > 0 ? (
+              {editedClient.addresses && editedClient.addresses.length > 0 ? (
                 <div className="space-y-2">
-                  {client.addresses.map((address) => (
+                  {editedClient.addresses.map((address) => (
                     <div
                       key={address.id}
                       className="p-3 bg-muted/30 rounded-lg"
@@ -214,7 +283,7 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
                   <p className="text-xs text-muted-foreground">Total em Compras</p>
                 </div>
                 <p className="text-lg font-semibold text-foreground">
-                  {client.totalSpent.toLocaleString("pt-BR", {
+                  {editedClient.totalSpent.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
@@ -226,35 +295,50 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
                   <p className="text-xs text-muted-foreground">Cliente desde</p>
                 </div>
                 <p className="text-lg font-semibold text-foreground">
-                  {new Date(client.createdAt).toLocaleDateString("pt-BR")}
+                  {new Date(editedClient.createdAt).toLocaleDateString("pt-BR")}
                 </p>
               </div>
             </div>
 
             {/* Ações */}
             <div className="flex gap-2 pt-2">
-              <Button variant="outline" className="flex-1 gap-2" onClick={handleEdit}>
-                <Edit className="w-4 h-4" />
-                Editar
-              </Button>
-              {client.status === "active" ? (
-                <Button
-                  variant="outline"
-                  className="flex-1 gap-2 text-destructive hover:text-destructive"
-                  onClick={handleToggleStatus}
-                >
-                  <UserX className="w-4 h-4" />
-                  Inativar
-                </Button>
+              {isEditing ? (
+                <>
+                  <Button variant="outline" className="flex-1 gap-2" onClick={handleCancelEdit}>
+                    <X className="w-4 h-4" />
+                    Cancelar
+                  </Button>
+                  <Button className="flex-1 gap-2" onClick={handleSaveEdit}>
+                    <Save className="w-4 h-4" />
+                    Salvar
+                  </Button>
+                </>
               ) : (
-                <Button
-                  variant="outline"
-                  className="flex-1 gap-2 text-green-600 hover:text-green-600"
-                  onClick={handleToggleStatus}
-                >
-                  <UserCheck className="w-4 h-4" />
-                  Ativar
-                </Button>
+                <>
+                  <Button variant="outline" className="flex-1 gap-2" onClick={handleEdit}>
+                    <Edit className="w-4 h-4" />
+                    Editar
+                  </Button>
+                  {editedClient.status === "active" ? (
+                    <Button
+                      variant="outline"
+                      className="flex-1 gap-2 text-destructive hover:text-destructive"
+                      onClick={handleToggleStatus}
+                    >
+                      <UserX className="w-4 h-4" />
+                      Inativar
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="flex-1 gap-2 text-green-600 hover:text-green-600"
+                      onClick={handleToggleStatus}
+                    >
+                      <UserCheck className="w-4 h-4" />
+                      Ativar
+                    </Button>
+                  )}
+                </>
               )}
             </div>
           </div>
