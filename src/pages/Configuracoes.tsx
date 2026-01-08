@@ -174,10 +174,22 @@ const Configuracoes = () => {
   });
   const [selectedUnidade, setSelectedUnidade] = useState<Unidade | null>(null);
   const [unidadeModalOpen, setUnidadeModalOpen] = useState(false);
+  const [unidades, setUnidades] = useState<Unidade[]>(mockUnidades);
 
   const handleUnidadeClick = (unidade: Unidade) => {
     setSelectedUnidade(unidade);
     setUnidadeModalOpen(true);
+  };
+
+  const handleSaveUnidade = (updatedUnidade: Unidade) => {
+    setUnidades((prev) =>
+      prev.map((u) => (u.id === updatedUnidade.id ? updatedUnidade : u))
+    );
+    setSelectedUnidade(updatedUnidade);
+  };
+
+  const handleDeleteUnidade = (unidadeId: string) => {
+    setUnidades((prev) => prev.filter((u) => u.id !== unidadeId));
   };
 
   const toggleSecretVisibility = (id: string) => {
@@ -246,7 +258,7 @@ const Configuracoes = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockUnidades.map((unidade) => (
+                    {unidades.map((unidade) => (
                       <TableRow 
                         key={unidade.id}
                         className="cursor-pointer hover:bg-muted/50"
@@ -287,6 +299,8 @@ const Configuracoes = () => {
                 open={unidadeModalOpen}
                 onOpenChange={setUnidadeModalOpen}
                 unidade={selectedUnidade}
+                onSave={handleSaveUnidade}
+                onDelete={handleDeleteUnidade}
               />
             </div>
           )}
