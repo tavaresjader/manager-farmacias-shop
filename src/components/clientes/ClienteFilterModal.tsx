@@ -45,7 +45,6 @@ const statusOptions = [
   { value: "all", label: "Todos os status" },
   { value: "active", label: "Ativo" },
   { value: "inactive", label: "Inativo" },
-  { value: "pending", label: "Pendente" },
 ];
 
 export function ClienteFilterModal({

@@ -30,7 +30,7 @@ interface Client {
   phone: string;
   document: string;
   segment: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive";
   campaigns: number;
   totalSpent: number;
   createdAt: string;
@@ -117,7 +117,7 @@ const mockClients: Client[] = [
     phone: "(31) 96666-3456",
     document: "789.123.456-00",
     segment: "Belo Horizonte, MG",
-    status: "pending",
+    status: "active",
     campaigns: 1,
     totalSpent: 5000,
     createdAt: "2024-06-05",
@@ -175,8 +175,7 @@ const mockClients: Client[] = [
 
 const tabs = [
   { id: "all", label: "Todos", count: 6 },
-  { id: "active", label: "Ativos", count: 4 },
-  { id: "pending", label: "Pendentes", count: 1 },
+  { id: "active", label: "Ativos", count: 5 },
   { id: "inactive", label: "Inativos", count: 1 },
 ];
 
@@ -225,13 +224,7 @@ const columns: Column<Client>[] = [
     render: (item) => (
       <StatusBadge
         status={item.status}
-        label={
-          item.status === "active"
-            ? "Ativo"
-            : item.status === "inactive"
-            ? "Inativo"
-            : "Pendente"
-        }
+        label={item.status === "active" ? "Ativo" : "Inativo"}
       />
     ),
   },
