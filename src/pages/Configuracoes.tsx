@@ -166,6 +166,7 @@ const Configuracoes = () => {
                       <TableHead>Nome</TableHead>
                       <TableHead>Endereço</TableHead>
                       <TableHead>Situação</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -173,6 +174,9 @@ const Configuracoes = () => {
                     <TableRow>
                       <TableCell className="font-medium">Matriz</TableCell>
                       <TableCell>Av. Paulista, 1000 - São Paulo/SP</TableCell>
+                      <TableCell>
+                        <Badge variant="default">Aberta</Badge>
+                      </TableCell>
                       <TableCell>
                         <Badge variant="default">Ativa</Badge>
                       </TableCell>
@@ -190,6 +194,9 @@ const Configuracoes = () => {
                       <TableCell className="font-medium">Filial Centro</TableCell>
                       <TableCell>Rua XV de Novembro, 500 - Curitiba/PR</TableCell>
                       <TableCell>
+                        <Badge variant="default">Aberta</Badge>
+                      </TableCell>
+                      <TableCell>
                         <Badge variant="default">Ativa</Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -205,6 +212,9 @@ const Configuracoes = () => {
                     <TableRow>
                       <TableCell className="font-medium">Filial Shopping</TableCell>
                       <TableCell>Shopping Center Norte, Loja 45 - São Paulo/SP</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">Fechada</Badge>
+                      </TableCell>
                       <TableCell>
                         <Badge variant="secondary">Inativa</Badge>
                       </TableCell>
