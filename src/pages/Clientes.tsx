@@ -11,17 +11,30 @@ import { Mail, Phone } from "lucide-react";
 import { ClienteFilterModal, ClienteFilters } from "@/components/clientes/ClienteFilterModal";
 import { ClienteDetailsModal } from "@/components/clientes/ClienteDetailsModal";
 
+interface Address {
+  id: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  isDefault?: boolean;
+}
+
 interface Client {
   id: string;
   name: string;
   email: string;
   phone: string;
-  company: string;
+  document: string;
   segment: string;
   status: "active" | "inactive" | "pending";
   campaigns: number;
   totalSpent: number;
   createdAt: string;
+  addresses: Address[];
 }
 
 const mockClients: Client[] = [
@@ -30,72 +43,133 @@ const mockClients: Client[] = [
     name: "João Silva",
     email: "joao@lojavirtualabc.com",
     phone: "(11) 99999-1234",
-    company: "Loja Virtual ABC",
-    segment: "E-commerce",
+    document: "123.456.789-00",
+    segment: "São Paulo, SP",
     status: "active",
     campaigns: 5,
     totalSpent: 45000,
     createdAt: "2024-01-15",
+    addresses: [
+      {
+        id: "1",
+        street: "Rua das Flores",
+        number: "123",
+        complement: "Apto 45",
+        neighborhood: "Centro",
+        city: "São Paulo",
+        state: "SP",
+        zipCode: "01234-567",
+        isDefault: true,
+      },
+    ],
   },
   {
     id: "2",
     name: "Maria Santos",
     email: "maria@techsolutions.com",
     phone: "(11) 98888-5678",
-    company: "Tech Solutions",
-    segment: "Tecnologia",
+    document: "987.654.321-00",
+    segment: "São Paulo, SP",
     status: "active",
     campaigns: 3,
     totalSpent: 75000,
     createdAt: "2024-02-20",
+    addresses: [
+      {
+        id: "1",
+        street: "Av. Paulista",
+        number: "1000",
+        neighborhood: "Bela Vista",
+        city: "São Paulo",
+        state: "SP",
+        zipCode: "01310-100",
+        isDefault: true,
+      },
+      {
+        id: "2",
+        street: "Rua Augusta",
+        number: "500",
+        complement: "Sala 10",
+        neighborhood: "Consolação",
+        city: "São Paulo",
+        state: "SP",
+        zipCode: "01305-000",
+      },
+    ],
   },
   {
     id: "3",
     name: "Pedro Costa",
     email: "pedro@modaexpress.com",
     phone: "(21) 97777-9012",
-    company: "Moda Express",
-    segment: "Moda",
+    document: "456.789.123-00",
+    segment: "Rio de Janeiro, RJ",
     status: "active",
     campaigns: 2,
     totalSpent: 18000,
     createdAt: "2024-03-10",
+    addresses: [],
   },
   {
     id: "4",
     name: "Ana Oliveira",
     email: "ana@ecommerceplus.com",
     phone: "(31) 96666-3456",
-    company: "E-commerce Plus",
-    segment: "E-commerce",
+    document: "789.123.456-00",
+    segment: "Belo Horizonte, MG",
     status: "pending",
     campaigns: 1,
     totalSpent: 5000,
     createdAt: "2024-06-05",
+    addresses: [
+      {
+        id: "1",
+        street: "Rua da Bahia",
+        number: "200",
+        neighborhood: "Centro",
+        city: "Belo Horizonte",
+        state: "MG",
+        zipCode: "30160-011",
+        isDefault: true,
+      },
+    ],
   },
   {
     id: "5",
     name: "Carlos Ferreira",
     email: "carlos@startupinc.com",
     phone: "(41) 95555-7890",
-    company: "StartUp Inc",
-    segment: "SaaS",
+    document: "321.654.987-00",
+    segment: "Curitiba, PR",
     status: "active",
     campaigns: 4,
     totalSpent: 32000,
     createdAt: "2024-04-18",
+    addresses: [
+      {
+        id: "1",
+        street: "Rua XV de Novembro",
+        number: "300",
+        neighborhood: "Centro",
+        city: "Curitiba",
+        state: "PR",
+        zipCode: "80020-310",
+        isDefault: true,
+      },
+    ],
   },
   {
     id: "6",
     name: "Fernanda Lima",
     email: "fernanda@consultoriaxyz.com",
     phone: "(51) 94444-1234",
-    company: "Consultoria XYZ",
-    segment: "Serviços",
+    document: "654.987.321-00",
+    segment: "Porto Alegre, RS",
     status: "inactive",
     campaigns: 0,
     totalSpent: 0,
     createdAt: "2024-07-22",
+    addresses: [],
   },
 ];
 
@@ -124,7 +198,7 @@ const columns: Column<Client>[] = [
         </div>
         <div>
           <span className="font-medium text-foreground">{item.name}</span>
-          <p className="text-xs text-muted-foreground mt-0.5">{item.company}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{item.document}</p>
         </div>
       </div>
     ),
@@ -208,7 +282,7 @@ const Clientes = () => {
   const filteredClients = mockClients.filter((client) => {
     const matchesSearch =
       client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      client.document.toLowerCase().includes(searchQuery.toLowerCase()) ||
       client.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab = activeTab === "all" || client.status === activeTab;
     
