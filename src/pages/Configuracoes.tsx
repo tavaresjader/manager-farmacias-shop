@@ -15,11 +15,13 @@ import {
   Trash2,
   Building2,
   ImageIcon,
+  Palette,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
@@ -108,6 +110,7 @@ const mockUnidades: Unidade[] = [
 const menuItems = [
   { id: "unidades", label: "Unidades", icon: Building2 },
   { id: "banners", label: "Banners", icon: ImageIcon },
+  { id: "aparencia", label: "Aparência", icon: Palette },
   { id: "conta", label: "Minha conta", icon: User },
   { id: "fatura", label: "Minha fatura", icon: CreditCard },
   { id: "integracoes", label: "Integrações", icon: Puzzle },
@@ -220,6 +223,12 @@ const Configuracoes = () => {
   const [selectedBanner, setSelectedBanner] = useState<Banner | null>(null);
   const [bannerModalOpen, setBannerModalOpen] = useState(false);
   const [banners, setBanners] = useState<Banner[]>(mockBanners);
+  const [aparencia, setAparencia] = useState({
+    corPrincipal: "#000000",
+    corSecundaria: "#666666",
+    politicaEnvio: "",
+    politicaPrivacidade: "",
+  });
 
   const handleUnidadeClick = (unidade: Unidade) => {
     setSelectedUnidade(unidade);
@@ -444,6 +453,89 @@ const Configuracoes = () => {
                 onSave={handleSaveBanner}
                 onDelete={handleDeleteBanner}
               />
+            </div>
+          )}
+
+          {activeTab === "aparencia" && (
+            <div className="bg-card border border-border rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-foreground mb-6">Aparência</h2>
+              <form className="space-y-6 max-w-2xl">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cor-principal">Cor Principal</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="cor-principal"
+                        type="color"
+                        value={aparencia.corPrincipal}
+                        onChange={(e) => setAparencia({ ...aparencia, corPrincipal: e.target.value })}
+                        className="w-12 h-10 p-1 cursor-pointer"
+                      />
+                      <Input
+                        type="text"
+                        value={aparencia.corPrincipal}
+                        onChange={(e) => setAparencia({ ...aparencia, corPrincipal: e.target.value })}
+                        placeholder="#000000"
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cor-secundaria">Cor Secundária</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="cor-secundaria"
+                        type="color"
+                        value={aparencia.corSecundaria}
+                        onChange={(e) => setAparencia({ ...aparencia, corSecundaria: e.target.value })}
+                        className="w-12 h-10 p-1 cursor-pointer"
+                      />
+                      <Input
+                        type="text"
+                        value={aparencia.corSecundaria}
+                        onChange={(e) => setAparencia({ ...aparencia, corSecundaria: e.target.value })}
+                        placeholder="#666666"
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="politica-envio">Política de Envio</Label>
+                  <Textarea
+                    id="politica-envio"
+                    value={aparencia.politicaEnvio}
+                    onChange={(e) => setAparencia({ ...aparencia, politicaEnvio: e.target.value })}
+                    placeholder="Descreva a política de envio da sua loja..."
+                    className="min-h-[150px]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="politica-privacidade">Política de Privacidade</Label>
+                  <Textarea
+                    id="politica-privacidade"
+                    value={aparencia.politicaPrivacidade}
+                    onChange={(e) => setAparencia({ ...aparencia, politicaPrivacidade: e.target.value })}
+                    placeholder="Descreva a política de privacidade da sua loja..."
+                    className="min-h-[150px]"
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      toast({
+                        description: "Configurações de aparência salvas com sucesso!",
+                      });
+                    }}
+                  >
+                    Salvar
+                  </Button>
+                </div>
+              </form>
             </div>
           )}
 
