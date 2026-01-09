@@ -36,6 +36,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { UnidadeDetailsModal } from "@/components/configuracoes/UnidadeDetailsModal";
+import { BannerDetailsModal } from "@/components/configuracoes/BannerDetailsModal";
 
 interface HorarioFuncionamento {
   dia: string;
@@ -216,6 +217,9 @@ const Configuracoes = () => {
   const [selectedUnidade, setSelectedUnidade] = useState<Unidade | null>(null);
   const [unidadeModalOpen, setUnidadeModalOpen] = useState(false);
   const [unidades, setUnidades] = useState<Unidade[]>(mockUnidades);
+  const [selectedBanner, setSelectedBanner] = useState<Banner | null>(null);
+  const [bannerModalOpen, setBannerModalOpen] = useState(false);
+  const [banners, setBanners] = useState<Banner[]>(mockBanners);
 
   const handleUnidadeClick = (unidade: Unidade) => {
     setSelectedUnidade(unidade);
@@ -231,6 +235,22 @@ const Configuracoes = () => {
 
   const handleDeleteUnidade = (unidadeId: string) => {
     setUnidades((prev) => prev.filter((u) => u.id !== unidadeId));
+  };
+
+  const handleBannerClick = (banner: Banner) => {
+    setSelectedBanner(banner);
+    setBannerModalOpen(true);
+  };
+
+  const handleSaveBanner = (updatedBanner: Banner) => {
+    setBanners((prev) =>
+      prev.map((b) => (b.id === updatedBanner.id ? updatedBanner : b))
+    );
+    setSelectedBanner(updatedBanner);
+  };
+
+  const handleDeleteBanner = (bannerId: string) => {
+    setBanners((prev) => prev.filter((b) => b.id !== bannerId));
   };
 
   const toggleSecretVisibility = (id: string) => {
@@ -367,10 +387,11 @@ const Configuracoes = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockBanners.map((banner) => (
+                    {banners.map((banner) => (
                       <TableRow 
                         key={banner.id}
                         className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => handleBannerClick(banner)}
                       >
                         <TableCell className="font-medium">{banner.nome}</TableCell>
                         <TableCell>
@@ -402,6 +423,10 @@ const Configuracoes = () => {
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleBannerClick(banner);
+                            }}
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
@@ -411,6 +436,14 @@ const Configuracoes = () => {
                   </TableBody>
                 </Table>
               </div>
+
+              <BannerDetailsModal
+                open={bannerModalOpen}
+                onOpenChange={setBannerModalOpen}
+                banner={selectedBanner}
+                onSave={handleSaveBanner}
+                onDelete={handleDeleteBanner}
+              />
             </div>
           )}
 
