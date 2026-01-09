@@ -80,8 +80,8 @@ export function AppSidebar() {
         })}
       </nav>
 
-      {/* Bottom Navigation */}
-      <div className="py-4 px-2 border-t border-sidebar-border space-y-1">
+      {/* Bottom Navigation - Fixed at bottom */}
+      <div className="mt-auto py-2 px-2 border-t border-sidebar-border space-y-0.5">
         {bottomNavItems.map((item) => {
           const isActive = location.pathname === item.path;
           
@@ -94,11 +94,11 @@ export function AppSidebar() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className={cn(
-                      "flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200",
+                      "flex items-center justify-center w-full h-9 rounded-lg transition-all duration-200",
                       "text-sidebar-foreground hover:bg-accent hover:text-foreground"
                     )}
                   >
-                    <item.icon className="w-5 h-5" />
+                    <item.icon className="w-4 h-4" />
                   </a>
                 </TooltipTrigger>
                 <TooltipContent side="right" sideOffset={10}>
@@ -114,13 +114,13 @@ export function AppSidebar() {
                 <NavLink
                   to={item.path}
                   className={cn(
-                    "flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200",
+                    "flex items-center justify-center w-full h-9 rounded-lg transition-all duration-200",
                     isActive
                       ? "bg-accent text-foreground"
                       : "text-sidebar-foreground hover:bg-accent hover:text-foreground"
                   )}
                 >
-                  <item.icon className="w-5 h-5" />
+                  <item.icon className="w-4 h-4" />
                 </NavLink>
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={10}>
@@ -135,12 +135,12 @@ export function AppSidebar() {
           <TooltipTrigger asChild>
             <button
               onClick={toggleTheme}
-              className="flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-accent hover:text-foreground"
+              className="flex items-center justify-center w-full h-9 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-accent hover:text-foreground"
             >
               {theme === "dark" ? (
-                <Sun className="w-5 h-5" />
+                <Sun className="w-4 h-4" />
               ) : (
-                <Moon className="w-5 h-5" />
+                <Moon className="w-4 h-4" />
               )}
             </button>
           </TooltipTrigger>
