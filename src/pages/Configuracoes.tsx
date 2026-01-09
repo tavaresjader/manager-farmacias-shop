@@ -361,7 +361,7 @@ const Configuracoes = () => {
                     <TableRow>
                       <TableHead>Nome</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Ícone</TableHead>
+                      <TableHead>Banner</TableHead>
                       <TableHead>Posição</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
@@ -379,11 +379,18 @@ const Configuracoes = () => {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <img 
-                            src={banner.imagem} 
-                            alt={banner.nome}
-                            className="w-16 h-10 object-cover rounded border border-border"
-                          />
+                          <a 
+                            href="https://cdn.farmaciashop.com.br/banner.jpg" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <img 
+                              src={banner.imagem} 
+                              alt={banner.nome}
+                              className="w-16 h-10 object-cover rounded border border-border hover:opacity-80 transition-opacity"
+                            />
+                          </a>
                         </TableCell>
                         <TableCell>
                           <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-muted text-foreground font-medium text-sm">
