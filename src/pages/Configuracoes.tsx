@@ -16,6 +16,8 @@ import {
   Building2,
   ImageIcon,
   Palette,
+  Upload,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -224,6 +226,7 @@ const Configuracoes = () => {
   const [bannerModalOpen, setBannerModalOpen] = useState(false);
   const [banners, setBanners] = useState<Banner[]>(mockBanners);
   const [aparencia, setAparencia] = useState({
+    logo: "/placeholder.svg",
     corPrincipal: "#000000",
     corSecundaria: "#666666",
     politicaEnvio: "",
@@ -460,6 +463,50 @@ const Configuracoes = () => {
             <div className="bg-card border border-border rounded-lg p-6 h-full flex flex-col">
               <h2 className="text-lg font-semibold text-foreground mb-6">Aparência</h2>
               <form className="flex-1 flex flex-col gap-6">
+                {/* Logo Upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="logo">Logotipo da Farmácia</Label>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <div className="flex gap-2">
+                        <Input
+                          id="logo"
+                          type="file"
+                          accept="image/*"
+                          className="flex-1"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const url = URL.createObjectURL(file);
+                              setAparencia({ ...aparencia, logo: url });
+                            }
+                          }}
+                        />
+                        <Button type="button" variant="outline" size="icon">
+                          <Upload className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-16 border border-border rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                        <img
+                          src={aparencia.logo}
+                          alt="Logo da Farmácia"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <a
+                        href={aparencia.logo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="cor-principal">Cor Principal</Label>
