@@ -148,6 +148,28 @@ export function BannerDetailsModal({
               </Select>
             </div>
 
+            {/* Posição */}
+            <div className="space-y-2">
+              <Label htmlFor="banner-posicao">Posição</Label>
+              <Select
+                value={editedBanner.posicao.toString()}
+                onValueChange={(value) =>
+                  setEditedBanner({ ...editedBanner, posicao: parseInt(value) })
+                }
+              >
+                <SelectTrigger id="banner-posicao">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                    <SelectItem key={num} value={num.toString()}>
+                      {num}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Link da imagem */}
             <div className="space-y-2">
               <Label htmlFor="banner-imagem">Link da imagem</Label>
