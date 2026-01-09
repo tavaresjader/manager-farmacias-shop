@@ -501,26 +501,26 @@ const Configuracoes = () => {
                   </div>
                 </div>
 
-                <div className="flex-1 grid grid-cols-2 gap-4">
-                  <div className="flex flex-col space-y-2">
+                <div className="flex-1 flex flex-col gap-4">
+                  <div className="flex-1 flex flex-col space-y-2">
                     <Label htmlFor="politica-envio">Política de Envio</Label>
                     <Textarea
                       id="politica-envio"
                       value={aparencia.politicaEnvio}
                       onChange={(e) => setAparencia({ ...aparencia, politicaEnvio: e.target.value })}
                       placeholder="Descreva a política de envio da sua loja..."
-                      className="flex-1 min-h-[200px] resize-none"
+                      className="flex-1 min-h-[150px] resize-none"
                     />
                   </div>
 
-                  <div className="flex flex-col space-y-2">
+                  <div className="flex-1 flex flex-col space-y-2">
                     <Label htmlFor="politica-privacidade">Política de Privacidade</Label>
                     <Textarea
                       id="politica-privacidade"
                       value={aparencia.politicaPrivacidade}
                       onChange={(e) => setAparencia({ ...aparencia, politicaPrivacidade: e.target.value })}
                       placeholder="Descreva a política de privacidade da sua loja..."
-                      className="flex-1 min-h-[200px] resize-none"
+                      className="flex-1 min-h-[150px] resize-none"
                     />
                   </div>
                 </div>
