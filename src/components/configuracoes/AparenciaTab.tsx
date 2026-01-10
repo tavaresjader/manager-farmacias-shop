@@ -107,12 +107,12 @@ export function AparenciaTab() {
 
         <div className="flex-1 flex flex-col gap-4">
           <div className="flex-1 flex flex-col space-y-2">
-            <Label htmlFor="politica-envio">Política de Envio</Label>
+            <Label htmlFor="politica-entrega">Política de Entrega</Label>
             <Textarea
-              id="politica-envio"
+              id="politica-entrega"
               value={aparencia.politicaEnvio}
               onChange={(e) => setAparencia({ ...aparencia, politicaEnvio: e.target.value })}
-              placeholder="Descreva a política de envio da sua loja..."
+              placeholder="Descreva a política de entrega da sua loja..."
               className="flex-1 min-h-[150px] resize-none"
             />
           </div>
