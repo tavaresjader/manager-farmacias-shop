@@ -47,6 +47,7 @@ export function CupomEditModal({
   const [formData, setFormData] = useState({
     codigo: "",
     desconto: "",
+    tipo: "percentual" as "percentual" | "fixo",
     minimo: "",
     validade: "",
     status: "active" as "active" | "inactive" | "cancelled",
@@ -60,6 +61,7 @@ export function CupomEditModal({
       setFormData({
         codigo: cupom.codigo,
         desconto: descontoValue,
+        tipo: cupom.tipo,
         minimo: cupom.minimo.toString(),
         validade: cupom.validade,
         status: cupom.status,
@@ -75,7 +77,8 @@ export function CupomEditModal({
     const updatedCupom: Cupom = {
       ...cupom,
       codigo: formData.codigo,
-      desconto: cupom.tipo === "percentual" ? `${formData.desconto}%` : `R$ ${formData.desconto}`,
+      tipo: formData.tipo,
+      desconto: formData.tipo === "percentual" ? `${formData.desconto}%` : `R$ ${formData.desconto}`,
       minimo: parseFloat(formData.minimo) || 0,
       validade: formData.validade,
       status: formData.status,
@@ -114,8 +117,26 @@ export function CupomEditModal({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="tipo">Tipo de Desconto</Label>
+            <Select
+              value={formData.tipo}
+              onValueChange={(value: "percentual" | "fixo") =>
+                setFormData({ ...formData, tipo: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="percentual">Percentual (%)</SelectItem>
+                <SelectItem value="fixo">Valor Fixo (R$)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="desconto">
-              Desconto ({cupom.tipo === "percentual" ? "%" : "R$"})
+              Desconto ({formData.tipo === "percentual" ? "%" : "R$"})
             </Label>
             <Input
               id="desconto"
@@ -125,7 +146,7 @@ export function CupomEditModal({
               onChange={(e) =>
                 setFormData({ ...formData, desconto: e.target.value })
               }
-              placeholder={cupom.tipo === "percentual" ? "Ex: 10" : "Ex: 15.00"}
+              placeholder={formData.tipo === "percentual" ? "Ex: 10" : "Ex: 15.00"}
             />
           </div>
 
