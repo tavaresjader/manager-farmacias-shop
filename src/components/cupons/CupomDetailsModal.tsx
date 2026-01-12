@@ -3,12 +3,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Percent, ShoppingCart, Hash, Target } from "lucide-react";
+import { Calendar, Percent, ShoppingCart, Hash, Target, Pencil } from "lucide-react";
 
 interface Utilizacao {
   pedidoId: string;
@@ -159,6 +161,13 @@ export function CupomDetailsModal({
             )}
           </div>
         </div>
+
+        <DialogFooter>
+          <Button className="gap-2">
+            <Pencil className="w-4 h-4" />
+            Editar Cupom
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
