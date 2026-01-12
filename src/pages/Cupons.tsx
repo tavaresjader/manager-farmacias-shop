@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { CupomDetailsModal } from "@/components/cupons/CupomDetailsModal";
 import { Plus, Percent } from "lucide-react";
 
 interface Cupom {
@@ -128,10 +129,17 @@ const columns: Column<Cupom>[] = [
 const Cupons = () => {
   usePageTitle("Cupons");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCupom, setSelectedCupom] = useState<Cupom | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredCupons = mockCupons.filter((cupom) =>
     cupom.codigo.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleRowClick = (cupom: Cupom) => {
+    setSelectedCupom(cupom);
+    setIsModalOpen(true);
+  };
 
   return (
     <MainLayout>
@@ -161,6 +169,7 @@ const Cupons = () => {
           columns={columns}
           data={filteredCupons}
           emptyMessage="Nenhum cupom encontrado"
+          onRowClick={handleRowClick}
           pagination={{
             currentPage: 1,
             totalPages: 1,
@@ -171,6 +180,13 @@ const Cupons = () => {
           }}
         />
       </div>
+
+      {/* Modal de Detalhes */}
+      <CupomDetailsModal
+        cupom={selectedCupom}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </MainLayout>
   );
 };
