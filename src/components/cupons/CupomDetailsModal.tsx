@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Percent, ShoppingCart, Hash, Target, Pencil } from "lucide-react";
+import { Calendar, Percent, ShoppingCart, Hash, Target, Pencil, DollarSign, Tag } from "lucide-react";
 import { CupomEditModal } from "./CupomEditModal";
 
 interface Utilizacao {
@@ -103,7 +103,21 @@ export function CupomDetailsModal({
           {/* Informações do Cupom */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-              <Percent className="w-4 h-4 text-primary" />
+              <Tag className="w-4 h-4 text-primary" />
+              <div>
+                <p className="text-xs text-muted-foreground">Tipo</p>
+                <p className="font-semibold">
+                  {cupom.tipo === "percentual" ? "Percentual" : "Valor Fixo"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+              {cupom.tipo === "percentual" ? (
+                <Percent className="w-4 h-4 text-primary" />
+              ) : (
+                <DollarSign className="w-4 h-4 text-primary" />
+              )}
               <div>
                 <p className="text-xs text-muted-foreground">Desconto</p>
                 <p className="font-semibold">{cupom.desconto}</p>
@@ -126,7 +140,7 @@ export function CupomDetailsModal({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg col-span-2">
               <Calendar className="w-4 h-4 text-primary" />
               <div>
                 <p className="text-xs text-muted-foreground">Validade</p>
