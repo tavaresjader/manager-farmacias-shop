@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +12,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar, Percent, ShoppingCart, Hash, Target, Pencil } from "lucide-react";
+import { CupomEditModal } from "./CupomEditModal";
 
 interface Utilizacao {
   pedidoId: string;
@@ -34,6 +36,7 @@ interface CupomDetailsModalProps {
   cupom: Cupom | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCupomUpdate?: (cupom: Cupom) => void;
 }
 
 const statusLabels: Record<string, string> = {
@@ -71,11 +74,21 @@ export function CupomDetailsModal({
   cupom,
   open,
   onOpenChange,
+  onCupomUpdate,
 }: CupomDetailsModalProps) {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   if (!cupom) return null;
 
   const utilizacoes = mockUtilizacoes[cupom.id] || [];
 
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleCupomSave = (updatedCupom: Cupom) => {
+    onCupomUpdate?.(updatedCupom);
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
@@ -163,12 +176,19 @@ export function CupomDetailsModal({
         </div>
 
         <DialogFooter>
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={handleEditClick}>
             <Pencil className="w-4 h-4" />
             Editar Cupom
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <CupomEditModal
+        cupom={cupom}
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        onSave={handleCupomSave}
+      />
     </Dialog>
   );
 }
