@@ -11,6 +11,7 @@ import {
   Sun,
   ShoppingCart,
   Package,
+  Ticket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -25,6 +26,7 @@ const mainNavItems = [
   { icon: ShoppingCart, label: "Pedidos", path: "/pedidos" },
   { icon: Package, label: "Produtos", path: "/produtos" },
   { icon: Users, label: "Clientes", path: "/clientes" },
+  { icon: Ticket, label: "Cupons", path: "/cupons" },
   { icon: AppWindow, label: "Aplicativos", path: "/aplicativos" },
   { icon: BarChart3, label: "Insights", path: "/relatorios" },
 ];
