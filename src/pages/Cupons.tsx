@@ -6,7 +6,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { CupomDetailsModal } from "@/components/cupons/CupomDetailsModal";
-import { Plus, Percent } from "lucide-react";
+import { Plus, Percent, DollarSign, Tag } from "lucide-react";
 
 interface Cupom {
   id: string;
@@ -83,14 +83,26 @@ const columns: Column<Cupom>[] = [
     ),
   },
   {
+    key: "tipo",
+    label: "Tipo",
+    sortable: true,
+    render: (cupom) => (
+      <div className="flex items-center gap-1.5">
+        {cupom.tipo === "percentual" ? (
+          <Percent className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <DollarSign className="w-4 h-4 text-muted-foreground" />
+        )}
+        <span>{cupom.tipo === "percentual" ? "Percentual" : "Valor Fixo"}</span>
+      </div>
+    ),
+  },
+  {
     key: "desconto",
     label: "Desconto",
     sortable: true,
     render: (cupom) => (
-      <div className="flex items-center gap-1">
-        <Percent className="w-4 h-4 text-muted-foreground" />
-        <span>{cupom.desconto}</span>
-      </div>
+      <span className="font-medium">{cupom.desconto}</span>
     ),
   },
   {
