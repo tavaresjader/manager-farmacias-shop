@@ -49,6 +49,7 @@ export function CupomEditModal({
     desconto: "",
     tipo: "percentual" as "percentual" | "fixo",
     minimo: "",
+    limite: "",
     validade: "",
     status: "active" as "active" | "inactive" | "cancelled",
   });
@@ -63,6 +64,7 @@ export function CupomEditModal({
         desconto: descontoValue,
         tipo: cupom.tipo,
         minimo: cupom.minimo.toString(),
+        limite: cupom.limite.toString(),
         validade: cupom.validade,
         status: cupom.status,
       });
@@ -80,6 +82,7 @@ export function CupomEditModal({
       tipo: formData.tipo,
       desconto: formData.tipo === "percentual" ? `${formData.desconto}%` : `R$ ${formData.desconto}`,
       minimo: parseFloat(formData.minimo) || 0,
+      limite: parseInt(formData.limite) || 0,
       validade: formData.validade,
       status: formData.status,
     };
@@ -161,6 +164,20 @@ export function CupomEditModal({
                 setFormData({ ...formData, minimo: e.target.value })
               }
               placeholder="Ex: 50.00"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="limite">Limite Máximo de Utilizações</Label>
+            <Input
+              id="limite"
+              type="number"
+              min="0"
+              value={formData.limite}
+              onChange={(e) =>
+                setFormData({ ...formData, limite: e.target.value })
+              }
+              placeholder="Ex: 100"
             />
           </div>
 
