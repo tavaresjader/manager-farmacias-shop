@@ -1,11 +1,13 @@
 import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TabsFilter } from "@/components/ui/tabs-filter";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import { PedidoDetailsModal } from "@/components/pedidos/PedidoDetailsModal";
 import { PedidoFilterModal, PedidoFilters } from "@/components/pedidos/PedidoFilterModal";
 import { Button } from "@/components/ui/button";
@@ -174,6 +176,7 @@ const ITEMS_PER_PAGE = 10;
 
 const Pedidos = () => {
   usePageTitle("Pedidos");
+  const isLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -243,6 +246,14 @@ const Pedidos = () => {
   const handleApplyFilters = (newFilters: PedidoFilters) => {
     setFilters(newFilters);
   };
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageLoading />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
