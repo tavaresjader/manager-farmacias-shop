@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/ui/search-bar";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
 import { Plus, ExternalLink, BarChart3, MessageCircle, Monitor, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -81,6 +83,7 @@ const getAppIcon = (icon?: Aplicativo["icon"]) => {
 
 const Aplicativos = () => {
   usePageTitle("Aplicativos");
+  const isLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
 
@@ -90,9 +93,17 @@ const Aplicativos = () => {
       app.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageLoading />
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
-      <WhatsAppConfigModal 
+      <WhatsAppConfigModal
         open={showWhatsAppModal} 
         onOpenChange={setShowWhatsAppModal} 
       />

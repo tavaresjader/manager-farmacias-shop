@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { PageLoading } from "@/components/layout/PageLoading";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import {
   User,
   CreditCard,
@@ -31,7 +33,16 @@ const menuItems = [
 
 const Configuracoes = () => {
   usePageTitle("Configurações");
+  const isLoading = usePageLoading();
   const [activeTab, setActiveTab] = useState("unidades");
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageLoading />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>

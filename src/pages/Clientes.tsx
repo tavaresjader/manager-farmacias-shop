@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/ui/search-bar";
 import { TabsFilter } from "@/components/ui/tabs-filter";
@@ -7,6 +8,7 @@ import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import { Mail, Phone } from "lucide-react";
 import { ClienteFilterModal, ClienteFilters } from "@/components/clientes/ClienteFilterModal";
 import { ClienteDetailsModal } from "@/components/clientes/ClienteDetailsModal";
@@ -255,6 +257,7 @@ const columns: Column<Client>[] = [
 
 const Clientes = () => {
   usePageTitle("Clientes");
+  const isLoading = usePageLoading();
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -287,6 +290,14 @@ const Clientes = () => {
     
     return matchesSearch && matchesTab && matchesNome && matchesStatus && matchesEmail && matchesData;
   });
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageLoading />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>

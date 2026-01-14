@@ -2,6 +2,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { MetricCard } from "@/components/ui/metric-card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
@@ -91,12 +93,21 @@ const unidadeOptions = [
 
 const Relatorios = () => {
   usePageTitle("Relatórios");
+  const isLoading = usePageLoading();
   
   const [unidade, setUnidade] = useState<string>("todas");
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
     new Date(new Date().setDate(new Date().getDate() - 30))
   );
   const [dateTo, setDateTo] = useState<Date | undefined>(new Date());
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageLoading />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>

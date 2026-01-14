@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import { Package } from "lucide-react";
 import { ProdutoFilterModal, ProdutoFilters } from "@/components/produtos/ProdutoFilterModal";
 import { ProdutoDetailsModal } from "@/components/produtos/ProdutoDetailsModal";
@@ -140,6 +142,7 @@ const columns: Column<Produto>[] = [
 
 const Produtos = () => {
   usePageTitle("Produtos");
+  const isLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -196,6 +199,14 @@ const Produtos = () => {
     setSelectedProduto(produto);
     setDetailsModalOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageLoading />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>

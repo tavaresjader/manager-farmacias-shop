@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { PageLoading } from "@/components/layout/PageLoading";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { MetricCard } from "@/components/ui/metric-card";
 import { TabsFilter } from "@/components/ui/tabs-filter";
@@ -180,6 +182,7 @@ const columns: Column<Order>[] = [
 
 const Dashboard = () => {
   usePageTitle("Início");
+  const isLoading = usePageLoading();
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(() => {
@@ -210,9 +213,17 @@ const Dashboard = () => {
     setCurrentPage(1);
   };
 
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageLoading />
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
-      <WhatsAppConfigModal 
+      <WhatsAppConfigModal
         open={showWhatsAppModal} 
         onOpenChange={handleCloseWhatsAppModal} 
       />

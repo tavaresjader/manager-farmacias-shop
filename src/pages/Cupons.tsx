@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { PageLoading } from "@/components/layout/PageLoading";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
@@ -140,6 +142,7 @@ const columns: Column<Cupom>[] = [
 
 const Cupons = () => {
   usePageTitle("Cupons");
+  const isLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCupom, setSelectedCupom] = useState<Cupom | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -152,6 +155,14 @@ const Cupons = () => {
     setSelectedCupom(cupom);
     setIsModalOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageLoading />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
