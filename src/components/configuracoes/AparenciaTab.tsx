@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Upload, ExternalLink } from "lucide-react";
+import { Upload, ExternalLink, Instagram, Facebook, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,9 @@ export function AparenciaTab() {
     corSecundaria: "#666666",
     politicaEnvio: "",
     politicaPrivacidade: "",
+    instagram: "",
+    facebook: "",
+    youtube: "",
   });
 
   return (
@@ -100,6 +103,52 @@ export function AparenciaTab() {
                 onChange={(e) => setAparencia({ ...aparencia, corSecundaria: e.target.value })}
                 placeholder="#666666"
                 className="flex-1"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Social Media Links */}
+        <div className="space-y-4">
+          <Label className="text-base font-medium">Redes Sociais</Label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="instagram" className="flex items-center gap-2">
+                <Instagram className="w-4 h-4" />
+                Instagram
+              </Label>
+              <Input
+                id="instagram"
+                type="url"
+                value={aparencia.instagram}
+                onChange={(e) => setAparencia({ ...aparencia, instagram: e.target.value })}
+                placeholder="https://instagram.com/sua-loja"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="facebook" className="flex items-center gap-2">
+                <Facebook className="w-4 h-4" />
+                Facebook
+              </Label>
+              <Input
+                id="facebook"
+                type="url"
+                value={aparencia.facebook}
+                onChange={(e) => setAparencia({ ...aparencia, facebook: e.target.value })}
+                placeholder="https://facebook.com/sua-loja"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="youtube" className="flex items-center gap-2">
+                <Youtube className="w-4 h-4" />
+                YouTube
+              </Label>
+              <Input
+                id="youtube"
+                type="url"
+                value={aparencia.youtube}
+                onChange={(e) => setAparencia({ ...aparencia, youtube: e.target.value })}
+                placeholder="https://youtube.com/@sua-loja"
               />
             </div>
           </div>
