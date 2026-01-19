@@ -72,8 +72,8 @@ export function AparenciaTab() {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="dominio-personalizado">Domínio Personalizado</Label>
+              <Label htmlFor="dominio-personalizado" className="flex items-center gap-2">
+                Domínio Personalizado
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -91,7 +91,7 @@ export function AparenciaTab() {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              </div>
+              </Label>
               <div className="flex gap-2">
                 <Input
                   id="dominio-personalizado"
