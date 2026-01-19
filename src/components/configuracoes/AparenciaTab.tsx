@@ -9,7 +9,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 export function AparenciaTab() {
   const { toast } = useToast();
-  const [copied, setCopied] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(false);
+  const [copiedDomain, setCopiedDomain] = useState(false);
   const [aparencia, setAparencia] = useState({
     logo: "/placeholder.svg",
     corPrincipal: "#000000",
@@ -26,9 +27,17 @@ export function AparenciaTab() {
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(urlAtual);
-    setCopied(true);
+    setCopiedUrl(true);
     toast({ description: "URL copiada para a área de transferência!" });
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopiedUrl(false), 2000);
+  };
+
+  const handleCopyDomain = () => {
+    if (!aparencia.dominioPersonalizado) return;
+    navigator.clipboard.writeText(aparencia.dominioPersonalizado);
+    setCopiedDomain(true);
+    toast({ description: "Domínio copiado para a área de transferência!" });
+    setTimeout(() => setCopiedDomain(false), 2000);
   };
 
   return (
@@ -58,7 +67,7 @@ export function AparenciaTab() {
                   size="icon"
                   onClick={handleCopyUrl}
                 >
-                  {copied ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
+                  {copiedUrl ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
             </div>
@@ -83,13 +92,25 @@ export function AparenciaTab() {
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <Input
-                id="dominio-personalizado"
-                type="text"
-                value={aparencia.dominioPersonalizado}
-                onChange={(e) => setAparencia({ ...aparencia, dominioPersonalizado: e.target.value })}
-                placeholder="www.sua-loja.com.br"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="dominio-personalizado"
+                  type="text"
+                  value={aparencia.dominioPersonalizado}
+                  onChange={(e) => setAparencia({ ...aparencia, dominioPersonalizado: e.target.value })}
+                  placeholder="www.sua-loja.com.br"
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={handleCopyDomain}
+                  disabled={!aparencia.dominioPersonalizado}
+                >
+                  {copiedDomain ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
