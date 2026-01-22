@@ -173,10 +173,17 @@ const Cupons = () => {
         </div>
 
         {/* Search and Filters */}
-        <SearchBar
-          placeholder="Buscar por código..."
-          onSearch={setSearchQuery}
-        />
+        <div className="flex items-center gap-3">
+          <SearchBar
+            placeholder="Buscar por código..."
+            onSearch={setSearchQuery}
+            className="flex-1"
+          />
+          <Button onClick={() => setIsModalOpen(true)}>
+            <Plus className="w-4 h-4" />
+            Adicionar
+          </Button>
+        </div>
 
         {/* Table */}
         <DataTable
