@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -37,11 +37,50 @@ interface Produto {
   controlado: boolean;
 }
 
+interface UnidadeDisponibilidade {
+  id: string;
+  nome: string;
+  preco: number;
+  estoque: number;
+  status: "active" | "inactive" | "pending";
+}
+
 interface ProdutoDetailsModalProps {
   produto: Produto | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+const getUnidadesFromProduto = (produto: Produto): UnidadeDisponibilidade[] => [
+  {
+    id: "matriz",
+    nome: "Matriz",
+    preco: produto.preco,
+    estoque: produto.estoque,
+    status: produto.status,
+  },
+  {
+    id: "filial-centro",
+    nome: "Filial Centro",
+    preco: produto.preco * 1.05,
+    estoque: Math.floor(produto.estoque * 0.7),
+    status: "active",
+  },
+  {
+    id: "filial-norte",
+    nome: "Filial Norte",
+    preco: produto.preco,
+    estoque: 0,
+    status: "inactive",
+  },
+  {
+    id: "filial-sul",
+    nome: "Filial Sul",
+    preco: produto.preco * 0.95,
+    estoque: Math.floor(produto.estoque * 1.2),
+    status: "active",
+  },
+];
 
 export function ProdutoDetailsModal({
   produto,
@@ -49,27 +88,48 @@ export function ProdutoDetailsModal({
   onOpenChange,
 }: ProdutoDetailsModalProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedProduto, setEditedProduto] = useState<Produto | null>(null);
   const [showInactivateConfirm, setShowInactivateConfirm] = useState(false);
+  const [unidades, setUnidades] = useState<UnidadeDisponibilidade[]>([]);
+  const [editedUnidades, setEditedUnidades] = useState<UnidadeDisponibilidade[]>([]);
+
+  useEffect(() => {
+    if (produto) {
+      const initialUnidades = getUnidadesFromProduto(produto);
+      setUnidades(initialUnidades);
+      setEditedUnidades(initialUnidades);
+    }
+  }, [produto]);
 
   if (!produto) return null;
 
-  const currentProduto = isEditing && editedProduto ? editedProduto : produto;
+  const currentUnidades = isEditing ? editedUnidades : unidades;
 
   const handleEdit = () => {
-    setEditedProduto({ ...produto });
+    setEditedUnidades([...unidades]);
     setIsEditing(true);
   };
 
   const handleSave = () => {
-    toast.success(`Produto "${currentProduto.nome}" salvo com sucesso!`);
+    setUnidades([...editedUnidades]);
+    toast.success(`Produto "${produto.nome}" salvo com sucesso!`);
     setIsEditing(false);
-    setEditedProduto(null);
   };
 
   const handleCancel = () => {
+    setEditedUnidades([...unidades]);
     setIsEditing(false);
-    setEditedProduto(null);
+  };
+
+  const handleUnidadeChange = (
+    unidadeId: string,
+    field: keyof UnidadeDisponibilidade,
+    value: number | string
+  ) => {
+    setEditedUnidades((prev) =>
+      prev.map((u) =>
+        u.id === unidadeId ? { ...u, [field]: value } : u
+      )
+    );
   };
 
   const handleToggleStatus = () => {
@@ -90,14 +150,14 @@ export function ProdutoDetailsModal({
   const handleClose = (open: boolean) => {
     if (!open) {
       setIsEditing(false);
-      setEditedProduto(null);
+      setEditedUnidades([...unidades]);
     }
     onOpenChange(open);
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -117,13 +177,13 @@ export function ProdutoDetailsModal({
             <div className="space-y-2">
               <Label htmlFor="nome">Nome do Produto</Label>
               <p className="text-sm text-foreground font-medium">
-                {currentProduto.nome}
+                {produto.nome}
               </p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="categoria">Categoria</Label>
-              <p className="text-sm text-foreground">{currentProduto.categoria}</p>
+              <p className="text-sm text-foreground">{produto.categoria}</p>
             </div>
           </div>
 
@@ -132,12 +192,12 @@ export function ProdutoDetailsModal({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="sku">SKU</Label>
-              <p className="text-sm text-muted-foreground">{currentProduto.sku}</p>
+              <p className="text-sm text-muted-foreground">{produto.sku}</p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="ean">EAN</Label>
-              <p className="text-sm text-muted-foreground">{currentProduto.ean}</p>
+              <p className="text-sm text-muted-foreground">{produto.ean}</p>
             </div>
           </div>
 
@@ -156,88 +216,79 @@ export function ProdutoDetailsModal({
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  <tr>
-                    <td className="px-3 py-2 font-medium text-foreground">Matriz</td>
-                    <td className="px-3 py-2">
-                      <span className="text-primary font-medium">
-                        {currentProduto.preco.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span
-                        className={`font-medium ${
-                          currentProduto.estoque === 0
-                            ? "text-destructive"
-                            : "text-foreground"
-                        }`}
-                      >
-                        {currentProduto.estoque}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <StatusBadge status={currentProduto.status} />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-2 font-medium text-foreground">Filial Centro</td>
-                    <td className="px-3 py-2">
-                      <span className="text-primary font-medium">
-                        {(currentProduto.preco * 1.05).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className="font-medium text-foreground">
-                        {Math.floor(currentProduto.estoque * 0.7)}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <StatusBadge status="active" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-2 font-medium text-foreground">Filial Norte</td>
-                    <td className="px-3 py-2">
-                      <span className="text-primary font-medium">
-                        {currentProduto.preco.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className="font-medium text-destructive">
-                        0
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <StatusBadge status="inactive" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-2 font-medium text-foreground">Filial Sul</td>
-                    <td className="px-3 py-2">
-                      <span className="text-primary font-medium">
-                        {(currentProduto.preco * 0.95).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className="font-medium text-foreground">
-                        {Math.floor(currentProduto.estoque * 1.2)}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <StatusBadge status="active" />
-                    </td>
-                  </tr>
+                  {currentUnidades.map((unidade) => (
+                    <tr key={unidade.id}>
+                      <td className="px-3 py-2 font-medium text-foreground">
+                        {unidade.nome}
+                      </td>
+                      <td className="px-3 py-2">
+                        {isEditing ? (
+                          <Input
+                            type="number"
+                            step="0.01"
+                            className="h-8 w-24"
+                            value={unidade.preco}
+                            onChange={(e) =>
+                              handleUnidadeChange(
+                                unidade.id,
+                                "preco",
+                                parseFloat(e.target.value) || 0
+                              )
+                            }
+                          />
+                        ) : (
+                          <span className="text-primary font-medium">
+                            {unidade.preco.toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            })}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2">
+                        {isEditing ? (
+                          <Input
+                            type="number"
+                            className="h-8 w-20"
+                            value={unidade.estoque}
+                            onChange={(e) =>
+                              handleUnidadeChange(
+                                unidade.id,
+                                "estoque",
+                                parseInt(e.target.value) || 0
+                              )
+                            }
+                          />
+                        ) : (
+                          <span
+                            className={`font-medium ${
+                              unidade.estoque === 0
+                                ? "text-destructive"
+                                : "text-foreground"
+                            }`}
+                          >
+                            {unidade.estoque}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2">
+                        {isEditing ? (
+                          <Switch
+                            checked={unidade.status === "active"}
+                            onCheckedChange={(checked) =>
+                              handleUnidadeChange(
+                                unidade.id,
+                                "status",
+                                checked ? "active" : "inactive"
+                              )
+                            }
+                          />
+                        ) : (
+                          <StatusBadge status={unidade.status} />
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -247,8 +298,8 @@ export function ProdutoDetailsModal({
 
           <div className="space-y-2">
             <Label>Produto Controlado</Label>
-            <p className={`text-sm font-medium ${currentProduto.controlado ? "text-amber-600" : "text-foreground"}`}>
-              {currentProduto.controlado ? "Sim" : "Não"}
+            <p className={`text-sm font-medium ${produto.controlado ? "text-amber-600" : "text-foreground"}`}>
+              {produto.controlado ? "Sim" : "Não"}
             </p>
           </div>
         </div>
