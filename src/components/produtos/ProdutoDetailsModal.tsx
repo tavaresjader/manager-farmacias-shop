@@ -159,66 +159,83 @@ export function ProdutoDetailsModal({
                   <tr>
                     <td className="px-3 py-2 font-medium text-foreground">Matriz</td>
                     <td className="px-3 py-2">
-                      {isEditing ? (
-                        <Input
-                          type="number"
-                          step="0.01"
-                          className="h-8 w-24"
-                          value={editedProduto?.preco || 0}
-                          onChange={(e) =>
-                            setEditedProduto((prev) =>
-                              prev ? { ...prev, preco: parseFloat(e.target.value) } : null
-                            )
-                          }
-                        />
-                      ) : (
-                        <span className="text-primary font-medium">
-                          {currentProduto.preco.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                        </span>
-                      )}
+                      <span className="text-primary font-medium">
+                        {currentProduto.preco.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </span>
                     </td>
                     <td className="px-3 py-2">
-                      {isEditing ? (
-                        <Input
-                          type="number"
-                          className="h-8 w-20"
-                          value={editedProduto?.estoque || 0}
-                          onChange={(e) =>
-                            setEditedProduto((prev) =>
-                              prev ? { ...prev, estoque: parseInt(e.target.value) } : null
-                            )
-                          }
-                        />
-                      ) : (
-                        <span
-                          className={`font-medium ${
-                            currentProduto.estoque === 0
-                              ? "text-destructive"
-                              : "text-foreground"
-                          }`}
-                        >
-                          {currentProduto.estoque}
-                        </span>
-                      )}
+                      <span
+                        className={`font-medium ${
+                          currentProduto.estoque === 0
+                            ? "text-destructive"
+                            : "text-foreground"
+                        }`}
+                      >
+                        {currentProduto.estoque}
+                      </span>
                     </td>
                     <td className="px-3 py-2">
-                      {isEditing ? (
-                        <div className="flex items-center gap-2">
-                          <Switch
-                            checked={editedProduto?.status === "active"}
-                            onCheckedChange={(checked) =>
-                              setEditedProduto((prev) =>
-                                prev ? { ...prev, status: checked ? "active" : "inactive" } : null
-                              )
-                            }
-                          />
-                        </div>
-                      ) : (
-                        <StatusBadge status={currentProduto.status} />
-                      )}
+                      <StatusBadge status={currentProduto.status} />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-2 font-medium text-foreground">Filial Centro</td>
+                    <td className="px-3 py-2">
+                      <span className="text-primary font-medium">
+                        {(currentProduto.preco * 1.05).toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className="font-medium text-foreground">
+                        {Math.floor(currentProduto.estoque * 0.7)}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <StatusBadge status="active" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-2 font-medium text-foreground">Filial Norte</td>
+                    <td className="px-3 py-2">
+                      <span className="text-primary font-medium">
+                        {currentProduto.preco.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className="font-medium text-destructive">
+                        0
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <StatusBadge status="inactive" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-2 font-medium text-foreground">Filial Sul</td>
+                    <td className="px-3 py-2">
+                      <span className="text-primary font-medium">
+                        {(currentProduto.preco * 0.95).toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className="font-medium text-foreground">
+                        {Math.floor(currentProduto.estoque * 1.2)}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <StatusBadge status="active" />
                     </td>
                   </tr>
                 </tbody>
