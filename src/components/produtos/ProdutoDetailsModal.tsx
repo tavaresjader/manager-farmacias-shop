@@ -203,6 +203,15 @@ export function ProdutoDetailsModal({
 
           <Separator />
 
+          <div className="space-y-2">
+            <Label>Produto Controlado</Label>
+            <p className={`text-sm font-medium ${produto.controlado ? "text-amber-600" : "text-foreground"}`}>
+              {produto.controlado ? "Sim" : "Não"}
+            </p>
+          </div>
+
+          <Separator />
+
           <div className="space-y-3">
             <Label>Disponibilidade por Unidade</Label>
             <div className="border rounded-lg overflow-hidden">
@@ -294,14 +303,6 @@ export function ProdutoDetailsModal({
             </div>
           </div>
 
-          <Separator />
-
-          <div className="space-y-2">
-            <Label>Produto Controlado</Label>
-            <p className={`text-sm font-medium ${produto.controlado ? "text-amber-600" : "text-foreground"}`}>
-              {produto.controlado ? "Sim" : "Não"}
-            </p>
-          </div>
         </div>
 
         <DialogFooter className="flex-col sm:flex-row gap-2">
