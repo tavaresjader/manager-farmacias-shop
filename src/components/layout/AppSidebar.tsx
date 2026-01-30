@@ -83,7 +83,7 @@ export function AppSidebar() {
       </nav>
 
       {/* Bottom Navigation */}
-      <div className="py-4 px-2 border-t border-sidebar-border space-y-1">
+      <div className="py-6 px-2 border-t border-sidebar-border space-y-2">
         {bottomNavItems.map((item) => {
           const isActive = location.pathname === item.path;
           
