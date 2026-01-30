@@ -89,6 +89,7 @@ export function ProdutoDetailsModal({
 }: ProdutoDetailsModalProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [showInactivateConfirm, setShowInactivateConfirm] = useState(false);
+  const [showActivateConfirm, setShowActivateConfirm] = useState(false);
   const [unidades, setUnidades] = useState<UnidadeDisponibilidade[]>([]);
   const [editedUnidades, setEditedUnidades] = useState<UnidadeDisponibilidade[]>([]);
 
@@ -136,9 +137,14 @@ export function ProdutoDetailsModal({
     if (produto.status === "active") {
       setShowInactivateConfirm(true);
     } else {
-      toast.success(`Produto "${produto.nome}" ativado com sucesso!`);
-      onOpenChange(false);
+      setShowActivateConfirm(true);
     }
+  };
+
+  const handleConfirmActivate = () => {
+    toast.success(`Produto "${produto.nome}" ativado com sucesso!`);
+    setShowActivateConfirm(false);
+    onOpenChange(false);
   };
 
   const handleConfirmInactivate = () => {
@@ -357,6 +363,23 @@ export function ProdutoDetailsModal({
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmInactivate}>
               Inativar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showActivateConfirm} onOpenChange={setShowActivateConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar ativação</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja ativar o produto "{produto.nome}"?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmActivate}>
+              Ativar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
