@@ -20,8 +20,6 @@ import {
 export interface ProdutoFilters {
   categoria: string;
   nome: string;
-  sku: string;
-  ean: string;
 }
 
 interface ProdutoFilterModalProps {
@@ -57,8 +55,6 @@ export function ProdutoFilterModal({
     const clearedFilters: ProdutoFilters = {
       categoria: "all",
       nome: "",
-      sku: "",
-      ean: "",
     };
     setLocalFilters(clearedFilters);
     onApplyFilters(clearedFilters);
@@ -108,31 +104,6 @@ export function ProdutoFilterModal({
             />
           </div>
 
-          {/* SKU */}
-          <div className="space-y-2">
-            <Label htmlFor="sku">SKU</Label>
-            <Input
-              id="sku"
-              placeholder="Digite o SKU..."
-              value={localFilters.sku}
-              onChange={(e) =>
-                setLocalFilters((prev) => ({ ...prev, sku: e.target.value }))
-              }
-            />
-          </div>
-
-          {/* EAN */}
-          <div className="space-y-2">
-            <Label htmlFor="ean">EAN</Label>
-            <Input
-              id="ean"
-              placeholder="Digite o código EAN..."
-              value={localFilters.ean}
-              onChange={(e) =>
-                setLocalFilters((prev) => ({ ...prev, ean: e.target.value }))
-              }
-            />
-          </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
