@@ -143,78 +143,86 @@ export function ProdutoDetailsModal({
 
           <Separator />
 
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="preco">Preço</Label>
-              {isEditing ? (
-                <Input
-                  id="preco"
-                  type="number"
-                  step="0.01"
-                  value={editedProduto?.preco || 0}
-                  onChange={(e) =>
-                    setEditedProduto((prev) =>
-                      prev ? { ...prev, preco: parseFloat(e.target.value) } : null
-                    )
-                  }
-                />
-              ) : (
-                <p className="text-sm text-primary font-medium">
-                  {currentProduto.preco.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="estoque">Estoque</Label>
-              {isEditing ? (
-                <Input
-                  id="estoque"
-                  type="number"
-                  value={editedProduto?.estoque || 0}
-                  onChange={(e) =>
-                    setEditedProduto((prev) =>
-                      prev ? { ...prev, estoque: parseInt(e.target.value) } : null
-                    )
-                  }
-                />
-              ) : (
-                <p
-                  className={`text-sm font-medium ${
-                    currentProduto.estoque === 0
-                      ? "text-destructive"
-                      : "text-foreground"
-                  }`}
-                >
-                  {currentProduto.estoque} unidades
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Status</Label>
-              {isEditing ? (
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={editedProduto?.status === "active"}
-                    onCheckedChange={(checked) =>
-                      setEditedProduto((prev) =>
-                        prev ? { ...prev, status: checked ? "active" : "inactive" } : null
-                      )
-                    }
-                  />
-                  <span className="text-sm text-muted-foreground">
-                    {editedProduto?.status === "active" ? "Ativo" : "Inativo"}
-                  </span>
-                </div>
-              ) : (
-                <div>
-                  <StatusBadge status={currentProduto.status} />
-                </div>
-              )}
+          <div className="space-y-3">
+            <Label>Disponibilidade por Unidade</Label>
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Unidade</th>
+                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Preço</th>
+                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Estoque</th>
+                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="px-3 py-2 font-medium text-foreground">Matriz</td>
+                    <td className="px-3 py-2">
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          step="0.01"
+                          className="h-8 w-24"
+                          value={editedProduto?.preco || 0}
+                          onChange={(e) =>
+                            setEditedProduto((prev) =>
+                              prev ? { ...prev, preco: parseFloat(e.target.value) } : null
+                            )
+                          }
+                        />
+                      ) : (
+                        <span className="text-primary font-medium">
+                          {currentProduto.preco.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          className="h-8 w-20"
+                          value={editedProduto?.estoque || 0}
+                          onChange={(e) =>
+                            setEditedProduto((prev) =>
+                              prev ? { ...prev, estoque: parseInt(e.target.value) } : null
+                            )
+                          }
+                        />
+                      ) : (
+                        <span
+                          className={`font-medium ${
+                            currentProduto.estoque === 0
+                              ? "text-destructive"
+                              : "text-foreground"
+                          }`}
+                        >
+                          {currentProduto.estoque}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {isEditing ? (
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={editedProduto?.status === "active"}
+                            onCheckedChange={(checked) =>
+                              setEditedProduto((prev) =>
+                                prev ? { ...prev, status: checked ? "active" : "inactive" } : null
+                              )
+                            }
+                          />
+                        </div>
+                      ) : (
+                        <StatusBadge status={currentProduto.status} />
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
