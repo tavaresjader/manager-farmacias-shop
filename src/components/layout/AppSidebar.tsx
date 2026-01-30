@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   Package,
   Ticket,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -148,6 +149,23 @@ export function AppSidebar() {
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={10}>
             {theme === "dark" ? "Tema Claro" : "Tema Escuro"}
+          </TooltipContent>
+        </Tooltip>
+
+        {/* Logout */}
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
+            <button
+              onClick={() => {
+                // TODO: Implement logout logic
+              }}
+              className="flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-accent hover:text-foreground"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right" sideOffset={10}>
+            Sair
           </TooltipContent>
         </Tooltip>
 
