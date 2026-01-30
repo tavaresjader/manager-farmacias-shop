@@ -84,8 +84,6 @@ const mockProdutos: Produto[] = [
 const initialFilters: ProdutoFilters = {
   categoria: "all",
   nome: "",
-  sku: "",
-  ean: "",
 };
 
 const columns: Column<Produto>[] = [
@@ -164,15 +162,7 @@ const Produtos = () => {
       !filters.nome ||
       produto.nome.toLowerCase().includes(filters.nome.toLowerCase());
 
-    const matchesSku =
-      !filters.sku ||
-      produto.sku.toLowerCase().includes(filters.sku.toLowerCase());
-
-    const matchesEan =
-      !filters.ean ||
-      produto.ean.toLowerCase().includes(filters.ean.toLowerCase());
-
-    return matchesSearch && matchesCategoria && matchesNome && matchesSku && matchesEan;
+    return matchesSearch && matchesCategoria && matchesNome;
   });
 
   const totalPages = Math.ceil(filteredProdutos.length / pageSize);
