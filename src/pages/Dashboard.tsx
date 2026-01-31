@@ -25,9 +25,9 @@ import farmaciaShopLogo from "@/assets/channels/farmacia-shop.png";
 import pedeProntoLogo from "@/assets/channels/pede-pronto.png";
 import aiqfomeLogo from "@/assets/channels/aiqfome.jfif";
 
-type Canal = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
+type Origem = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
 
-const channelLogos: Record<Canal, string> = {
+const origemLogos: Record<Origem, string> = {
   ifood: ifoodLogo,
   keeta: keetaLogo,
   "farmacia-shop": farmaciaShopLogo,
@@ -35,7 +35,7 @@ const channelLogos: Record<Canal, string> = {
   aiqfome: aiqfomeLogo,
 };
 
-const channelNames: Record<Canal, string> = {
+const origemNames: Record<Origem, string> = {
   ifood: "iFood",
   keeta: "Keeta",
   "farmacia-shop": "Farmácia Shop",
@@ -52,7 +52,7 @@ interface Order {
   total: number;
   items: number;
   date: string;
-  canal: Canal;
+  origem: Origem;
 }
 
 const mockOrders: Order[] = [
@@ -64,7 +64,7 @@ const mockOrders: Order[] = [
     total: 245.90,
     items: 5,
     date: "2024-01-05",
-    canal: "ifood",
+    origem: "ifood",
   },
   {
     id: "2",
@@ -74,7 +74,7 @@ const mockOrders: Order[] = [
     total: 189.50,
     items: 3,
     date: "2024-01-05",
-    canal: "keeta",
+    origem: "keeta",
   },
   {
     id: "3",
@@ -84,7 +84,7 @@ const mockOrders: Order[] = [
     total: 78.00,
     items: 2,
     date: "2024-01-04",
-    canal: "farmacia-shop",
+    origem: "farmacia-shop",
   },
   {
     id: "4",
@@ -94,7 +94,7 @@ const mockOrders: Order[] = [
     total: 456.30,
     items: 8,
     date: "2024-01-04",
-    canal: "pede-pronto",
+    origem: "pede-pronto",
   },
   {
     id: "5",
@@ -104,7 +104,7 @@ const mockOrders: Order[] = [
     total: 125.00,
     items: 2,
     date: "2024-01-03",
-    canal: "aiqfome",
+    origem: "aiqfome",
   },
 ];
 
@@ -119,13 +119,13 @@ const ITEMS_PER_PAGE = 5;
 
 const columns: Column<Order>[] = [
   {
-    key: "canal",
-    label: "Canal",
+    key: "origem",
+    label: "Origem",
     render: (item) => (
       <div className="flex items-center gap-2">
         <img 
-          src={channelLogos[item.canal]} 
-          alt={channelNames[item.canal]} 
+          src={origemLogos[item.origem]} 
+          alt={origemNames[item.origem]} 
           className="w-6 h-6 rounded object-cover"
         />
       </div>

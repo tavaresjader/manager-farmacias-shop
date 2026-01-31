@@ -31,9 +31,9 @@ import farmaciaShopLogo from "@/assets/channels/farmacia-shop.png";
 import pedeProntoLogo from "@/assets/channels/pede-pronto.png";
 import aiqfomeLogo from "@/assets/channels/aiqfome.jfif";
 
-type Canal = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
+type Origem = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
 
-const channelLogos: Record<Canal, string> = {
+const origemLogos: Record<Origem, string> = {
   ifood: ifoodLogo,
   keeta: keetaLogo,
   "farmacia-shop": farmaciaShopLogo,
@@ -41,7 +41,7 @@ const channelLogos: Record<Canal, string> = {
   aiqfome: aiqfomeLogo,
 };
 
-const channelNames: Record<Canal, string> = {
+const origemNames: Record<Origem, string> = {
   ifood: "iFood",
   keeta: "Keeta",
   "farmacia-shop": "Farmácia Shop",
@@ -64,7 +64,7 @@ interface Pedido {
   status: "active" | "inactive" | "pending" | "processing" | "cancelled";
   total: number;
   itens: number;
-  canal?: Canal;
+  origem?: Origem;
 }
 
 interface PedidoDetailsModalProps {
@@ -221,11 +221,11 @@ export function PedidoDetailsModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <span>Pedido {pedido.numero}</span>
-            {pedido.canal && (
+            {pedido.origem && (
               <div className="flex items-center gap-2">
                 <img 
-                  src={channelLogos[pedido.canal]} 
-                  alt={channelNames[pedido.canal]} 
+                  src={origemLogos[pedido.origem]} 
+                  alt={origemNames[pedido.origem]} 
                   className="w-6 h-6 rounded object-cover"
                 />
                 <span className="text-sm font-normal text-muted-foreground">
