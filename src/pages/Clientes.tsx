@@ -264,9 +264,7 @@ const Clientes = () => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [filters, setFilters] = useState<ClienteFilters>({
-    nome: "",
     status: "all",
-    email: "",
     dataCadastro: undefined,
   });
 
@@ -283,12 +281,10 @@ const Clientes = () => {
     const matchesTab = activeTab === "all" || client.status === activeTab;
     
     // Filtros da modal
-    const matchesNome = !filters.nome || client.name.toLowerCase().includes(filters.nome.toLowerCase());
     const matchesStatus = filters.status === "all" || client.status === filters.status;
-    const matchesEmail = !filters.email || client.email.toLowerCase().includes(filters.email.toLowerCase());
     const matchesData = !filters.dataCadastro || client.createdAt === filters.dataCadastro.toISOString().split("T")[0];
     
-    return matchesSearch && matchesTab && matchesNome && matchesStatus && matchesEmail && matchesData;
+    return matchesSearch && matchesTab && matchesStatus && matchesData;
   });
 
   if (isLoading) {

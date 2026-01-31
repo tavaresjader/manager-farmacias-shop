@@ -28,9 +28,7 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 export interface ClienteFilters {
-  nome: string;
   status: string;
-  email: string;
   dataCadastro: Date | undefined;
 }
 
@@ -62,9 +60,7 @@ export function ClienteFilterModal({
 
   const handleClear = () => {
     const clearedFilters: ClienteFilters = {
-      nome: "",
       status: "all",
-      email: "",
       dataCadastro: undefined,
     };
     setLocalFilters(clearedFilters);
@@ -80,19 +76,6 @@ export function ClienteFilterModal({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Nome */}
-          <div className="space-y-2">
-            <Label htmlFor="nome">Nome</Label>
-            <Input
-              id="nome"
-              placeholder="Digite o nome do cliente..."
-              value={localFilters.nome}
-              onChange={(e) =>
-                setLocalFilters((prev) => ({ ...prev, nome: e.target.value }))
-              }
-            />
-          </div>
-
           {/* Status */}
           <div className="space-y-2">
             <Label>Status</Label>
@@ -113,19 +96,6 @@ export function ClienteFilterModal({
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          {/* E-mail */}
-          <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
-            <Input
-              id="email"
-              placeholder="Digite o e-mail..."
-              value={localFilters.email}
-              onChange={(e) =>
-                setLocalFilters((prev) => ({ ...prev, email: e.target.value }))
-              }
-            />
           </div>
 
           {/* Data de Cadastro */}
