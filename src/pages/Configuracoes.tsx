@@ -26,7 +26,7 @@ const menuItems = [
   { id: "banners", label: "Banners", icon: ImageIcon },
   { id: "aparencia", label: "Aparência", icon: Palette },
   { id: "conta", label: "Minha conta", icon: User },
-  { id: "fatura", label: "Minha fatura", icon: CreditCard },
+  { id: "fatura", label: "Minhas faturas", icon: CreditCard },
   { id: "integracoes", label: "Integrações", icon: Puzzle },
   { id: "colaboradores", label: "Colaboradores", icon: Users },
 ];
