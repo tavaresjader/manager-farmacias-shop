@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +14,6 @@ import {
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Store, MapPin, CheckCircle, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 
 const Cadastro = () => {
