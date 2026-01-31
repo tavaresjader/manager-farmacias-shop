@@ -49,12 +49,6 @@ export function DataTable<T extends { id: string | number }>({
         <table className="w-full">
           <thead>
             <tr className="border-b border-border bg-muted/30">
-              <th className="w-12 px-4 py-3">
-                <input
-                  type="checkbox"
-                  className="rounded border-border"
-                />
-              </th>
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
@@ -78,7 +72,7 @@ export function DataTable<T extends { id: string | number }>({
             {data.length === 0 ? (
               <tr>
                 <td
-                  colSpan={columns.length + 2}
+                  colSpan={columns.length + 1}
                   className="px-4 py-12 text-center text-muted-foreground"
                 >
                   {emptyMessage}
@@ -96,12 +90,6 @@ export function DataTable<T extends { id: string | number }>({
                   style={{ animationDelay: `${index * 50}ms` }}
                   onClick={() => onRowClick?.(item)}
                 >
-                  <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      className="rounded border-border"
-                    />
-                  </td>
                   {columns.map((column) => (
                     <td
                       key={String(column.key)}
