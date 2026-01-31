@@ -70,6 +70,7 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
+  const [statusConfirmOpen, setStatusConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (client) {
@@ -98,11 +99,16 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
   };
 
   const handleToggleStatus = () => {
+    setStatusConfirmOpen(true);
+  };
+
+  const confirmToggleStatus = () => {
     const newStatus = editedClient.status === "active" ? "inativado" : "ativado";
     toast({
       title: `Cliente ${newStatus}`,
       description: `O cliente ${editedClient.name} foi ${newStatus} com sucesso.`,
     });
+    setStatusConfirmOpen(false);
     onOpenChange(false);
   };
 
@@ -395,6 +401,33 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Remover
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={statusConfirmOpen} onOpenChange={setStatusConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {editedClient.status === "active" ? "Inativar" : "Ativar"} cliente
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {editedClient.status === "active"
+                ? `Tem certeza que deseja inativar o cliente ${editedClient.name}?`
+                : `Tem certeza que deseja ativar o cliente ${editedClient.name}?`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmToggleStatus}
+              className={editedClient.status === "active" 
+                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
+              }
+            >
+              {editedClient.status === "active" ? "Inativar" : "Ativar"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
