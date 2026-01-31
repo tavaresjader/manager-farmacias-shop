@@ -221,9 +221,9 @@ const Cadastro = () => {
         </p>
         <p className="text-center text-sm text-muted-foreground mt-2">
           Ao criar sua loja, você concorda com nossos{" "}
-          <a href="#" className="text-primary hover:underline">Termos de Uso</a>
+          <a href="https://farmacias.shop/termos" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Termos de Uso</a>
           {" "}e{" "}
-          <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
+          <a href="https://farmacias.shop/privacidade" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Política de Privacidade</a>
         </p>
       </div>
 
