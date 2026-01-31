@@ -19,9 +19,9 @@ import farmaciaShopLogo from "@/assets/channels/farmacia-shop.png";
 import pedeProntoLogo from "@/assets/channels/pede-pronto.png";
 import aiqfomeLogo from "@/assets/channels/aiqfome.jfif";
 
-type Canal = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
+type Origem = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
 
-const channelLogos: Record<Canal, string> = {
+const origemLogos: Record<Origem, string> = {
   ifood: ifoodLogo,
   keeta: keetaLogo,
   "farmacia-shop": farmaciaShopLogo,
@@ -29,7 +29,7 @@ const channelLogos: Record<Canal, string> = {
   aiqfome: aiqfomeLogo,
 };
 
-const channelNames: Record<Canal, string> = {
+const origemNames: Record<Origem, string> = {
   ifood: "iFood",
   keeta: "Keeta",
   "farmacia-shop": "Farmácia Shop",
@@ -45,7 +45,7 @@ interface Pedido {
   status: "active" | "inactive" | "pending" | "processing" | "cancelled";
   total: number;
   itens: number;
-  canal: Canal;
+  origem: Origem;
 }
 
 const mockPedidos: Pedido[] = [
@@ -57,7 +57,7 @@ const mockPedidos: Pedido[] = [
     status: "pending",
     total: 459.90,
     itens: 3,
-    canal: "ifood",
+    origem: "ifood",
   },
   {
     id: "2",
@@ -67,7 +67,7 @@ const mockPedidos: Pedido[] = [
     status: "processing",
     total: 189.50,
     itens: 2,
-    canal: "keeta",
+    origem: "keeta",
   },
   {
     id: "3",
@@ -77,7 +77,7 @@ const mockPedidos: Pedido[] = [
     status: "active",
     total: 1250.00,
     itens: 5,
-    canal: "farmacia-shop",
+    origem: "farmacia-shop",
   },
   {
     id: "4",
@@ -87,7 +87,7 @@ const mockPedidos: Pedido[] = [
     status: "inactive",
     total: 89.90,
     itens: 1,
-    canal: "pede-pronto",
+    origem: "pede-pronto",
   },
   {
     id: "5",
@@ -97,19 +97,19 @@ const mockPedidos: Pedido[] = [
     status: "cancelled",
     total: 567.80,
     itens: 4,
-    canal: "aiqfome",
+    origem: "aiqfome",
   },
 ];
 
 const columns: Column<Pedido>[] = [
   {
-    key: "canal",
-    label: "Canal",
+    key: "origem",
+    label: "Origem",
     render: (item) => (
       <div className="flex items-center gap-2">
         <img 
-          src={channelLogos[item.canal]} 
-          alt={channelNames[item.canal]} 
+          src={origemLogos[item.origem]} 
+          alt={origemNames[item.origem]} 
           className="w-6 h-6 rounded object-cover"
         />
       </div>
