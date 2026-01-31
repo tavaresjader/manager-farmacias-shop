@@ -95,8 +95,8 @@ export function ContaTab() {
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 onClick={() => {
                   toast({
-                    description: "Conta excluída com sucesso",
-                    variant: "destructive",
+                    title: "Solicitação enviada",
+                    description: "Enviamos uma confirmação de exclusão para o seu e-mail de cadastro.",
                   });
                 }}
               >
