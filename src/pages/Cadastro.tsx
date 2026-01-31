@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,8 +17,8 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 
-const Onboarding = () => {
-  usePageTitle("Criar Loja");
+const Cadastro = () => {
+  usePageTitle("Cadastro");
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -213,7 +214,13 @@ const Onboarding = () => {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-muted-foreground mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-4">
+          Já tem uma conta?{" "}
+          <Link to="/login" className="text-primary font-medium hover:underline">
+            Fazer login
+          </Link>
+        </p>
+        <p className="text-center text-sm text-muted-foreground mt-2">
           Ao criar sua loja, você concorda com nossos{" "}
           <a href="#" className="text-primary hover:underline">Termos de Uso</a>
           {" "}e{" "}
@@ -264,4 +271,4 @@ const Onboarding = () => {
   );
 };
 
-export default Onboarding;
+export default Cadastro;
