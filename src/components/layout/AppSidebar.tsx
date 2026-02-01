@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
@@ -39,6 +39,7 @@ const bottomNavItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
 
   const toggleTheme = () => {
@@ -157,7 +158,7 @@ export function AppSidebar() {
           <TooltipTrigger asChild>
             <button
               onClick={() => {
-                // TODO: Implement logout logic
+                navigate("/login");
               }}
               className="flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-accent hover:text-foreground"
             >
