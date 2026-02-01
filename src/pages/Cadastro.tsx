@@ -12,7 +12,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { Store, MapPin, CheckCircle, Copy, ExternalLink } from "lucide-react";
+import { Store, CheckCircle, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 
@@ -22,13 +22,9 @@ const Cadastro = () => {
   
   const [formData, setFormData] = useState({
     nomeFarmacia: "",
-    cep: "",
-    rua: "",
-    numero: "",
-    complemento: "",
-    bairro: "",
-    cidade: "",
-    estado: "",
+    cnpj: "",
+    nomeResponsavel: "",
+    telefoneResponsavel: "",
   });
   
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -52,7 +48,7 @@ const Cadastro = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.nomeFarmacia || !formData.rua || !formData.numero || !formData.bairro || !formData.cidade || !formData.estado) {
+    if (!formData.nomeFarmacia || !formData.cnpj || !formData.nomeResponsavel || !formData.telefoneResponsavel) {
       toast.error("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
@@ -117,92 +113,43 @@ const Cadastro = () => {
               )}
             </div>
 
-            {/* Endereço */}
-            <div className="space-y-4">
-              <Label className="flex items-center gap-2 text-base">
-                <MapPin className="w-4 h-4 text-primary" />
-                Endereço Completo
-              </Label>
+            {/* CNPJ */}
+            <div className="space-y-2">
+              <Label htmlFor="cnpj">CNPJ *</Label>
+              <Input
+                id="cnpj"
+                name="cnpj"
+                placeholder="00.000.000/0000-00"
+                value={formData.cnpj}
+                onChange={handleInputChange}
+                className="h-12"
+              />
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cep">CEP</Label>
-                  <Input
-                    id="cep"
-                    name="cep"
-                    placeholder="00000-000"
-                    value={formData.cep}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="rua">Rua *</Label>
-                  <Input
-                    id="rua"
-                    name="rua"
-                    placeholder="Nome da rua"
-                    value={formData.rua}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
+            {/* Nome do Responsável */}
+            <div className="space-y-2">
+              <Label htmlFor="nomeResponsavel">Nome do Responsável *</Label>
+              <Input
+                id="nomeResponsavel"
+                name="nomeResponsavel"
+                placeholder="Nome completo do responsável"
+                value={formData.nomeResponsavel}
+                onChange={handleInputChange}
+                className="h-12"
+              />
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="numero">Número *</Label>
-                  <Input
-                    id="numero"
-                    name="numero"
-                    placeholder="123"
-                    value={formData.numero}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="complemento">Complemento</Label>
-                  <Input
-                    id="complemento"
-                    name="complemento"
-                    placeholder="Sala, Bloco, etc."
-                    value={formData.complemento}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="bairro">Bairro *</Label>
-                  <Input
-                    id="bairro"
-                    name="bairro"
-                    placeholder="Centro"
-                    value={formData.bairro}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cidade">Cidade *</Label>
-                  <Input
-                    id="cidade"
-                    name="cidade"
-                    placeholder="São Paulo"
-                    value={formData.cidade}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="estado">Estado *</Label>
-                  <Input
-                    id="estado"
-                    name="estado"
-                    placeholder="SP"
-                    maxLength={2}
-                    value={formData.estado}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
+            {/* Telefone do Responsável */}
+            <div className="space-y-2">
+              <Label htmlFor="telefoneResponsavel">Telefone do Responsável *</Label>
+              <Input
+                id="telefoneResponsavel"
+                name="telefoneResponsavel"
+                placeholder="(00) 00000-0000"
+                value={formData.telefoneResponsavel}
+                onChange={handleInputChange}
+                className="h-12"
+              />
             </div>
 
             {/* Submit Button */}
