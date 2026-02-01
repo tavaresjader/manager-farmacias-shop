@@ -106,11 +106,6 @@ const Cadastro = () => {
                 onChange={handleInputChange}
                 className="h-12"
               />
-              {formData.nomeFarmacia && (
-                <p className="text-xs text-muted-foreground">
-                  Sua loja ficará em: <span className="text-primary font-medium">https://{generateSlug(formData.nomeFarmacia)}.farmaciashop.com.br</span>
-                </p>
-              )}
             </div>
 
             {/* CNPJ */}
