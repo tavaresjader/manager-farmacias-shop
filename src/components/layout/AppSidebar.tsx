@@ -34,7 +34,7 @@ const mainNavItems = [
 
 const bottomNavItems = [
   { icon: Settings, label: "Configurações", path: "/configuracoes" },
-  { icon: HelpCircle, label: "Ajuda", path: "/ajuda", external: "https://ajuda.farmaciashop.com.br?UTM_SOURCE=MANAGER" },
+  { icon: HelpCircle, label: "Ajuda", path: "/ajuda", external: "https://ajuda.farmacia.shop?UTM_SOURCE=MANAGER" },
 ];
 
 export function AppSidebar() {
