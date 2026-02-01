@@ -66,7 +66,7 @@ const Cadastro = () => {
     }
 
     const slug = generateSlug(formData.nomeFarmacia);
-    const url = `https://${slug}.farmaciashop.com.br`;
+    const url = `https://${slug}.farmacia.shop`;
     setStoreUrl(url);
     setShowSuccessModal(true);
   };
