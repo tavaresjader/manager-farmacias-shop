@@ -151,7 +151,7 @@ const Aplicativos = () => {
 
           {/* Integrador Card */}
           <div
-            onClick={() => window.open("https://integrador.farmacia.shop?utm_source=MANAGER", "_blank")}
+            onClick={() => window.open("https://integrador.farmacias.shop?utm_source=MANAGER", "_blank")}
             className={cn(
               "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group"
             )}

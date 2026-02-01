@@ -100,7 +100,7 @@ export function BannersTab() {
                 </TableCell>
                 <TableCell>
                   <a 
-                    href="https://cdn.farmacia.shop/banner.jpg" 
+                    href="https://cdn.farmacias.shop/banner.jpg" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
