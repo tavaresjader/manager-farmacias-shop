@@ -6,6 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 
 const mockIntegracoes = [
   {
+    id: "0",
+    nome: "Principal",
+    clientId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    clientSecret: "9876fedc-ba09-8765-4321-0fedcba98765",
+    unidade: "Todas as Unidades",
+  },
+  {
     id: "1",
     nome: "Matriz",
     clientId: "fd0710a7-e02d-44e1-8372-6df9c7c89ad7",
