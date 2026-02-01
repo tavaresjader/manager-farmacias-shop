@@ -12,7 +12,7 @@ Obrigado por entrar em contato conosco!
 Estamos verificando sua mensagem e retornaremos o mais breve possível.
 
 Enquanto isso, você pode:
-📦 Compre ONLINE pelo site: https://demo.farmacia.shop
+📦 Compre ONLINE pelo site: https://demo.farmacias.shop
 📞 Ligar para (11) 1234-5678 das 7h as 22h
 
 Atenciosamente,
