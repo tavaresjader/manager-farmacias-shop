@@ -25,6 +25,8 @@ const Cadastro = () => {
     cnpj: "",
     nomeResponsavel: "",
     telefoneResponsavel: "",
+    senha: "",
+    confirmarSenha: "",
   });
   
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -48,8 +50,18 @@ const Cadastro = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.nomeFarmacia || !formData.cnpj || !formData.nomeResponsavel || !formData.telefoneResponsavel) {
+    if (!formData.nomeFarmacia || !formData.cnpj || !formData.nomeResponsavel || !formData.telefoneResponsavel || !formData.senha || !formData.confirmarSenha) {
       toast.error("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    if (formData.senha !== formData.confirmarSenha) {
+      toast.error("As senhas não coincidem.");
+      return;
+    }
+
+    if (formData.senha.length < 6) {
+      toast.error("A senha deve ter pelo menos 6 caracteres.");
       return;
     }
 
@@ -142,6 +154,34 @@ const Cadastro = () => {
                 name="telefoneResponsavel"
                 placeholder="(00) 00000-0000"
                 value={formData.telefoneResponsavel}
+                onChange={handleInputChange}
+                className="h-12"
+              />
+            </div>
+
+            {/* Senha */}
+            <div className="space-y-2">
+              <Label htmlFor="senha">Senha *</Label>
+              <Input
+                id="senha"
+                name="senha"
+                type="password"
+                placeholder="Mínimo 6 caracteres"
+                value={formData.senha}
+                onChange={handleInputChange}
+                className="h-12"
+              />
+            </div>
+
+            {/* Confirmar Senha */}
+            <div className="space-y-2">
+              <Label htmlFor="confirmarSenha">Confirmar Senha *</Label>
+              <Input
+                id="confirmarSenha"
+                name="confirmarSenha"
+                type="password"
+                placeholder="Digite a senha novamente"
+                value={formData.confirmarSenha}
                 onChange={handleInputChange}
                 className="h-12"
               />
