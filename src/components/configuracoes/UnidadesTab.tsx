@@ -16,6 +16,8 @@ export interface Unidade {
   id: string;
   nome: string;
   endereco: string;
+  numero: string;
+  cep: string;
   situacao: "aberta" | "fechada";
   status: "ativa" | "inativa";
   horarios: HorarioFuncionamento[];
@@ -25,7 +27,9 @@ const mockUnidades: Unidade[] = [
   {
     id: "1",
     nome: "Matriz",
-    endereco: "Av. Paulista, 1000 - São Paulo/SP",
+    endereco: "Av. Paulista - São Paulo/SP",
+    numero: "1000",
+    cep: "01310-100",
     situacao: "aberta",
     status: "ativa",
     horarios: [
@@ -41,7 +45,9 @@ const mockUnidades: Unidade[] = [
   {
     id: "2",
     nome: "Filial Centro",
-    endereco: "Rua XV de Novembro, 500 - Curitiba/PR",
+    endereco: "Rua XV de Novembro - Curitiba/PR",
+    numero: "500",
+    cep: "80020-310",
     situacao: "aberta",
     status: "ativa",
     horarios: [
@@ -58,6 +64,8 @@ const mockUnidades: Unidade[] = [
     id: "3",
     nome: "Filial Shopping",
     endereco: "Shopping Center Norte, Loja 45 - São Paulo/SP",
+    numero: "45",
+    cep: "02089-900",
     situacao: "fechada",
     status: "inativa",
     horarios: [
