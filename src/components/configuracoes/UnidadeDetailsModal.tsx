@@ -211,13 +211,16 @@ export function UnidadeDetailsModal({
                         />
                       </div>
                     </div>
-                    <Input
-                      value={editedUnidade.endereco}
-                      onChange={(e) =>
-                        setEditedUnidade({ ...editedUnidade, endereco: e.target.value })
-                      }
-                      placeholder="Rua, Avenida..."
-                    />
+                    <div className="space-y-1">
+                      <Label className="text-xs">Logradouro</Label>
+                      <Input
+                        value={editedUnidade.endereco}
+                        onChange={(e) =>
+                          setEditedUnidade({ ...editedUnidade, endereco: e.target.value })
+                        }
+                        placeholder="Rua, Avenida..."
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-1">
