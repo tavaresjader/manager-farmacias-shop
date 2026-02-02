@@ -189,24 +189,7 @@ export function UnidadeDetailsModal({
                 <h4 className="text-sm font-medium text-foreground">Endereço</h4>
                 {isEditing ? (
                   <div className="space-y-3 mt-1">
-                    <Input
-                      value={editedUnidade.endereco}
-                      onChange={(e) =>
-                        setEditedUnidade({ ...editedUnidade, endereco: e.target.value })
-                      }
-                      placeholder="Rua, Avenida..."
-                    />
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <Label className="text-xs">Número</Label>
-                        <Input
-                          value={editedUnidade.numero}
-                          onChange={(e) =>
-                            setEditedUnidade({ ...editedUnidade, numero: e.target.value })
-                          }
-                          placeholder="123"
-                        />
-                      </div>
                       <div className="space-y-1">
                         <Label className="text-xs">CEP</Label>
                         <Input
@@ -217,14 +200,31 @@ export function UnidadeDetailsModal({
                           placeholder="00000-000"
                         />
                       </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Número</Label>
+                        <Input
+                          value={editedUnidade.numero}
+                          onChange={(e) =>
+                            setEditedUnidade({ ...editedUnidade, numero: e.target.value })
+                          }
+                          placeholder="123"
+                        />
+                      </div>
                     </div>
+                    <Input
+                      value={editedUnidade.endereco}
+                      onChange={(e) =>
+                        setEditedUnidade({ ...editedUnidade, endereco: e.target.value })
+                      }
+                      placeholder="Rua, Avenida..."
+                    />
                   </div>
                 ) : (
                   <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">CEP: {editedUnidade.cep}</p>
                     <p className="text-sm text-muted-foreground">
                       {editedUnidade.endereco}, {editedUnidade.numero}
                     </p>
-                    <p className="text-sm text-muted-foreground">CEP: {editedUnidade.cep}</p>
                   </div>
                 )}
               </div>
