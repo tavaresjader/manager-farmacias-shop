@@ -215,10 +215,8 @@ export function UnidadeDetailsModal({
                       <Label className="text-xs">Logradouro</Label>
                       <Input
                         value={editedUnidade.endereco}
-                        onChange={(e) =>
-                          setEditedUnidade({ ...editedUnidade, endereco: e.target.value })
-                        }
-                        placeholder="Rua, Avenida..."
+                        readOnly
+                        className="bg-muted cursor-not-allowed"
                       />
                     </div>
                   </div>
