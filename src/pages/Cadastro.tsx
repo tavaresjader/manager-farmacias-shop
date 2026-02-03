@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,9 +17,13 @@ import { Store, CheckCircle, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 
+// Chave de teste do Google reCAPTCHA (substituir em produção)
+const RECAPTCHA_SITE_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
+
 const Cadastro = () => {
   usePageTitle("Cadastro");
   const navigate = useNavigate();
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   
   const [formData, setFormData] = useState({
     nomeFarmacia: "",
@@ -29,6 +34,7 @@ const Cadastro = () => {
     confirmarSenha: "",
   });
   
+  const [captchaValue, setCaptchaValue] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [storeUrl, setStoreUrl] = useState("");
 
@@ -65,10 +71,19 @@ const Cadastro = () => {
       return;
     }
 
+    if (!captchaValue) {
+      toast.error("Por favor, confirme que você não é um robô.");
+      return;
+    }
+
     const slug = generateSlug(formData.nomeFarmacia);
     const url = `https://${slug}.farmacias.shop`;
     setStoreUrl(url);
     setShowSuccessModal(true);
+  };
+
+  const handleCaptchaChange = (value: string | null) => {
+    setCaptchaValue(value);
   };
 
   const handleCopyUrl = () => {
@@ -184,6 +199,15 @@ const Cadastro = () => {
                 value={formData.confirmarSenha}
                 onChange={handleInputChange}
                 className="h-12"
+              />
+            </div>
+
+            {/* reCAPTCHA */}
+            <div className="flex justify-center">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={RECAPTCHA_SITE_KEY}
+                onChange={handleCaptchaChange}
               />
             </div>
 
