@@ -4,8 +4,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { 
   Truck, 
-  CreditCard, 
-  QrCode, 
   Banknote, 
   Building2 
 } from "lucide-react";
@@ -24,20 +22,6 @@ const initialPaymentOptions: PaymentOption[] = [
     name: "Pagamento na entrega / retirada",
     description: "Aceitar pagamentos no momento da entrega ou retirada",
     icon: Truck,
-    enabled: true,
-  },
-  {
-    id: "credit_card",
-    name: "Cartão de crédito",
-    description: "Aceitar pagamentos via cartão de crédito",
-    icon: CreditCard,
-    enabled: true,
-  },
-  {
-    id: "pix",
-    name: "Pix",
-    description: "Aceitar pagamentos via Pix",
-    icon: QrCode,
     enabled: true,
   },
   {
