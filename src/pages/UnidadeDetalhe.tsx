@@ -30,6 +30,7 @@ import {
 import { MapPin, Clock, Pencil, Trash2, Save, X, Building2, Truck, Plus, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ConveniosSection, Convenio } from "@/components/unidades/ConveniosSection";
 
 interface HorarioFuncionamento {
   dia: string;
@@ -55,6 +56,7 @@ interface Unidade {
   status: "ativa" | "inativa";
   horarios: HorarioFuncionamento[];
   areasEntrega: AreaEntrega[];
+  convenios: Convenio[];
 }
 
 // Mock data - em produção virá da API
@@ -81,6 +83,11 @@ const mockUnidades: Unidade[] = [
       { id: "2", raio: 5, compraMinima: 50, preco: 8 },
       { id: "3", raio: 10, compraMinima: 80, preco: 12 },
     ],
+    convenios: [
+      { id: "1", nome: "Unimed", codigo: "UNI001", senha: "senha123", ativo: true },
+      { id: "2", nome: "Bradesco Saúde", codigo: "BRA002", senha: "brad456", ativo: true },
+      { id: "3", nome: "SulAmérica", codigo: "SUL003", senha: "", ativo: false },
+    ],
   },
   {
     id: "2",
@@ -103,6 +110,7 @@ const mockUnidades: Unidade[] = [
       { id: "1", raio: 2, compraMinima: 25, preco: 4 },
       { id: "2", raio: 5, compraMinima: 40, preco: 7 },
     ],
+    convenios: [],
   },
   {
     id: "3",
@@ -122,6 +130,7 @@ const mockUnidades: Unidade[] = [
       { dia: "Domingo", aberto: true, abertura: "14:00", fechamento: "20:00" },
     ],
     areasEntrega: [],
+    convenios: [],
   },
 ];
 
@@ -157,6 +166,7 @@ export default function UnidadeDetalhe() {
         ...found,
         horarios: found.horarios.map((h) => ({ ...h })),
         areasEntrega: found.areasEntrega.map((a) => ({ ...a })),
+        convenios: found.convenios.map((c) => ({ ...c })),
       });
     }
   }, [id]);
@@ -202,6 +212,7 @@ export default function UnidadeDetalhe() {
       ...unidade,
       horarios: unidade.horarios.map((h) => ({ ...h })),
       areasEntrega: unidade.areasEntrega.map((a) => ({ ...a })),
+      convenios: unidade.convenios.map((c) => ({ ...c })),
     });
     setIsEditing(false);
     setEditingAreaId(null);
@@ -626,6 +637,15 @@ export default function UnidadeDetalhe() {
               )}
             </div>
           </div>
+
+          {/* Convênios */}
+          <ConveniosSection
+            convenios={editedUnidade.convenios}
+            isEditing={isEditing}
+            onConveniosChange={(convenios) =>
+              setEditedUnidade({ ...editedUnidade, convenios })
+            }
+          />
         </div>
 
         {/* Footer Actions */}
