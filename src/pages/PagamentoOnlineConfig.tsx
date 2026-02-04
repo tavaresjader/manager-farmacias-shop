@@ -147,14 +147,14 @@ const PagamentoOnlineConfig = () => {
             </div>
           </Card>
 
-          {/* Gateway Configuration */}
+          {/* Payment Provider Configuration */}
           <Card className="p-6">
             <h2 className="text-lg font-medium text-foreground mb-4">
-              Configuração do Gateway
+              Configuração do Provedor de Pagamentos
             </h2>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="gateway">Gateway de Pagamento</Label>
+                <Label htmlFor="gateway">Provedor de Pagamento</Label>
                 <Select>
                   <SelectTrigger className="bg-white dark:bg-background">
                     <SelectValue placeholder="Selecione o gateway" />
