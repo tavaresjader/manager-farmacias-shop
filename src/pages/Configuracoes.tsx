@@ -11,6 +11,7 @@ import {
   Building2,
   ImageIcon,
   Palette,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UnidadesTab } from "@/components/configuracoes/UnidadesTab";
@@ -20,11 +21,13 @@ import { ContaTab } from "@/components/configuracoes/ContaTab";
 import { FaturaTab } from "@/components/configuracoes/FaturaTab";
 import { IntegracoesTab } from "@/components/configuracoes/IntegracoesTab";
 import { ColaboradoresTab } from "@/components/configuracoes/ColaboradoresTab";
+import { PagamentosTab } from "@/components/configuracoes/PagamentosTab";
 
 const menuItems = [
   { id: "unidades", label: "Unidades", icon: Building2 },
   { id: "banners", label: "Banners", icon: ImageIcon },
   { id: "aparencia", label: "Aparência", icon: Palette },
+  { id: "pagamentos", label: "Pagamentos", icon: Wallet },
   { id: "conta", label: "Minha conta", icon: User },
   { id: "fatura", label: "Minhas faturas", icon: CreditCard },
   { id: "integracoes", label: "Integrações", icon: Puzzle },
@@ -77,6 +80,7 @@ const Configuracoes = () => {
           {activeTab === "unidades" && <UnidadesTab />}
           {activeTab === "banners" && <BannersTab />}
           {activeTab === "aparencia" && <AparenciaTab />}
+          {activeTab === "pagamentos" && <PagamentosTab />}
           {activeTab === "conta" && <ContaTab />}
           {activeTab === "fatura" && <FaturaTab />}
           {activeTab === "integracoes" && <IntegracoesTab />}
