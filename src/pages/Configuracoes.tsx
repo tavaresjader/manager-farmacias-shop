@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageLoading } from "@/components/layout/PageLoading";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -37,7 +38,18 @@ const menuItems = [
 const Configuracoes = () => {
   usePageTitle("Configurações");
   const isLoading = usePageLoading();
-  const [activeTab, setActiveTab] = useState("unidades");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => {
+    const tabParam = searchParams.get("tab");
+    return tabParam && menuItems.some(item => item.id === tabParam) ? tabParam : "unidades";
+  });
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam && menuItems.some(item => item.id === tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   if (isLoading) {
     return (

@@ -199,7 +199,7 @@ const PagamentoOnlineConfig = () => {
           <div className="flex justify-end gap-3">
             <Button
               variant="ghost"
-              onClick={() => navigate("/configuracoes")}
+              onClick={() => navigate("/configuracoes?tab=pagamentos")}
             >
               Voltar
             </Button>
