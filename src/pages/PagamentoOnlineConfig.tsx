@@ -198,7 +198,8 @@ const PagamentoOnlineConfig = () => {
           {/* Actions */}
           <div className="flex justify-end gap-3">
             <Button
-              variant="ghost"
+              variant="outline"
+              className="bg-white dark:bg-background"
               onClick={() => navigate("/configuracoes?tab=pagamentos")}
             >
               Voltar
