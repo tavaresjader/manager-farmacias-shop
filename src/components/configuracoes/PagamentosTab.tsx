@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { 
   Truck, 
   Banknote, 
-  Building2 
+  Building2,
+  Globe
 } from "lucide-react";
 
 interface PaymentOption {
@@ -14,6 +16,7 @@ interface PaymentOption {
   description: string;
   icon: React.ElementType;
   enabled: boolean;
+  hasConfig?: boolean;
 }
 
 const initialPaymentOptions: PaymentOption[] = [
@@ -23,6 +26,14 @@ const initialPaymentOptions: PaymentOption[] = [
     description: "Aceitar pagamentos no momento da entrega ou retirada",
     icon: Truck,
     enabled: true,
+  },
+  {
+    id: "online",
+    name: "Pagamento Online",
+    description: "Aceitar pagamentos online (cartão, pix, boleto)",
+    icon: Globe,
+    enabled: false,
+    hasConfig: true,
   },
   {
     id: "cash",
@@ -41,6 +52,7 @@ const initialPaymentOptions: PaymentOption[] = [
 ];
 
 export function PagamentosTab() {
+  const navigate = useNavigate();
   const [paymentOptions, setPaymentOptions] = useState<PaymentOption[]>(initialPaymentOptions);
 
   const togglePaymentOption = (id: string) => {
@@ -93,6 +105,14 @@ export function PagamentosTab() {
                     <p className="text-xs text-muted-foreground">
                       {option.description}
                     </p>
+                    {option.hasConfig && option.enabled && (
+                      <button
+                        onClick={() => navigate("/configuracoes/pagamento-online")}
+                        className="text-xs text-primary hover:underline mt-1"
+                      >
+                        Configurar pagamento online
+                      </button>
+                    )}
                   </div>
                 </div>
                 <Switch
