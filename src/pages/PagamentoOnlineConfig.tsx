@@ -204,12 +204,6 @@ const PagamentoOnlineConfig = () => {
             >
               Voltar
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/configuracoes")}
-            >
-              Cancelar
-            </Button>
             <Button>Salvar Configurações</Button>
           </div>
         </div>
