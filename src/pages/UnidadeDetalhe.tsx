@@ -307,6 +307,7 @@ export default function UnidadeDetalhe() {
                       onChange={(e) =>
                         setEditedUnidade({ ...editedUnidade, nome: e.target.value })
                       }
+                      className="bg-white dark:bg-background"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -318,7 +319,7 @@ export default function UnidadeDetalhe() {
                           setEditedUnidade({ ...editedUnidade, situacao: value })
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white dark:bg-background">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -335,7 +336,7 @@ export default function UnidadeDetalhe() {
                           setEditedUnidade({ ...editedUnidade, status: value })
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white dark:bg-background">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -375,6 +376,7 @@ export default function UnidadeDetalhe() {
                           setEditedUnidade({ ...editedUnidade, cep: e.target.value })
                         }
                         placeholder="00000-000"
+                        className="bg-white dark:bg-background"
                       />
                     </div>
                     <div className="space-y-1">
@@ -385,6 +387,7 @@ export default function UnidadeDetalhe() {
                           setEditedUnidade({ ...editedUnidade, numero: e.target.value })
                         }
                         placeholder="123"
+                        className="bg-white dark:bg-background"
                       />
                     </div>
                   </div>
@@ -445,7 +448,7 @@ export default function UnidadeDetalhe() {
                               onChange={(e) =>
                                 handleHorarioChange(index, "abertura", e.target.value)
                               }
-                              className="h-8 w-24"
+                              className="h-8 w-24 bg-white dark:bg-background"
                             />
                             <span className="text-muted-foreground">-</span>
                             <Input
@@ -454,7 +457,7 @@ export default function UnidadeDetalhe() {
                               onChange={(e) =>
                                 handleHorarioChange(index, "fechamento", e.target.value)
                               }
-                              className="h-8 w-24"
+                              className="h-8 w-24 bg-white dark:bg-background"
                             />
                           </div>
                         )}
@@ -505,7 +508,7 @@ export default function UnidadeDetalhe() {
                                 type="number"
                                 value={area.raio}
                                 onChange={(e) => handleUpdateArea(area.id, "raio", Number(e.target.value))}
-                                className="h-8 w-20"
+                                className="h-8 w-20 bg-white dark:bg-background"
                                 min={0}
                               />
                             ) : (
@@ -523,7 +526,7 @@ export default function UnidadeDetalhe() {
                                 type="number"
                                 value={area.compraMinima}
                                 onChange={(e) => handleUpdateArea(area.id, "compraMinima", Number(e.target.value))}
-                                className="h-8 w-24"
+                                className="h-8 w-24 bg-white dark:bg-background"
                                 min={0}
                                 step={0.01}
                               />
@@ -542,7 +545,7 @@ export default function UnidadeDetalhe() {
                                 type="number"
                                 value={area.preco}
                                 onChange={(e) => handleUpdateArea(area.id, "preco", Number(e.target.value))}
-                                className="h-8 w-24"
+                                className="h-8 w-24 bg-white dark:bg-background"
                                 min={0}
                                 step={0.01}
                               />
@@ -587,6 +590,7 @@ export default function UnidadeDetalhe() {
                         onChange={(e) => setNovaArea({ ...novaArea, raio: Number(e.target.value) })}
                         placeholder="0"
                         min={0}
+                        className="bg-white dark:bg-background"
                       />
                     </div>
                     <div className="space-y-1">
@@ -598,6 +602,7 @@ export default function UnidadeDetalhe() {
                         placeholder="0,00"
                         min={0}
                         step={0.01}
+                        className="bg-white dark:bg-background"
                       />
                     </div>
                     <div className="space-y-1">
@@ -609,6 +614,7 @@ export default function UnidadeDetalhe() {
                         placeholder="0,00"
                         min={0}
                         step={0.01}
+                        className="bg-white dark:bg-background"
                       />
                     </div>
                     <Button onClick={handleAddArea} size="sm">
