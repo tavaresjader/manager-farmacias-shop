@@ -12,6 +12,7 @@ import Cupons from "./pages/Cupons";
 import Aplicativos from "./pages/Aplicativos";
 import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
+import UnidadeDetalhe from "./pages/UnidadeDetalhe";
 import Cadastro from "./pages/Cadastro";
 import Login from "./pages/Login";
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/aplicativos" element={<Aplicativos />} />
             <Route path="/relatorios" element={<Relatorios />} />
             <Route path="/configuracoes" element={<Configuracoes />} />
+            <Route path="/configuracoes/unidades/:id" element={<UnidadeDetalhe />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/login" element={<Login />} />
             
