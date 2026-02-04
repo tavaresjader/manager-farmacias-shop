@@ -5,15 +5,25 @@ import { Label } from "@/components/ui/label";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
 
+interface LocationState {
+  from?: {
+    pathname: string;
+  };
+}
+
 const Login = () => {
   usePageTitle("Login");
   const navigate = useNavigate();
+  const location = useLocation();
   const { setAuthToken } = useAuth();
+  
+  // Get the intended destination from location state
+  const from = (location.state as LocationState)?.from?.pathname || "/";
   
   const [formData, setFormData] = useState({
     email: "",
@@ -69,7 +79,7 @@ const Login = () => {
       if (response.data?.token) {
         setAuthToken(response.data.token);
         toast.success("Login realizado com sucesso!");
-        navigate("/");
+        navigate(from, { replace: true });
       }
     } catch (error) {
       toast.error("Erro ao realizar login. Tente novamente.");
