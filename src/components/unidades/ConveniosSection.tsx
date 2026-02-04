@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -11,17 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Plus, Trash2, FileText, Eye, EyeOff, Settings2 } from "lucide-react";
+import { FileText, Eye, EyeOff, Settings2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export interface Convenio {
@@ -44,30 +33,8 @@ export function ConveniosSection({
   onConveniosChange,
 }: ConveniosSectionProps) {
   const { toast } = useToast();
-  const [novoConvenio, setNovoConvenio] = useState<Omit<Convenio, "id">>({
-    nome: "",
-    codigo: "",
-    senha: "",
-    ativo: true,
-  });
   const [editingConvenioId, setEditingConvenioId] = useState<string | null>(null);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [convenioToDelete, setConvenioToDelete] = useState<string | null>(null);
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
-
-  const handleAddConvenio = () => {
-    if (!novoConvenio.nome.trim()) {
-      toast({ description: "Informe o nome do convênio", variant: "destructive" });
-      return;
-    }
-    const newConvenio: Convenio = {
-      id: Date.now().toString(),
-      ...novoConvenio,
-    };
-    onConveniosChange([...convenios, newConvenio]);
-    setNovoConvenio({ nome: "", codigo: "", senha: "", ativo: true });
-    toast({ description: "Convênio adicionado" });
-  };
 
   const handleUpdateConvenio = (
     convenioId: string,
@@ -88,19 +55,6 @@ export function ConveniosSection({
     });
   };
 
-  const handleDeleteConvenio = (convenioId: string) => {
-    setConvenioToDelete(convenioId);
-    setDeleteConfirmOpen(true);
-  };
-
-  const confirmDeleteConvenio = () => {
-    if (convenioToDelete) {
-      onConveniosChange(convenios.filter((c) => c.id !== convenioToDelete));
-      toast({ description: "Convênio removido" });
-    }
-    setDeleteConfirmOpen(false);
-    setConvenioToDelete(null);
-  };
 
   const togglePasswordVisibility = (convenioId: string) => {
     setShowPasswords((prev) => ({
@@ -151,24 +105,11 @@ export function ConveniosSection({
                         />
                       </TableCell>
                       <TableCell>
-                        {isEditing && editingConvenioId === convenio.id ? (
-                          <Input
-                            value={convenio.nome}
-                            onChange={(e) =>
-                              handleUpdateConvenio(convenio.id, "nome", e.target.value)
-                            }
-                            className="h-8 bg-white dark:bg-background"
-                          />
-                        ) : (
-                          <span
-                            className={`${
-                              isEditing ? "cursor-pointer hover:text-primary" : ""
-                            } ${!convenio.ativo ? "text-muted-foreground" : ""}`}
-                            onClick={() => isEditing && setEditingConvenioId(convenio.id)}
-                          >
-                            {convenio.nome}
-                          </span>
-                        )}
+                        <span
+                          className={!convenio.ativo ? "text-muted-foreground" : ""}
+                        >
+                          {convenio.nome}
+                        </span>
                       </TableCell>
                       <TableCell>
                         {isEditing && editingConvenioId === convenio.id ? (
@@ -232,28 +173,18 @@ export function ConveniosSection({
                       </TableCell>
                       {isEditing && (
                         <TableCell>
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() =>
-                                setEditingConvenioId(
-                                  editingConvenioId === convenio.id ? null : convenio.id
-                                )
-                              }
-                            >
-                              <Settings2 className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                              onClick={() => handleDeleteConvenio(convenio.id)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() =>
+                              setEditingConvenioId(
+                                editingConvenioId === convenio.id ? null : convenio.id
+                              )
+                            }
+                          >
+                            <Settings2 className="w-4 h-4" />
+                          </Button>
                         </TableCell>
                       )}
                     </TableRow>
@@ -263,91 +194,9 @@ export function ConveniosSection({
             </Table>
           </div>
 
-          {/* Formulário para adicionar novo convênio */}
-          {isEditing && (
-            <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-              <h5 className="text-sm font-medium text-foreground mb-3">
-                Adicionar novo convênio
-              </h5>
-              <div className="grid grid-cols-5 gap-3 items-end">
-                <div className="space-y-1">
-                  <Label className="text-xs">Nome do convênio</Label>
-                  <Input
-                    value={novoConvenio.nome}
-                    onChange={(e) =>
-                      setNovoConvenio({ ...novoConvenio, nome: e.target.value })
-                    }
-                    placeholder="Ex: Unimed"
-                    className="bg-white dark:bg-background"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Código</Label>
-                  <Input
-                    value={novoConvenio.codigo}
-                    onChange={(e) =>
-                      setNovoConvenio({ ...novoConvenio, codigo: e.target.value })
-                    }
-                    placeholder="Código"
-                    className="bg-white dark:bg-background"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Senha</Label>
-                  <Input
-                    type="password"
-                    value={novoConvenio.senha}
-                    onChange={(e) =>
-                      setNovoConvenio({ ...novoConvenio, senha: e.target.value })
-                    }
-                    placeholder="Senha"
-                    className="bg-white dark:bg-background"
-                  />
-                </div>
-                <div className="flex items-center gap-2 pb-1">
-                  <Switch
-                    checked={novoConvenio.ativo}
-                    onCheckedChange={(checked) =>
-                      setNovoConvenio({ ...novoConvenio, ativo: checked })
-                    }
-                  />
-                  <span className="text-xs text-muted-foreground">
-                    {novoConvenio.ativo ? "Ativo" : "Inativo"}
-                  </span>
-                </div>
-                <Button onClick={handleAddConvenio} size="sm">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Adicionar
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Alert para excluir convênio */}
-      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir convênio</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir este convênio? Esta ação não pode ser
-              desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConvenioToDelete(null)}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={confirmDeleteConvenio}
-            >
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+    </> 
   );
 }
