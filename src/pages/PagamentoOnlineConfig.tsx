@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, CreditCard, QrCode } from "lucide-react";
+import { CreditCard, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -44,7 +44,7 @@ const initialMethods: OnlinePaymentMethod[] = [
 ];
 
 const PagamentoOnlineConfig = () => {
-  usePageTitle("Configuração de Pagamento Online");
+  usePageTitle("Pagamentos Online");
   const isLoading = usePageLoading();
   const navigate = useNavigate();
   const [methods, setMethods] = useState<OnlinePaymentMethod[]>(initialMethods);
@@ -68,22 +68,13 @@ const PagamentoOnlineConfig = () => {
   return (
     <MainLayout>
       <div className="p-6 max-w-4xl">
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/configuracoes")}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <h1 className="text-xl font-semibold text-foreground">
-              Configuração de Pagamento Online
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Configure as formas de pagamento online aceitas
-            </p>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-xl font-semibold text-foreground">
+            Pagamentos Online
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Configure as formas de pagamento online aceitas
+          </p>
         </div>
 
         <div className="space-y-6">
