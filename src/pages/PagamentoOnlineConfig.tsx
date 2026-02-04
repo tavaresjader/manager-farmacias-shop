@@ -7,7 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, CreditCard, QrCode, Landmark } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowLeft, CreditCard, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -32,13 +39,6 @@ const initialMethods: OnlinePaymentMethod[] = [
     name: "Pix",
     description: "Aceitar pagamentos via Pix",
     icon: QrCode,
-    enabled: false,
-  },
-  {
-    id: "bank_slip",
-    name: "Boleto Bancário",
-    description: "Aceitar pagamentos via boleto",
-    icon: Landmark,
     enabled: false,
   },
 ];
@@ -139,11 +139,15 @@ const PagamentoOnlineConfig = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="gateway">Gateway de Pagamento</Label>
-                <Input
-                  id="gateway"
-                  placeholder="Selecione o gateway"
-                  className="bg-white dark:bg-background"
-                />
+                <Select>
+                  <SelectTrigger className="bg-white dark:bg-background">
+                    <SelectValue placeholder="Selecione o gateway" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cielo">Cielo</SelectItem>
+                    <SelectItem value="stone">Stone</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="api_key">Chave de API</Label>
