@@ -157,7 +157,7 @@ const PagamentoOnlineConfig = () => {
                 <Label htmlFor="gateway">Provedor de Pagamento</Label>
                 <Select>
                   <SelectTrigger className="bg-white dark:bg-background">
-                    <SelectValue placeholder="Selecione o gateway" />
+                    <SelectValue placeholder="Selecione o Provedor" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="cielo">Cielo</SelectItem>
