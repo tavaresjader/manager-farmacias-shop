@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin, Clock, Pencil, Trash2, Save, X } from "lucide-react";
+import { MapPin, Clock, Pencil, Trash2, Save, X, Building2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface HorarioFuncionamento {
@@ -211,58 +211,71 @@ export default function UnidadeDetalhe() {
 
       <div className="bg-card border border-border rounded-lg p-6">
         <div className="space-y-6">
-          {/* Status e Situação */}
-          {isEditing && (
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Situação</Label>
-                <Select
-                  value={editedUnidade.situacao}
-                  onValueChange={(value: "aberta" | "fechada") =>
-                    setEditedUnidade({ ...editedUnidade, situacao: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="aberta">Aberta</SelectItem>
-                    <SelectItem value="fechada">Fechada</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Status</Label>
-                <Select
-                  value={editedUnidade.status}
-                  onValueChange={(value: "ativa" | "inativa") =>
-                    setEditedUnidade({ ...editedUnidade, status: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ativa">Ativa</SelectItem>
-                    <SelectItem value="inativa">Inativa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          {/* Detalhes da unidade */}
+          <div className="flex items-start gap-3">
+            <Building2 className="w-5 h-5 text-muted-foreground mt-0.5" />
+            <div className="flex-1">
+              <h4 className="text-sm font-medium text-foreground">Detalhes da unidade</h4>
+              {isEditing ? (
+                <div className="space-y-3 mt-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Nome da unidade</Label>
+                    <Input
+                      value={editedUnidade.nome}
+                      onChange={(e) =>
+                        setEditedUnidade({ ...editedUnidade, nome: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Situação</Label>
+                      <Select
+                        value={editedUnidade.situacao}
+                        onValueChange={(value: "aberta" | "fechada") =>
+                          setEditedUnidade({ ...editedUnidade, situacao: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="aberta">Aberta</SelectItem>
+                          <SelectItem value="fechada">Fechada</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Status</Label>
+                      <Select
+                        value={editedUnidade.status}
+                        onValueChange={(value: "ativa" | "inativa") =>
+                          setEditedUnidade({ ...editedUnidade, status: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ativa">Ativa</SelectItem>
+                          <SelectItem value="inativa">Inativa</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-1 mt-1">
+                  <p className="text-sm text-muted-foreground">
+                    Situação: {editedUnidade.situacao === "aberta" ? "Aberta" : "Fechada"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Status: {editedUnidade.status === "ativa" ? "Ativa" : "Inativa"}
+                  </p>
+                </div>
+              )}
             </div>
-          )}
-
-          {/* Nome */}
-          {isEditing && (
-            <div className="space-y-2">
-              <Label>Nome da unidade</Label>
-              <Input
-                value={editedUnidade.nome}
-                onChange={(e) =>
-                  setEditedUnidade({ ...editedUnidade, nome: e.target.value })
-                }
-              />
-            </div>
-          )}
+          </div>
 
           {/* Endereço */}
           <div className="flex items-start gap-3">
