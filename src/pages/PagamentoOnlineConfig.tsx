@@ -198,6 +198,12 @@ const PagamentoOnlineConfig = () => {
           {/* Actions */}
           <div className="flex justify-end gap-3">
             <Button
+              variant="ghost"
+              onClick={() => navigate("/configuracoes")}
+            >
+              Voltar
+            </Button>
+            <Button
               variant="outline"
               onClick={() => navigate("/configuracoes")}
             >
