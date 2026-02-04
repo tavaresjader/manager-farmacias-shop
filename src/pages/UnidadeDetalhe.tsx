@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin, Clock, Pencil, Trash2, Save, X, Building2, Truck, Plus } from "lucide-react";
+import { MapPin, Clock, Pencil, Trash2, Save, X, Building2, Truck, Plus, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -641,10 +641,16 @@ export default function UnidadeDetalhe() {
                 </Button>
               </>
             ) : (
-              <Button variant="outline" onClick={() => setIsEditing(true)}>
-                <Pencil className="w-4 h-4 mr-2" />
-                Editar
-              </Button>
+              <>
+                <Button variant="outline" onClick={() => setIsEditing(true)}>
+                  <Pencil className="w-4 h-4 mr-2" />
+                  Editar
+                </Button>
+                <Button variant="outline" onClick={() => navigate("/configuracoes")}>
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar
+                </Button>
+              </>
             )}
           </div>
         </div>
