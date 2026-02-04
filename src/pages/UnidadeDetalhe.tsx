@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { PageHeader } from "@/components/layout/PageHeader";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
 import { PageLoading } from "@/components/layout/PageLoading";
@@ -182,13 +181,11 @@ export default function UnidadeDetalhe() {
   if (!unidade || !editedUnidade) {
     return (
       <MainLayout>
-        <PageHeader
-          title="Unidade não encontrada"
-          breadcrumbs={[
-            { label: "Configurações", path: "/configuracoes" },
-            { label: "Unidades" },
-          ]}
-        />
+        <div className="mb-6">
+          <h1 className="font-heading text-2xl font-semibold text-foreground">
+            Unidade não encontrada
+          </h1>
+        </div>
         <div className="bg-card border border-border rounded-lg p-6">
           <p className="text-muted-foreground">A unidade solicitada não foi encontrada.</p>
           <Button className="mt-4" onClick={() => navigate("/configuracoes")}>
@@ -283,24 +280,19 @@ export default function UnidadeDetalhe() {
 
   return (
     <MainLayout>
-      <PageHeader
-        title={editedUnidade.nome}
-        breadcrumbs={[
-          { label: "Configurações", path: "/configuracoes" },
-          { label: "Unidades", path: "/configuracoes" },
-          { label: editedUnidade.nome },
-        ]}
-        actions={
-          <div className="flex items-center gap-2">
-            <Badge variant={editedUnidade.situacao === "aberta" ? "default" : "secondary"}>
-              {editedUnidade.situacao === "aberta" ? "Aberta" : "Fechada"}
-            </Badge>
-            <Badge variant={editedUnidade.status === "ativa" ? "default" : "secondary"}>
-              {editedUnidade.status === "ativa" ? "Ativa" : "Inativa"}
-            </Badge>
-          </div>
-        }
-      />
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="font-heading text-2xl font-semibold text-foreground">
+          {editedUnidade.nome}
+        </h1>
+        <div className="flex items-center gap-2">
+          <Badge variant={editedUnidade.situacao === "aberta" ? "default" : "secondary"}>
+            {editedUnidade.situacao === "aberta" ? "Aberta" : "Fechada"}
+          </Badge>
+          <Badge variant={editedUnidade.status === "ativa" ? "default" : "secondary"}>
+            {editedUnidade.status === "ativa" ? "Ativa" : "Inativa"}
+          </Badge>
+        </div>
+      </div>
 
       <div className="bg-card border border-border rounded-lg p-6">
         <div className="space-y-6">

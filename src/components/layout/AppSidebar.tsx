@@ -69,7 +69,8 @@ export function AppSidebar() {
       {/* Main Navigation */}
       <nav className="flex-1 py-4 px-2 space-y-1">
         {mainNavItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = location.pathname === item.path || 
+            (item.path === "/" && location.pathname === "/");
           return (
             <Tooltip key={item.path} delayDuration={0}>
               <TooltipTrigger asChild>
@@ -96,7 +97,8 @@ export function AppSidebar() {
       {/* Bottom Navigation */}
       <div className="py-6 px-2 border-t border-sidebar-border space-y-2">
         {bottomNavItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = location.pathname === item.path || 
+            location.pathname.startsWith(item.path + "/");
           
           if (item.external) {
             return (
