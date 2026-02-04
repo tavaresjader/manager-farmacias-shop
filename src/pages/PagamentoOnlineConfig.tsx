@@ -95,36 +95,61 @@ const PagamentoOnlineConfig = () => {
             <div className="space-y-4">
               {methods.map((method) => {
                 const IconComponent = method.icon;
+                const isCreditCard = method.id === "credit_card";
                 return (
                   <div
                     key={method.id}
-                    className={`flex items-center justify-between p-4 rounded-lg border transition-all duration-200 ${
+                    className={`p-4 rounded-lg border transition-all duration-200 ${
                       method.enabled
                         ? "border-primary/50 bg-primary/5"
                         : "border-border bg-background"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`p-2 rounded-lg ${
-                          method.enabled
-                            ? "bg-primary/10 text-primary"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        <IconComponent className="w-5 h-5" />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`p-2 rounded-lg ${
+                            method.enabled
+                              ? "bg-primary/10 text-primary"
+                              : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          <IconComponent className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{method.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {method.description}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">{method.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {method.description}
-                        </p>
-                      </div>
+                      <Switch
+                        checked={method.enabled}
+                        onCheckedChange={() => toggleMethod(method.id)}
+                      />
                     </div>
-                    <Switch
-                      checked={method.enabled}
-                      onCheckedChange={() => toggleMethod(method.id)}
-                    />
+                    {isCreditCard && method.enabled && (
+                      <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="min_installment">Parcela mínima</Label>
+                          <Input
+                            id="min_installment"
+                            type="text"
+                            placeholder="R$ 0,00"
+                            className="bg-white dark:bg-background"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="max_installments">Número máximo de parcelas</Label>
+                          <Input
+                            id="max_installments"
+                            type="number"
+                            placeholder="12"
+                            className="bg-white dark:bg-background"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
