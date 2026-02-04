@@ -7,10 +7,13 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
+import { useAuth } from "@/contexts/AuthContext";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
 
 const Login = () => {
   usePageTitle("Login");
   const navigate = useNavigate();
+  const { setAuthToken } = useAuth();
   
   const [formData, setFormData] = useState({
     email: "",
@@ -35,7 +38,7 @@ const Login = () => {
 
     if (isForgotPassword) {
       setIsLoading(true);
-      // TODO: Implement password recovery with Supabase
+      // TODO: Implement password recovery with API
       setTimeout(() => {
         setIsLoading(false);
         toast.success("E-mail de recuperação enviado!");
@@ -51,12 +54,28 @@ const Login = () => {
 
     setIsLoading(true);
     
-    // TODO: Implement actual login logic with Supabase
-    setTimeout(() => {
+    try {
+      const response = await managerBackendBff.signIn({
+        email: formData.email,
+        password: formData.senha,
+      });
+
+      if (response.error) {
+        toast.error(response.error);
+        setIsLoading(false);
+        return;
+      }
+
+      if (response.data?.token) {
+        setAuthToken(response.data.token);
+        toast.success("Login realizado com sucesso!");
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("Erro ao realizar login. Tente novamente.");
+    } finally {
       setIsLoading(false);
-      toast.success("Login realizado com sucesso!");
-      navigate("/");
-    }, 1000);
+    }
   };
 
   return (

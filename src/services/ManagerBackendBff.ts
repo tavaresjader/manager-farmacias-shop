@@ -11,9 +11,24 @@ interface ApiResponse<T> {
   status: number;
 }
 
+interface SignInRequest {
+  email: string;
+  password: string;
+}
+
+interface SignInResponse {
+  token: string;
+  user?: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+}
+
 export class ManagerBackendBff {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
+  private authToken: string | null = null;
 
   constructor() {
     this.baseUrl = MANAGER_API_URL;
@@ -33,22 +48,94 @@ export class ManagerBackendBff {
   }
 
   private mergeHeaders(customHeaders?: Record<string, string>): Record<string, string> {
-    return {
+    const headers: Record<string, string> = {
       ...this.defaultHeaders,
       ...customHeaders,
     };
+    
+    // Add Authorization header if token is set
+    if (this.authToken) {
+      headers["Authorization"] = `Bearer ${this.authToken}`;
+    }
+    
+    return headers;
+  }
+
+  private isAuthenticated(): boolean {
+    return !!this.authToken;
+  }
+
+  private requireAuth(): void {
+    if (!this.isAuthenticated()) {
+      throw new Error("Autenticação necessária. Faça login novamente.");
+    }
   }
 
   setAuthToken(token: string): void {
-    this.defaultHeaders["Authorization"] = `Bearer ${token}`;
+    this.authToken = token;
   }
 
   removeAuthToken(): void {
-    delete this.defaultHeaders["Authorization"];
+    this.authToken = null;
+  }
+
+  getAuthToken(): string | null {
+    return this.authToken;
+  }
+
+  /**
+   * Authenticate user and get access token
+   */
+  async signIn(credentials: SignInRequest): Promise<ApiResponse<SignInResponse>> {
+    try {
+      const url = this.buildUrl("/auth/signin");
+      const response = await fetch(url, {
+        method: "POST",
+        headers: this.defaultHeaders,
+        body: JSON.stringify(credentials),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          data: null,
+          error: data.message || "Credenciais inválidas",
+          status: response.status,
+        };
+      }
+
+      // Automatically set the token after successful login
+      if (data.token) {
+        this.setAuthToken(data.token);
+      }
+
+      return {
+        data,
+        error: null,
+        status: response.status,
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: "Erro de conexão. Tente novamente.",
+        status: 0,
+      };
+    }
+  }
+
+  /**
+   * Sign out and clear auth token
+   */
+  signOut(): void {
+    this.removeAuthToken();
   }
 
   async get<T>(endpoint: string, options?: RequestOptions): Promise<ApiResponse<T>> {
     try {
+      // Require authentication for all API calls
+      this.requireAuth();
+      
       const url = this.buildUrl(endpoint, options?.params);
       const response = await fetch(url, {
         method: "GET",
@@ -56,6 +143,16 @@ export class ManagerBackendBff {
       });
 
       const data = await response.json();
+
+      // Handle unauthorized responses
+      if (response.status === 401) {
+        this.removeAuthToken();
+        return {
+          data: null,
+          error: "Sessão expirada. Faça login novamente.",
+          status: response.status,
+        };
+      }
 
       if (!response.ok) {
         return {
@@ -81,6 +178,9 @@ export class ManagerBackendBff {
 
   async post<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<ApiResponse<T>> {
     try {
+      // Require authentication for all API calls
+      this.requireAuth();
+      
       const url = this.buildUrl(endpoint, options?.params);
       const response = await fetch(url, {
         method: "POST",
@@ -89,6 +189,16 @@ export class ManagerBackendBff {
       });
 
       const data = await response.json();
+
+      // Handle unauthorized responses
+      if (response.status === 401) {
+        this.removeAuthToken();
+        return {
+          data: null,
+          error: "Sessão expirada. Faça login novamente.",
+          status: response.status,
+        };
+      }
 
       if (!response.ok) {
         return {
@@ -114,6 +224,9 @@ export class ManagerBackendBff {
 
   async put<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<ApiResponse<T>> {
     try {
+      // Require authentication for all API calls
+      this.requireAuth();
+      
       const url = this.buildUrl(endpoint, options?.params);
       const response = await fetch(url, {
         method: "PUT",
@@ -122,6 +235,16 @@ export class ManagerBackendBff {
       });
 
       const data = await response.json();
+
+      // Handle unauthorized responses
+      if (response.status === 401) {
+        this.removeAuthToken();
+        return {
+          data: null,
+          error: "Sessão expirada. Faça login novamente.",
+          status: response.status,
+        };
+      }
 
       if (!response.ok) {
         return {
@@ -147,6 +270,9 @@ export class ManagerBackendBff {
 
   async patch<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<ApiResponse<T>> {
     try {
+      // Require authentication for all API calls
+      this.requireAuth();
+      
       const url = this.buildUrl(endpoint, options?.params);
       const response = await fetch(url, {
         method: "PATCH",
@@ -155,6 +281,16 @@ export class ManagerBackendBff {
       });
 
       const data = await response.json();
+
+      // Handle unauthorized responses
+      if (response.status === 401) {
+        this.removeAuthToken();
+        return {
+          data: null,
+          error: "Sessão expirada. Faça login novamente.",
+          status: response.status,
+        };
+      }
 
       if (!response.ok) {
         return {
@@ -180,11 +316,24 @@ export class ManagerBackendBff {
 
   async delete<T>(endpoint: string, options?: RequestOptions): Promise<ApiResponse<T>> {
     try {
+      // Require authentication for all API calls
+      this.requireAuth();
+      
       const url = this.buildUrl(endpoint, options?.params);
       const response = await fetch(url, {
         method: "DELETE",
         headers: this.mergeHeaders(options?.headers),
       });
+
+      // Handle unauthorized responses
+      if (response.status === 401) {
+        this.removeAuthToken();
+        return {
+          data: null,
+          error: "Sessão expirada. Faça login novamente.",
+          status: response.status,
+        };
+      }
 
       if (response.status === 204) {
         return {
