@@ -27,14 +27,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin, Clock, Pencil, Trash2, Save, X, Building2 } from "lucide-react";
+import { MapPin, Clock, Pencil, Trash2, Save, X, Building2, Truck, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface HorarioFuncionamento {
   dia: string;
   aberto: boolean;
   abertura?: string;
   fechamento?: string;
+}
+
+interface AreaEntrega {
+  id: string;
+  raio: number;
+  compraMinima: number;
+  preco: number;
 }
 
 interface Unidade {
@@ -46,6 +54,7 @@ interface Unidade {
   situacao: "aberta" | "fechada";
   status: "ativa" | "inativa";
   horarios: HorarioFuncionamento[];
+  areasEntrega: AreaEntrega[];
 }
 
 // Mock data - em produção virá da API
@@ -67,6 +76,11 @@ const mockUnidades: Unidade[] = [
       { dia: "Sábado", aberto: true, abertura: "09:00", fechamento: "13:00" },
       { dia: "Domingo", aberto: false },
     ],
+    areasEntrega: [
+      { id: "1", raio: 3, compraMinima: 30, preco: 5 },
+      { id: "2", raio: 5, compraMinima: 50, preco: 8 },
+      { id: "3", raio: 10, compraMinima: 80, preco: 12 },
+    ],
   },
   {
     id: "2",
@@ -84,6 +98,10 @@ const mockUnidades: Unidade[] = [
       { dia: "Sexta-feira", aberto: true, abertura: "09:00", fechamento: "19:00" },
       { dia: "Sábado", aberto: true, abertura: "10:00", fechamento: "14:00" },
       { dia: "Domingo", aberto: false },
+    ],
+    areasEntrega: [
+      { id: "1", raio: 2, compraMinima: 25, preco: 4 },
+      { id: "2", raio: 5, compraMinima: 40, preco: 7 },
     ],
   },
   {
@@ -103,6 +121,7 @@ const mockUnidades: Unidade[] = [
       { dia: "Sábado", aberto: true, abertura: "10:00", fechamento: "22:00" },
       { dia: "Domingo", aberto: true, abertura: "14:00", fechamento: "20:00" },
     ],
+    areasEntrega: [],
   },
 ];
 
@@ -116,6 +135,16 @@ export default function UnidadeDetalhe() {
   const [editedUnidade, setEditedUnidade] = useState<Unidade | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  
+  // Estados para área de entrega
+  const [novaArea, setNovaArea] = useState<Omit<AreaEntrega, "id">>({
+    raio: 0,
+    compraMinima: 0,
+    preco: 0,
+  });
+  const [editingAreaId, setEditingAreaId] = useState<string | null>(null);
+  const [deleteAreaConfirmOpen, setDeleteAreaConfirmOpen] = useState(false);
+  const [areaToDelete, setAreaToDelete] = useState<string | null>(null);
 
   usePageTitle(unidade ? `Unidade - ${unidade.nome}` : "Unidade");
 
@@ -124,7 +153,11 @@ export default function UnidadeDetalhe() {
     const found = mockUnidades.find((u) => u.id === id);
     if (found) {
       setUnidade(found);
-      setEditedUnidade({ ...found, horarios: found.horarios.map((h) => ({ ...h })) });
+      setEditedUnidade({
+        ...found,
+        horarios: found.horarios.map((h) => ({ ...h })),
+        areasEntrega: found.areasEntrega.map((a) => ({ ...a })),
+      });
     }
   }, [id]);
 
@@ -165,8 +198,13 @@ export default function UnidadeDetalhe() {
   };
 
   const handleCancel = () => {
-    setEditedUnidade({ ...unidade, horarios: unidade.horarios.map((h) => ({ ...h })) });
+    setEditedUnidade({
+      ...unidade,
+      horarios: unidade.horarios.map((h) => ({ ...h })),
+      areasEntrega: unidade.areasEntrega.map((a) => ({ ...a })),
+    });
     setIsEditing(false);
+    setEditingAreaId(null);
   };
 
   const handleDelete = () => {
@@ -186,6 +224,50 @@ export default function UnidadeDetalhe() {
     const newHorarios = [...editedUnidade.horarios];
     newHorarios[index] = { ...newHorarios[index], [field]: value };
     setEditedUnidade({ ...editedUnidade, horarios: newHorarios });
+  };
+
+  // Handlers para áreas de entrega
+  const handleAddArea = () => {
+    if (novaArea.raio <= 0) {
+      toast({ description: "Informe um raio válido", variant: "destructive" });
+      return;
+    }
+    const newArea: AreaEntrega = {
+      id: Date.now().toString(),
+      ...novaArea,
+    };
+    setEditedUnidade({
+      ...editedUnidade,
+      areasEntrega: [...editedUnidade.areasEntrega, newArea],
+    });
+    setNovaArea({ raio: 0, compraMinima: 0, preco: 0 });
+    toast({ description: "Área de entrega adicionada" });
+  };
+
+  const handleUpdateArea = (areaId: string, field: keyof Omit<AreaEntrega, "id">, value: number) => {
+    setEditedUnidade({
+      ...editedUnidade,
+      areasEntrega: editedUnidade.areasEntrega.map((a) =>
+        a.id === areaId ? { ...a, [field]: value } : a
+      ),
+    });
+  };
+
+  const handleDeleteArea = (areaId: string) => {
+    setAreaToDelete(areaId);
+    setDeleteAreaConfirmOpen(true);
+  };
+
+  const confirmDeleteArea = () => {
+    if (areaToDelete) {
+      setEditedUnidade({
+        ...editedUnidade,
+        areasEntrega: editedUnidade.areasEntrega.filter((a) => a.id !== areaToDelete),
+      });
+      toast({ description: "Área de entrega removida" });
+    }
+    setDeleteAreaConfirmOpen(false);
+    setAreaToDelete(null);
   };
 
   return (
@@ -389,6 +471,155 @@ export default function UnidadeDetalhe() {
               </div>
             </div>
           </div>
+
+          {/* Entrega */}
+          <div className="flex items-start gap-3">
+            <Truck className="w-5 h-5 text-muted-foreground mt-0.5" />
+            <div className="flex-1">
+              <h4 className="text-sm font-medium text-foreground mb-3">Entrega</h4>
+              
+              {/* Tabela de áreas de entrega */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Raio (km)</TableHead>
+                      <TableHead>Compra Mínima</TableHead>
+                      <TableHead>Preço da Entrega</TableHead>
+                      {isEditing && <TableHead className="w-[80px]">Ações</TableHead>}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {editedUnidade.areasEntrega.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={isEditing ? 4 : 3} className="text-center text-muted-foreground py-4">
+                          Nenhuma área de entrega cadastrada
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      editedUnidade.areasEntrega.map((area) => (
+                        <TableRow key={area.id}>
+                          <TableCell>
+                            {isEditing && editingAreaId === area.id ? (
+                              <Input
+                                type="number"
+                                value={area.raio}
+                                onChange={(e) => handleUpdateArea(area.id, "raio", Number(e.target.value))}
+                                className="h-8 w-20"
+                                min={0}
+                              />
+                            ) : (
+                              <span 
+                                className={isEditing ? "cursor-pointer hover:text-primary" : ""}
+                                onClick={() => isEditing && setEditingAreaId(area.id)}
+                              >
+                                {area.raio} km
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {isEditing && editingAreaId === area.id ? (
+                              <Input
+                                type="number"
+                                value={area.compraMinima}
+                                onChange={(e) => handleUpdateArea(area.id, "compraMinima", Number(e.target.value))}
+                                className="h-8 w-24"
+                                min={0}
+                                step={0.01}
+                              />
+                            ) : (
+                              <span 
+                                className={isEditing ? "cursor-pointer hover:text-primary" : ""}
+                                onClick={() => isEditing && setEditingAreaId(area.id)}
+                              >
+                                R$ {area.compraMinima.toFixed(2)}
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {isEditing && editingAreaId === area.id ? (
+                              <Input
+                                type="number"
+                                value={area.preco}
+                                onChange={(e) => handleUpdateArea(area.id, "preco", Number(e.target.value))}
+                                className="h-8 w-24"
+                                min={0}
+                                step={0.01}
+                              />
+                            ) : (
+                              <span 
+                                className={isEditing ? "cursor-pointer hover:text-primary" : ""}
+                                onClick={() => isEditing && setEditingAreaId(area.id)}
+                              >
+                                R$ {area.preco.toFixed(2)}
+                              </span>
+                            )}
+                          </TableCell>
+                          {isEditing && (
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                                onClick={() => handleDeleteArea(area.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Formulário para adicionar nova área */}
+              {isEditing && (
+                <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                  <h5 className="text-sm font-medium text-foreground mb-3">Adicionar nova área</h5>
+                  <div className="grid grid-cols-4 gap-3 items-end">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Raio (km)</Label>
+                      <Input
+                        type="number"
+                        value={novaArea.raio || ""}
+                        onChange={(e) => setNovaArea({ ...novaArea, raio: Number(e.target.value) })}
+                        placeholder="0"
+                        min={0}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Compra Mínima (R$)</Label>
+                      <Input
+                        type="number"
+                        value={novaArea.compraMinima || ""}
+                        onChange={(e) => setNovaArea({ ...novaArea, compraMinima: Number(e.target.value) })}
+                        placeholder="0,00"
+                        min={0}
+                        step={0.01}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Preço da Entrega (R$)</Label>
+                      <Input
+                        type="number"
+                        value={novaArea.preco || ""}
+                        onChange={(e) => setNovaArea({ ...novaArea, preco: Number(e.target.value) })}
+                        placeholder="0,00"
+                        min={0}
+                        step={0.01}
+                      />
+                    </div>
+                    <Button onClick={handleAddArea} size="sm">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Adicionar
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Footer Actions */}
@@ -433,6 +664,27 @@ export default function UnidadeDetalhe() {
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleDelete}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Alert para excluir área de entrega */}
+      <AlertDialog open={deleteAreaConfirmOpen} onOpenChange={setDeleteAreaConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir área de entrega</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir esta área de entrega? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setAreaToDelete(null)}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={confirmDeleteArea}
             >
               Excluir
             </AlertDialogAction>
