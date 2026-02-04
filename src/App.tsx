@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Pedidos from "./pages/Pedidos";
 import Produtos from "./pages/Produtos";
@@ -17,7 +18,6 @@ import UnidadeDetalhe from "./pages/UnidadeDetalhe";
 import PagamentoOnlineConfig from "./pages/PagamentoOnlineConfig";
 import Cadastro from "./pages/Cadastro";
 import Login from "./pages/Login";
-
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,18 +31,21 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/pedidos" element={<Pedidos />} />
-              <Route path="/produtos" element={<Produtos />} />
-              <Route path="/clientes" element={<Clientes />} />
-              <Route path="/cupons" element={<Cupons />} />
-              <Route path="/aplicativos" element={<Aplicativos />} />
-              <Route path="/relatorios" element={<Relatorios />} />
-              <Route path="/configuracoes" element={<Configuracoes />} />
-              <Route path="/configuracoes/unidades/:id" element={<UnidadeDetalhe />} />
-              <Route path="/configuracoes/pagamento-online" element={<PagamentoOnlineConfig />} />
-              <Route path="/cadastro" element={<Cadastro />} />
+              {/* Public routes */}
               <Route path="/login" element={<Login />} />
+              <Route path="/cadastro" element={<Cadastro />} />
+              
+              {/* Protected routes */}
+              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/pedidos" element={<ProtectedRoute><Pedidos /></ProtectedRoute>} />
+              <Route path="/produtos" element={<ProtectedRoute><Produtos /></ProtectedRoute>} />
+              <Route path="/clientes" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
+              <Route path="/cupons" element={<ProtectedRoute><Cupons /></ProtectedRoute>} />
+              <Route path="/aplicativos" element={<ProtectedRoute><Aplicativos /></ProtectedRoute>} />
+              <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+              <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
+              <Route path="/configuracoes/unidades/:id" element={<ProtectedRoute><UnidadeDetalhe /></ProtectedRoute>} />
+              <Route path="/configuracoes/pagamento-online" element={<ProtectedRoute><PagamentoOnlineConfig /></ProtectedRoute>} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

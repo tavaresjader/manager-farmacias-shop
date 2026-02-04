@@ -21,6 +21,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const mainNavItems = [
   { icon: LayoutDashboard, label: "Início", path: "/" },
@@ -41,9 +43,16 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { clearAuth } = useAuth();
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/login");
+    toast.success("Logout realizado com sucesso!");
   };
 
   return (
@@ -157,9 +166,7 @@ export function AppSidebar() {
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
             <button
-              onClick={() => {
-                navigate("/login");
-              }}
+              onClick={handleLogout}
               className="flex items-center justify-center w-full h-10 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-accent hover:text-foreground"
             >
               <LogOut className="w-5 h-5" />
