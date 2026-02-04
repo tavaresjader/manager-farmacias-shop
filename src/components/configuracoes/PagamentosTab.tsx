@@ -7,8 +7,10 @@ import {
   Truck, 
   Banknote, 
   Building2,
-  Globe
+  Globe,
+  ArrowRight
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface PaymentOption {
   id: string;
@@ -112,6 +114,15 @@ export function PagamentosTab() {
                       >
                         Configurar pagamento online
                       </button>
+                    )}
+                    {option.id === "agreement" && option.enabled && (
+                      <Link
+                        to="/configuracoes?tab=unidades"
+                        className="flex items-center gap-1 text-xs text-destructive hover:underline mt-1"
+                      >
+                        Configure os convênios em suas unidades
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
                     )}
                   </div>
                 </div>
