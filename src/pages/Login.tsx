@@ -64,28 +64,13 @@ const Login = () => {
 
     setIsLoading(true);
     
-    try {
-      const response = await managerBackendBff.signIn({
-        email: formData.email,
-        password: formData.senha,
-      });
-
-      if (response.error) {
-        toast.error(response.error);
-        setIsLoading(false);
-        return;
-      }
-
-      if (response.data?.token) {
-        setAuthToken(response.data.token);
-        toast.success("Login realizado com sucesso!");
-        navigate(from, { replace: true });
-      }
-    } catch (error) {
-      toast.error("Erro ao realizar login. Tente novamente.");
-    } finally {
+    // Autenticação temporária para desenvolvimento
+    setTimeout(() => {
+      setAuthToken("temp_token_" + Date.now());
+      toast.success("Login realizado com sucesso!");
+      navigate(from, { replace: true });
       setIsLoading(false);
-    }
+    }, 500);
   };
 
   return (
