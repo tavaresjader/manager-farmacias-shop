@@ -1,9 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { UnidadeDetailsModal } from "./UnidadeDetailsModal";
 
 interface HorarioFuncionamento {
   dia: string;
@@ -81,24 +81,11 @@ const mockUnidades: Unidade[] = [
 ];
 
 export function UnidadesTab() {
-  const [unidades, setUnidades] = useState<Unidade[]>(mockUnidades);
-  const [selectedUnidade, setSelectedUnidade] = useState<Unidade | null>(null);
-  const [unidadeModalOpen, setUnidadeModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const [unidades] = useState<Unidade[]>(mockUnidades);
 
   const handleUnidadeClick = (unidade: Unidade) => {
-    setSelectedUnidade(unidade);
-    setUnidadeModalOpen(true);
-  };
-
-  const handleSaveUnidade = (updatedUnidade: Unidade) => {
-    setUnidades((prev) =>
-      prev.map((u) => (u.id === updatedUnidade.id ? updatedUnidade : u))
-    );
-    setSelectedUnidade(updatedUnidade);
-  };
-
-  const handleDeleteUnidade = (unidadeId: string) => {
-    setUnidades((prev) => prev.filter((u) => u.id !== unidadeId));
+    navigate(`/configuracoes/unidades/${unidade.id}`);
   };
 
   return (
@@ -158,14 +145,6 @@ export function UnidadesTab() {
           </TableBody>
         </Table>
       </div>
-      
-      <UnidadeDetailsModal
-        open={unidadeModalOpen}
-        onOpenChange={setUnidadeModalOpen}
-        unidade={selectedUnidade}
-        onSave={handleSaveUnidade}
-        onDelete={handleDeleteUnidade}
-      />
     </div>
   );
 }
