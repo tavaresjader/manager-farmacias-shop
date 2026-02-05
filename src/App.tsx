@@ -16,6 +16,7 @@ import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
 import UnidadeDetalhe from "./pages/UnidadeDetalhe";
 import PagamentoOnlineConfig from "./pages/PagamentoOnlineConfig";
+ import ColaboradorDetalhe from "./pages/ColaboradorDetalhe";
 import Cadastro from "./pages/Cadastro";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
               <Route path="/configuracoes/unidades/:id" element={<ProtectedRoute><UnidadeDetalhe /></ProtectedRoute>} />
               <Route path="/configuracoes/pagamento-online" element={<ProtectedRoute><PagamentoOnlineConfig /></ProtectedRoute>} />
+               <Route path="/configuracoes/colaboradores/:id" element={<ProtectedRoute><ColaboradorDetalhe /></ProtectedRoute>} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

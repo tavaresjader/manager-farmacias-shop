@@ -1,4 +1,5 @@
 import { Plus, Eye } from "lucide-react";
+ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,6 +17,8 @@ const colaboradorStatusConfig: Record<string, { label: string; variant: "default
 };
 
 export function ColaboradoresTab() {
+   const navigate = useNavigate();
+ 
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
@@ -50,7 +53,7 @@ export function ColaboradoresTab() {
                     variant="ghost"
                     size="sm"
                     className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                    onClick={() => console.log("Visualizar colaborador:", colaborador.id)}
+                     onClick={() => navigate(`/configuracoes/colaboradores/${colaborador.id}`)}
                   >
                     <Eye className="w-4 h-4" />
                   </Button>
