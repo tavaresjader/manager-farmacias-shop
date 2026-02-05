@@ -24,7 +24,7 @@ interface PaymentOption {
 const initialPaymentOptions: PaymentOption[] = [
   {
     id: "delivery",
-    name: "Pagamento na entrega / retirada",
+    name: "Pagamento na entrega",
     description: "Aceitar pagamentos no momento da entrega ou retirada",
     icon: Truck,
     enabled: true,
