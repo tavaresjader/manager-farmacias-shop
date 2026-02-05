@@ -9,9 +9,20 @@
  import { Label } from "@/components/ui/label";
  import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
  import { Checkbox } from "@/components/ui/checkbox";
- import { Badge } from "@/components/ui/badge";
  import { Switch } from "@/components/ui/switch";
- import { ArrowLeft, User, Building2, Save } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { User, Building2, Save, Trash2, ArrowLeft } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
  
  const mockColaboradores = [
   { id: "1", nome: "João Silva", email: "joao.silva@empresa.com", situacao: "ativo", master: true },
@@ -54,6 +65,11 @@
      navigate("/configuracoes?tab=colaboradores");
    };
  
+  const handleRemove = () => {
+    console.log("Removendo colaborador:", id);
+    navigate("/configuracoes?tab=colaboradores");
+  };
+
    if (isLoading) {
      return (
        <MainLayout>
@@ -79,14 +95,7 @@
    return (
      <MainLayout>
        <div className="p-6 max-w-4xl">
-         <Button
-           variant="ghost"
-           onClick={() => navigate("/configuracoes?tab=colaboradores")}
-           className="mb-6 -ml-2 text-muted-foreground hover:text-foreground"
-         >
-           <ArrowLeft className="w-4 h-4 mr-2" />
-           Voltar para colaboradores
-         </Button>
+          <h1 className="text-2xl font-semibold text-foreground mb-6">Colaborador</h1>
  
          <div className="space-y-6">
            {/* Dados do Colaborador */}
@@ -199,12 +208,41 @@
            </Card>
             )}
  
-           {/* Botão Salvar */}
-           <div className="flex justify-end">
-             <Button onClick={handleSave}>
+            {/* Botões de Ação */}
+            <div className="flex justify-between">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Remover
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Remover colaborador</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Tem certeza que deseja remover este colaborador? Esta ação não pode ser desfeita.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRemove}>
+                      Confirmar remoção
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")}>
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar
+                </Button>
+                <Button onClick={handleSave}>
                <Save className="w-4 h-4 mr-2" />
                Salvar alterações
              </Button>
+              </div>
            </div>
          </div>
        </div>
