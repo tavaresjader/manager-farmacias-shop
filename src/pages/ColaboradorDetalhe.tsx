@@ -153,6 +153,7 @@
            </Card>
  
            {/* Unidades de Acesso */}
+            {!master && (
            <Card>
              <CardHeader className="pb-4">
                <CardTitle className="flex items-center gap-2 text-lg">
@@ -196,6 +197,7 @@
                </div>
              </CardContent>
            </Card>
+            )}
  
            {/* Botão Salvar */}
            <div className="flex justify-end">
