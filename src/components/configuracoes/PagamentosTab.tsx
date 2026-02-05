@@ -159,7 +159,7 @@ export function PagamentosTab() {
                           Dinheiro
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                          Aceitar pagamentos em dinheiro
+                          Aceitar pagamentos em dinheiro na entrega
                         </p>
                       </div>
                     </div>
