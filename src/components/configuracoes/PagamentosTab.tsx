@@ -38,13 +38,6 @@ const initialPaymentOptions: PaymentOption[] = [
     hasConfig: true,
   },
   {
-    id: "cash",
-    name: "Dinheiro",
-    description: "Aceitar pagamentos em dinheiro",
-    icon: Banknote,
-    enabled: false,
-  },
-  {
     id: "agreement",
     name: "Convênio",
     description: "Aceitar pagamentos via convênio empresarial",
@@ -53,9 +46,12 @@ const initialPaymentOptions: PaymentOption[] = [
   },
 ];
 
+const initialCashEnabled = false;
+
 export function PagamentosTab() {
   const navigate = useNavigate();
   const [paymentOptions, setPaymentOptions] = useState<PaymentOption[]>(initialPaymentOptions);
+  const [cashEnabled, setCashEnabled] = useState(initialCashEnabled);
 
   const togglePaymentOption = (id: string) => {
     setPaymentOptions((prev) =>
@@ -63,7 +59,16 @@ export function PagamentosTab() {
         option.id === id ? { ...option, enabled: !option.enabled } : option
       )
     );
+    // Reset cash option when delivery is disabled
+    if (id === "delivery") {
+      const deliveryOption = paymentOptions.find(o => o.id === "delivery");
+      if (deliveryOption?.enabled) {
+        setCashEnabled(false);
+      }
+    }
   };
+
+  const isDeliveryEnabled = paymentOptions.find(o => o.id === "delivery")?.enabled ?? false;
 
   return (
     <div className="space-y-6">
@@ -132,6 +137,40 @@ export function PagamentosTab() {
                   onCheckedChange={() => togglePaymentOption(option.id)}
                 />
               </div>
+              {/* Cash option nested under delivery */}
+              {option.id === "delivery" && option.enabled && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <div className="flex items-center justify-between gap-4 pl-10">
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`p-2 rounded-lg ${
+                          cashEnabled
+                            ? "bg-primary/10 text-primary"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        <Banknote className="w-5 h-5" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label
+                          htmlFor="cash"
+                          className="text-sm font-medium cursor-pointer"
+                        >
+                          Dinheiro
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Aceitar pagamentos em dinheiro
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      id="cash"
+                      checked={cashEnabled}
+                      onCheckedChange={setCashEnabled}
+                    />
+                  </div>
+                </div>
+              )}
             </Card>
           );
         })}
