@@ -14,10 +14,10 @@
  import { ArrowLeft, User, Building2, Save } from "lucide-react";
  
  const mockColaboradores = [
-   { id: "1", nome: "João Silva", email: "joao.silva@empresa.com", situacao: "ativo" },
-   { id: "2", nome: "Maria Santos", email: "maria.santos@empresa.com", situacao: "ativo" },
-   { id: "3", nome: "Carlos Oliveira", email: "carlos.oliveira@empresa.com", situacao: "inativo" },
-   { id: "4", nome: "Ana Costa", email: "ana.costa@empresa.com", situacao: "ativo" },
+  { id: "1", nome: "João Silva", email: "joao.silva@empresa.com", situacao: "ativo", master: true },
+  { id: "2", nome: "Maria Santos", email: "maria.santos@empresa.com", situacao: "ativo", master: false },
+  { id: "3", nome: "Carlos Oliveira", email: "carlos.oliveira@empresa.com", situacao: "inativo", master: false },
+  { id: "4", nome: "Ana Costa", email: "ana.costa@empresa.com", situacao: "ativo", master: false },
  ];
  
  const mockUnidades = [
@@ -38,6 +38,7 @@
    const [nome, setNome] = useState(colaborador?.nome || "");
    const [email, setEmail] = useState(colaborador?.email || "");
    const [ativo, setAtivo] = useState(colaborador?.situacao === "ativo");
+  const [master, setMaster] = useState(colaborador?.master || false);
    const [unidadesSelecionadas, setUnidadesSelecionadas] = useState<string[]>(["1", "2"]);
  
    const handleUnidadeToggle = (unidadeId: string) => {
@@ -49,7 +50,7 @@
    };
  
    const handleSave = () => {
-     console.log("Salvando colaborador:", { nome, email, ativo, unidadesSelecionadas });
+    console.log("Salvando colaborador:", { nome, email, ativo, master, unidadesSelecionadas });
      navigate("/configuracoes?tab=colaboradores");
    };
  
@@ -120,11 +121,12 @@
                    />
                  </div>
                </div>
-               <div className="flex items-center justify-between pt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                  <div className="space-y-0.5">
                    <Label htmlFor="ativo">Situação</Label>
                    <p className="text-sm text-muted-foreground">
-                     {ativo ? "Colaborador ativo" : "Colaborador inativo"}
+                      {ativo ? "Ativo" : "Inativo"}
                    </p>
                  </div>
                  <Switch
@@ -133,6 +135,20 @@
                    onCheckedChange={setAtivo}
                  />
                </div>
+                  <div className="flex items-center justify-between p-3 border border-border rounded-lg">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="master">Perfil Master</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {master ? "Master" : "Padrão"}
+                      </p>
+                    </div>
+                    <Switch
+                      id="master"
+                      checked={master}
+                      onCheckedChange={setMaster}
+                    />
+                  </div>
+                </div>
              </CardContent>
            </Card>
  
