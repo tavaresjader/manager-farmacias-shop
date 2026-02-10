@@ -131,7 +131,7 @@ export function AparenciaTab() {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="cor-principal">Cor Principal</Label>
+            <Label htmlFor="cor-principal">Cor (Header)</Label>
             <div className="flex gap-2">
               <Input
                 id="cor-principal"
@@ -150,7 +150,7 @@ export function AparenciaTab() {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="cor-secundaria">Cor Secundária</Label>
+            <Label htmlFor="cor-secundaria">Cor (Botões e ícones)</Label>
             <div className="flex gap-2">
               <Input
                 id="cor-secundaria"
