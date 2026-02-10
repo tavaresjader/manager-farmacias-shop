@@ -273,7 +273,7 @@ const Pedidos = () => {
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <Select value={selectedUnidade} onValueChange={setSelectedUnidade}>
-            <SelectTrigger className="w-[200px] bg-background">
+            <SelectTrigger className="w-[200px] bg-white dark:bg-background">
               <SelectValue placeholder="Selecione a unidade" />
             </SelectTrigger>
             <SelectContent>
