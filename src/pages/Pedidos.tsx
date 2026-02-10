@@ -53,6 +53,7 @@ interface Pedido {
   total: number;
   itens: number;
   origem: Origem;
+  unidade: string;
 }
 
 const mockPedidos: Pedido[] = [
@@ -65,6 +66,7 @@ const mockPedidos: Pedido[] = [
     total: 459.90,
     itens: 3,
     origem: "ifood",
+    unidade: "Unidade Centro",
   },
   {
     id: "2",
@@ -75,6 +77,7 @@ const mockPedidos: Pedido[] = [
     total: 189.50,
     itens: 2,
     origem: "keeta",
+    unidade: "Unidade Norte",
   },
   {
     id: "3",
@@ -85,6 +88,7 @@ const mockPedidos: Pedido[] = [
     total: 1250.00,
     itens: 5,
     origem: "farmacia-shop",
+    unidade: "Unidade Sul",
   },
   {
     id: "4",
@@ -95,6 +99,7 @@ const mockPedidos: Pedido[] = [
     total: 89.90,
     itens: 1,
     origem: "pede-pronto",
+    unidade: "Unidade Centro",
   },
   {
     id: "5",
@@ -105,6 +110,7 @@ const mockPedidos: Pedido[] = [
     total: 567.80,
     itens: 4,
     origem: "aiqfome",
+    unidade: "Unidade Norte",
   },
 ];
 
@@ -120,6 +126,14 @@ const columns: Column<Pedido>[] = [
           className="w-6 h-6 rounded object-cover"
         />
       </div>
+    ),
+  },
+  {
+    key: "unidade",
+    label: "Unidade",
+    sortable: true,
+    render: (item) => (
+      <span className="text-foreground">{item.unidade}</span>
     ),
   },
   {
