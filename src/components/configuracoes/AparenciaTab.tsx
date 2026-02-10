@@ -52,21 +52,13 @@ export function AparenciaTab() {
           </Label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="url-atual">URL Atual da Loja</Label>
+              <Label htmlFor="url-atual" className="flex items-center gap-2">
+                URL Atual da Loja
+              </Label>
+
               <div className="flex gap-2">
-                <Input
-                  id="url-atual"
-                  type="url"
-                  value={urlAtual}
-                  readOnly
-                  className="flex-1 bg-muted"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={handleCopyUrl}
-                >
+                <Input id="url-atual" type="url" value={urlAtual} readOnly className="flex-1 bg-muted" />
+                <Button type="button" variant="outline" size="icon" onClick={handleCopyUrl}>
                   {copiedUrl ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
@@ -74,23 +66,6 @@ export function AparenciaTab() {
             <div className="space-y-2">
               <Label htmlFor="dominio-personalizado" className="flex items-center gap-2">
                 Domínio Personalizado
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <a
-                        href="https://docs.lovable.dev/features/custom-domain"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-muted-foreground hover:text-primary transition-colors"
-                      >
-                        <HelpCircle className="w-4 h-4" />
-                      </a>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Clique para ver como configurar seu domínio</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -140,11 +115,7 @@ export function AparenciaTab() {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-16 h-16 border border-border rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-                <img
-                  src={aparencia.logo}
-                  alt="Logo da Farmácia"
-                  className="w-full h-full object-contain"
-                />
+                <img src={aparencia.logo} alt="Logo da Farmácia" className="w-full h-full object-contain" />
               </div>
               <a
                 href={aparencia.logo}
