@@ -65,6 +65,7 @@ interface Pedido {
   total: number;
   itens: number;
   origem?: Origem;
+  unidade?: string;
 }
 
 interface PedidoDetailsModalProps {
@@ -221,6 +222,11 @@ export function PedidoDetailsModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <span>Pedido {pedido.numero}</span>
+            {pedido.unidade && (
+              <span className="text-sm font-normal text-muted-foreground">
+                — {pedido.unidade}
+              </span>
+            )}
             {pedido.origem && (
               <div className="flex items-center gap-2">
                 <img 
