@@ -12,6 +12,13 @@ import { PedidoDetailsModal } from "@/components/pedidos/PedidoDetailsModal";
 import { PedidoFilterModal, PedidoFilters } from "@/components/pedidos/PedidoFilterModal";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import ifoodLogo from "@/assets/channels/ifood.webp";
 import keetaLogo from "@/assets/channels/keeta.png";
@@ -184,6 +191,7 @@ const Pedidos = () => {
   const [filters, setFilters] = useState<PedidoFilters>(initialFilters);
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUnidade, setSelectedUnidade] = useState("all");
 
   const statusCounts = useMemo(() => {
     return {
@@ -263,12 +271,25 @@ const Pedidos = () => {
       />
 
       <div className="space-y-4">
-        <SearchBar
-          placeholder="Pesquisar por número ou cliente..."
-          onSearch={handleSearch}
-          onFilter={() => setFilterModalOpen(true)}
-          className="max-w-md"
-        />
+        <div className="flex items-center gap-3">
+          <Select value={selectedUnidade} onValueChange={setSelectedUnidade}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Selecione a unidade" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as unidades</SelectItem>
+              <SelectItem value="1">Unidade Centro</SelectItem>
+              <SelectItem value="2">Unidade Norte</SelectItem>
+              <SelectItem value="3">Unidade Sul</SelectItem>
+            </SelectContent>
+          </Select>
+          <SearchBar
+            placeholder="Pesquisar por número ou cliente..."
+            onSearch={handleSearch}
+            onFilter={() => setFilterModalOpen(true)}
+            className="flex-1 max-w-md"
+          />
+        </div>
 
         <TabsFilter
           tabs={statusTabs}
