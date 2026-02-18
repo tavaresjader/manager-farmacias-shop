@@ -244,7 +244,7 @@ export function PedidoDetailsModal({
             <StatusBadge status={pedido.status} />
             {pedido.tipo && (
               <span className="text-sm font-normal text-muted-foreground">
-                • {pedido.tipo === "delivery" ? "Delivery" : "Retirada"}
+                | {pedido.tipo === "delivery" ? "Delivery" : "Retirada"}
               </span>
             )}
           </DialogTitle>
