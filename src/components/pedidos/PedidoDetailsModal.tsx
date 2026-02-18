@@ -62,6 +62,7 @@ interface Pedido {
   cliente: string;
   data: string;
   status: "active" | "inactive" | "pending" | "processing" | "cancelled";
+  tipo?: "delivery" | "retirada";
   total: number;
   itens: number;
   origem?: Origem;
@@ -241,6 +242,11 @@ export function PedidoDetailsModal({
             )}
             <span className="text-muted-foreground">|</span>
             <StatusBadge status={pedido.status} />
+            {pedido.tipo && (
+              <span className="text-sm font-normal text-muted-foreground">
+                • {pedido.tipo === "delivery" ? "Delivery" : "Retirada"}
+              </span>
+            )}
           </DialogTitle>
         </DialogHeader>
 
