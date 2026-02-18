@@ -50,6 +50,7 @@ interface Pedido {
   cliente: string;
   data: string;
   status: "active" | "inactive" | "pending" | "processing" | "cancelled";
+  tipo: "delivery" | "retirada";
   total: number;
   itens: number;
   origem: Origem;
@@ -67,6 +68,7 @@ const mockPedidos: Pedido[] = [
     itens: 3,
     origem: "ifood",
     unidade: "Unidade Centro",
+    tipo: "delivery",
   },
   {
     id: "2",
@@ -78,6 +80,7 @@ const mockPedidos: Pedido[] = [
     itens: 2,
     origem: "keeta",
     unidade: "Unidade Norte",
+    tipo: "retirada",
   },
   {
     id: "3",
@@ -89,6 +92,7 @@ const mockPedidos: Pedido[] = [
     itens: 5,
     origem: "farmacia-shop",
     unidade: "Unidade Sul",
+    tipo: "delivery",
   },
   {
     id: "4",
@@ -100,6 +104,7 @@ const mockPedidos: Pedido[] = [
     itens: 1,
     origem: "pede-pronto",
     unidade: "Unidade Centro",
+    tipo: "retirada",
   },
   {
     id: "5",
@@ -111,6 +116,7 @@ const mockPedidos: Pedido[] = [
     itens: 4,
     origem: "aiqfome",
     unidade: "Unidade Norte",
+    tipo: "delivery",
   },
 ];
 
@@ -164,6 +170,13 @@ const columns: Column<Pedido>[] = [
     key: "status",
     label: "Status",
     render: (item) => <StatusBadge status={item.status} />,
+  },
+  {
+    key: "tipo",
+    label: "Tipo",
+    render: (item) => (
+      <span className="text-foreground capitalize">{item.tipo === "delivery" ? "Delivery" : "Retirada"}</span>
+    ),
   },
   {
     key: "itens",
