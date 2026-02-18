@@ -1,14 +1,23 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { useAuth } from "@/contexts/AuthContext";
-import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { loginSchema, forgotPasswordSchema, type LoginFormData } from "@/lib/validations";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 
 interface LocationState {
   from?: {
@@ -22,33 +31,20 @@ const Login = () => {
   const location = useLocation();
   const { setAuthToken } = useAuth();
   
-  // Get the intended destination from location state
   const from = (location.state as LocationState)?.from?.pathname || "/";
   
-  const [formData, setFormData] = useState({
-    email: "",
-    senha: "",
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(isForgotPassword ? forgotPasswordSchema : loginSchema),
+    defaultValues: { email: "", senha: "" },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.email) {
-      toast.error("Por favor, preencha o e-mail.");
-      return;
-    }
-
+  const onSubmit = async (data: LoginFormData) => {
     if (isForgotPassword) {
       setIsLoading(true);
-      // TODO: Implement password recovery with API
       setTimeout(() => {
         setIsLoading(false);
         toast.success("E-mail de recuperação enviado!");
@@ -57,14 +53,7 @@ const Login = () => {
       return;
     }
 
-    if (!formData.senha) {
-      toast.error("Por favor, preencha a senha.");
-      return;
-    }
-
     setIsLoading(true);
-    
-    // Autenticação temporária para desenvolvimento
     setTimeout(() => {
       setAuthToken("temp_token_" + Date.now());
       toast.success("Login realizado com sucesso!");
@@ -97,91 +86,105 @@ const Login = () => {
 
         {/* Form Card */}
         <div className="card-elevated p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-primary" />
-                E-mail
-              </Label>
-              <Input
-                id="email"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Email */}
+              <FormField
+                control={form.control}
                 name="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="h-12"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-primary" />
+                      E-mail
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="seu@email.com"
+                        className="h-12"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* Senha */}
-            {!isForgotPassword && (
-              <div className="space-y-2">
-                <Label htmlFor="senha" className="flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-primary" />
-                  Senha
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="senha"
-                    name="senha"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={formData.senha}
-                    onChange={handleInputChange}
-                    className="h-12 pr-12"
-                  />
+              {/* Senha */}
+              {!isForgotPassword && (
+                <FormField
+                  control={form.control}
+                  name="senha"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Lock className="w-4 h-4 text-primary" />
+                        Senha
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="••••••••"
+                            className="h-12 pr-12"
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="w-5 h-5" />
+                            ) : (
+                              <Eye className="w-5 h-5" />
+                            )}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Esqueceu a senha */}
+              {!isForgotPassword && (
+                <div className="text-right">
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => setIsForgotPassword(true)}
+                    className="text-sm text-primary hover:underline"
                   >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
+                    Esqueceu sua senha?
                   </button>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Esqueceu a senha */}
-            {!isForgotPassword && (
-              <div className="text-right">
+              {/* Submit Button */}
+              <Button 
+                type="submit" 
+                className="w-full h-12 text-base font-semibold"
+                disabled={isLoading}
+              >
+                {isLoading 
+                  ? (isForgotPassword ? "Enviando..." : "Entrando...") 
+                  : (isForgotPassword ? "Recuperar senha" : "Entrar")}
+              </Button>
+
+              {/* Voltar ao login */}
+              {isForgotPassword && (
                 <button
                   type="button"
-                  onClick={() => setIsForgotPassword(true)}
-                  className="text-sm text-primary hover:underline"
+                  onClick={() => setIsForgotPassword(false)}
+                  className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Esqueceu sua senha?
+                  Voltar ao login
                 </button>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <Button 
-              type="submit" 
-              className="w-full h-12 text-base font-semibold"
-              disabled={isLoading}
-            >
-              {isLoading 
-                ? (isForgotPassword ? "Enviando..." : "Entrando...") 
-                : (isForgotPassword ? "Recuperar senha" : "Entrar")}
-            </Button>
-
-            {/* Voltar ao login */}
-            {isForgotPassword && (
-              <button
-                type="button"
-                onClick={() => setIsForgotPassword(false)}
-                className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Voltar ao login
-              </button>
-            )}
-          </form>
+              )}
+            </form>
+          </Form>
 
           {/* Divider */}
           <div className="relative my-6">

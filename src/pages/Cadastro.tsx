@@ -1,9 +1,10 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +13,20 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Store, CheckCircle, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
+import { registrationSchema, type RegistrationFormData } from "@/lib/validations";
+import { useState } from "react";
 
 // Chave de teste do Google reCAPTCHA (substituir em produção)
 const RECAPTCHA_SITE_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
@@ -25,23 +36,21 @@ const Cadastro = () => {
   const navigate = useNavigate();
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   
-  const [formData, setFormData] = useState({
-    nomeFarmacia: "",
-    cnpj: "",
-    nomeResponsavel: "",
-    telefoneResponsavel: "",
-    senha: "",
-    confirmarSenha: "",
-  });
-  
   const [captchaValue, setCaptchaValue] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [storeUrl, setStoreUrl] = useState("");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const form = useForm<RegistrationFormData>({
+    resolver: zodResolver(registrationSchema),
+    defaultValues: {
+      nomeFarmacia: "",
+      cnpj: "",
+      nomeResponsavel: "",
+      telefoneResponsavel: "",
+      senha: "",
+      confirmarSenha: "",
+    },
+  });
 
   const generateSlug = (name: string) => {
     return name
@@ -53,30 +62,13 @@ const Cadastro = () => {
       .replace(/\s+/g, "-");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.nomeFarmacia || !formData.cnpj || !formData.nomeResponsavel || !formData.telefoneResponsavel || !formData.senha || !formData.confirmarSenha) {
-      toast.error("Por favor, preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    if (formData.senha !== formData.confirmarSenha) {
-      toast.error("As senhas não coincidem.");
-      return;
-    }
-
-    if (formData.senha.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres.");
-      return;
-    }
-
+  const onSubmit = (data: RegistrationFormData) => {
     if (!captchaValue) {
       toast.error("Por favor, confirme que você não é um robô.");
       return;
     }
 
-    const slug = generateSlug(formData.nomeFarmacia);
+    const slug = generateSlug(data.nomeFarmacia);
     const url = `https://${slug}.farmacias.shop`;
     setStoreUrl(url);
     setShowSuccessModal(true);
@@ -118,104 +110,116 @@ const Cadastro = () => {
 
         {/* Form Card */}
         <div className="card-elevated p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Nome da Farmácia */}
-            <div className="space-y-2">
-              <Label htmlFor="nomeFarmacia" className="flex items-center gap-2">
-                <Store className="w-4 h-4 text-primary" />
-                Nome da Farmácia *
-              </Label>
-              <Input
-                id="nomeFarmacia"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Nome da Farmácia */}
+              <FormField
+                control={form.control}
                 name="nomeFarmacia"
-                placeholder="Ex: Farmácia Saúde Total"
-                value={formData.nomeFarmacia}
-                onChange={handleInputChange}
-                className="h-12"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Store className="w-4 h-4 text-primary" />
+                      Nome da Farmácia *
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Farmácia Saúde Total" className="h-12" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* CNPJ */}
-            <div className="space-y-2">
-              <Label htmlFor="cnpj">CNPJ *</Label>
-              <Input
-                id="cnpj"
+              {/* CNPJ */}
+              <FormField
+                control={form.control}
                 name="cnpj"
-                placeholder="00.000.000/0000-00"
-                value={formData.cnpj}
-                onChange={handleInputChange}
-                className="h-12"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CNPJ *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="00.000.000/0000-00" className="h-12" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* Nome do Responsável */}
-            <div className="space-y-2">
-              <Label htmlFor="nomeResponsavel">Nome do Responsável *</Label>
-              <Input
-                id="nomeResponsavel"
+              {/* Nome do Responsável */}
+              <FormField
+                control={form.control}
                 name="nomeResponsavel"
-                placeholder="Nome completo do responsável"
-                value={formData.nomeResponsavel}
-                onChange={handleInputChange}
-                className="h-12"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome do Responsável *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nome completo do responsável" className="h-12" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* Telefone do Responsável */}
-            <div className="space-y-2">
-              <Label htmlFor="telefoneResponsavel">Telefone do Responsável *</Label>
-              <Input
-                id="telefoneResponsavel"
+              {/* Telefone do Responsável */}
+              <FormField
+                control={form.control}
                 name="telefoneResponsavel"
-                placeholder="(00) 00000-0000"
-                value={formData.telefoneResponsavel}
-                onChange={handleInputChange}
-                className="h-12"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Telefone do Responsável *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="(00) 00000-0000" className="h-12" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* Senha */}
-            <div className="space-y-2">
-              <Label htmlFor="senha">Senha *</Label>
-              <Input
-                id="senha"
+              {/* Senha */}
+              <FormField
+                control={form.control}
                 name="senha"
-                type="password"
-                placeholder="Mínimo 6 caracteres"
-                value={formData.senha}
-                onChange={handleInputChange}
-                className="h-12"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Senha *</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Mínimo 8 caracteres" className="h-12" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* Confirmar Senha */}
-            <div className="space-y-2">
-              <Label htmlFor="confirmarSenha">Confirmar Senha *</Label>
-              <Input
-                id="confirmarSenha"
+              {/* Confirmar Senha */}
+              <FormField
+                control={form.control}
                 name="confirmarSenha"
-                type="password"
-                placeholder="Digite a senha novamente"
-                value={formData.confirmarSenha}
-                onChange={handleInputChange}
-                className="h-12"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirmar Senha *</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Digite a senha novamente" className="h-12" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* reCAPTCHA */}
-            <div className="flex justify-center">
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={RECAPTCHA_SITE_KEY}
-                onChange={handleCaptchaChange}
-              />
-            </div>
+              {/* reCAPTCHA */}
+              <div className="flex justify-center">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={handleCaptchaChange}
+                />
+              </div>
 
-            {/* Submit Button */}
-            <Button type="submit" className="w-full h-12 text-base font-semibold">
-              Começar Agora
-            </Button>
-          </form>
+              {/* Submit Button */}
+              <Button type="submit" className="w-full h-12 text-base font-semibold">
+                Começar Agora
+              </Button>
+            </form>
+          </Form>
         </div>
 
         {/* Footer */}
@@ -244,7 +248,7 @@ const Cadastro = () => {
               Parabéns! 🎉
             </DialogTitle>
             <DialogDescription className="text-base">
-              Sua loja <strong>{formData.nomeFarmacia}</strong> foi criada com sucesso!
+              Sua loja <strong>{form.getValues("nomeFarmacia")}</strong> foi criada com sucesso!
             </DialogDescription>
           </DialogHeader>
 
