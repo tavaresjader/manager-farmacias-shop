@@ -32,7 +32,6 @@ export interface PedidoFilters {
   dataFim?: Date;
   cliente: string;
   status: string;
-  unidade: string;
 }
 
 interface PedidoFilterModalProps {
@@ -51,12 +50,6 @@ const statusOptions = [
   { value: "cancelled", label: "Cancelado" },
 ];
 
-const unidadeOptions = [
-  { value: "all", label: "Todas as unidades" },
-  { value: "1", label: "Unidade Centro" },
-  { value: "2", label: "Unidade Norte" },
-  { value: "3", label: "Unidade Sul" },
-];
 
 export function PedidoFilterModal({
   open,
@@ -77,7 +70,6 @@ export function PedidoFilterModal({
       dataFim: undefined,
       cliente: "",
       status: "all",
-      unidade: "all",
     };
     setLocalFilters(clearedFilters);
     onApplyFilters(clearedFilters);
@@ -193,27 +185,6 @@ export function PedidoFilterModal({
             </Select>
           </div>
 
-          {/* Unidade */}
-          <div className="space-y-2">
-            <Label>Unidade</Label>
-            <Select
-              value={localFilters.unidade}
-              onValueChange={(value) =>
-                setLocalFilters((prev) => ({ ...prev, unidade: value }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a unidade" />
-              </SelectTrigger>
-              <SelectContent>
-                {unidadeOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">

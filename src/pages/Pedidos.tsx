@@ -190,7 +190,6 @@ const initialFilters: PedidoFilters = {
   dataFim: undefined,
   cliente: "",
   status: "all",
-  unidade: "all",
 };
 
 const ITEMS_PER_PAGE = 10;
