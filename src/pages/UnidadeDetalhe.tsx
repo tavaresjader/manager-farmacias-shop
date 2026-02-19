@@ -43,6 +43,7 @@ interface AreaEntrega {
   raio: number;
   compraMinima: number;
   preco: number;
+  tempo: number;
 }
 
 interface Unidade {
@@ -78,9 +79,9 @@ const mockUnidades: Unidade[] = [
       { dia: "Domingo", aberto: false },
     ],
     areasEntrega: [
-      { id: "1", raio: 3, compraMinima: 30, preco: 5 },
-      { id: "2", raio: 5, compraMinima: 50, preco: 8 },
-      { id: "3", raio: 10, compraMinima: 80, preco: 12 },
+      { id: "1", raio: 3, compraMinima: 30, preco: 5, tempo: 30 },
+      { id: "2", raio: 5, compraMinima: 50, preco: 8, tempo: 45 },
+      { id: "3", raio: 10, compraMinima: 80, preco: 12, tempo: 60 },
     ],
     convenios: [
       { id: "1", nome: "Unimed", codigo: "UNI001", senha: "senha123", ativo: true },
@@ -106,8 +107,8 @@ const mockUnidades: Unidade[] = [
       { dia: "Domingo", aberto: false },
     ],
     areasEntrega: [
-      { id: "1", raio: 2, compraMinima: 25, preco: 4 },
-      { id: "2", raio: 5, compraMinima: 40, preco: 7 },
+      { id: "1", raio: 2, compraMinima: 25, preco: 4, tempo: 25 },
+      { id: "2", raio: 5, compraMinima: 40, preco: 7, tempo: 40 },
     ],
     convenios: [],
   },
@@ -149,6 +150,7 @@ export default function UnidadeDetalhe() {
     raio: 0,
     compraMinima: 0,
     preco: 0,
+    tempo: 0,
   });
   const [editingAreaId, setEditingAreaId] = useState<string | null>(null);
   const [deleteAreaConfirmOpen, setDeleteAreaConfirmOpen] = useState(false);
@@ -248,7 +250,7 @@ export default function UnidadeDetalhe() {
       ...editedUnidade,
       areasEntrega: [...editedUnidade.areasEntrega, newArea],
     });
-    setNovaArea({ raio: 0, compraMinima: 0, preco: 0 });
+    setNovaArea({ raio: 0, compraMinima: 0, preco: 0, tempo: 0 });
     toast({ description: "Área de entrega adicionada" });
   };
 
@@ -492,13 +494,14 @@ export default function UnidadeDetalhe() {
                       <TableHead>Raio (km)</TableHead>
                       <TableHead>Compra Mínima</TableHead>
                       <TableHead>Preço da Entrega</TableHead>
+                      <TableHead>Tempo (min)</TableHead>
                       {isEditing && <TableHead className="w-[80px]">Ações</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {editedUnidade.areasEntrega.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={isEditing ? 4 : 3} className="text-center text-muted-foreground py-4">
+                        <TableCell colSpan={isEditing ? 5 : 4} className="text-center text-muted-foreground py-4">
                           Nenhuma área de entrega cadastrada
                         </TableCell>
                       </TableRow>
@@ -561,6 +564,24 @@ export default function UnidadeDetalhe() {
                               </span>
                             )}
                           </TableCell>
+                          <TableCell>
+                            {isEditing && editingAreaId === area.id ? (
+                              <Input
+                                type="number"
+                                value={area.tempo}
+                                onChange={(e) => handleUpdateArea(area.id, "tempo", Number(e.target.value))}
+                                className="h-8 w-20 bg-white dark:bg-background"
+                                min={0}
+                              />
+                            ) : (
+                              <span 
+                                className={isEditing ? "cursor-pointer hover:text-primary" : ""}
+                                onClick={() => isEditing && setEditingAreaId(area.id)}
+                              >
+                                {area.tempo} min
+                              </span>
+                            )}
+                          </TableCell>
                           {isEditing && (
                             <TableCell>
                               <Button
@@ -584,7 +605,7 @@ export default function UnidadeDetalhe() {
               {isEditing && (
                 <div className="mt-4 p-4 bg-muted/50 rounded-lg">
                   <h5 className="text-sm font-medium text-foreground mb-3">Adicionar nova área</h5>
-                  <div className="grid grid-cols-4 gap-3 items-end">
+                  <div className="grid grid-cols-5 gap-3 items-end">
                     <div className="space-y-1">
                       <Label className="text-xs">Raio (km)</Label>
                       <Input
@@ -617,6 +638,17 @@ export default function UnidadeDetalhe() {
                         placeholder="0,00"
                         min={0}
                         step={0.01}
+                        className="bg-white dark:bg-background"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Tempo (min)</Label>
+                      <Input
+                        type="number"
+                        value={novaArea.tempo || ""}
+                        onChange={(e) => setNovaArea({ ...novaArea, tempo: Number(e.target.value) })}
+                        placeholder="0"
+                        min={0}
                         className="bg-white dark:bg-background"
                       />
                     </div>
