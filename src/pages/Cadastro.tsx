@@ -69,10 +69,7 @@ const Cadastro = () => {
       return;
     }
 
-    const slug = generateSlug(data.nomeFarmacia);
-    const url = `https://${slug}.farmacias.shop`;
-    setStoreUrl(url);
-    setShowSuccessModal(true);
+    navigate("/validar-token", { state: { email: data.emailResponsavel } });
   };
 
   const handleCaptchaChange = (value: string | null) => {
