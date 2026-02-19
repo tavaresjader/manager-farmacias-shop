@@ -74,12 +74,6 @@ const Aplicativos = () => {
       />
 
       <div className="space-y-6">
-        <SearchBar
-          placeholder="Pesquisar por nome ou categoria..."
-          onSearch={setSearchQuery}
-          className="max-w-md"
-        />
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* WhatsApp Card */}
           <div
