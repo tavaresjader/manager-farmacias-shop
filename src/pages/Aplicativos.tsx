@@ -11,8 +11,6 @@ import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
 import { Plus, ExternalLink, BarChart3, MessageCircle, Monitor, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import ifoodLogo from "@/assets/channels/ifood.webp";
-import keetaLogo from "@/assets/channels/keeta.png";
 
 interface Aplicativo {
   id: string;
@@ -32,43 +30,6 @@ const mockAplicativos: Aplicativo[] = [
     category: "Analytics",
     status: "active",
     icon: "chart",
-  },
-  {
-    id: "2",
-    name: "iFood",
-    description: "Receba pedidos do maior marketplace de delivery",
-    category: "Marketplace",
-    status: "active",
-    logo: ifoodLogo,
-  },
-  {
-    id: "3",
-    name: "Rappi",
-    description: "Conecte-se ao aplicativo de entregas Rappi",
-    category: "Marketplace",
-    status: "pending",
-  },
-  {
-    id: "4",
-    name: "Keeta",
-    description: "Integração com a plataforma Keeta",
-    category: "Marketplace",
-    status: "active",
-    logo: keetaLogo,
-  },
-  {
-    id: "5",
-    name: "Amazon",
-    description: "Venda seus produtos na Amazon",
-    category: "Marketplace",
-    status: "inactive",
-  },
-  {
-    id: "6",
-    name: "Mercado Livre",
-    description: "Integração com o Mercado Livre",
-    category: "Marketplace",
-    status: "pending",
   },
 ];
 
