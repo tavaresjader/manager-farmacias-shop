@@ -20,6 +20,7 @@ import PagamentoOnlineConfig from "./pages/PagamentoOnlineConfig";
 import Cadastro from "./pages/Cadastro";
 import Login from "./pages/Login";
 import ValidarToken from "./pages/ValidarToken";
+import CadastroSucesso from "./pages/CadastroSucesso";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<Cadastro />} />
               <Route path="/validar-token" element={<ValidarToken />} />
+              <Route path="/cadastro-sucesso" element={<CadastroSucesso />} />
               
               {/* Protected routes */}
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />

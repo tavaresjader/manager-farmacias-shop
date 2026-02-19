@@ -15,7 +15,8 @@ const ValidarToken = () => {
   usePageTitle("Validar Token");
   const navigate = useNavigate();
   const location = useLocation();
-  const email = (location.state as { email?: string })?.email || "";
+  const state = location.state as { email?: string; nomeFarmacia?: string; storeUrl?: string } || {};
+  const email = state.email || "";
 
   const [token, setToken] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +33,9 @@ const ValidarToken = () => {
     setIsLoading(false);
 
     toast.success("E-mail verificado com sucesso!");
-    navigate("/login");
+    navigate("/cadastro-sucesso", {
+      state: { nomeFarmacia: state.nomeFarmacia, storeUrl: state.storeUrl },
+    });
   };
 
   const handleResend = async () => {
