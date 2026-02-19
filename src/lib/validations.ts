@@ -52,6 +52,11 @@ export const registrationSchema = z
       .trim()
       .min(3, "Nome deve ter no mínimo 3 caracteres")
       .max(100, "Nome muito longo"),
+    emailResponsavel: z
+      .string()
+      .trim()
+      .email("E-mail inválido")
+      .max(255, "E-mail muito longo"),
     telefoneResponsavel: z
       .string()
       .regex(

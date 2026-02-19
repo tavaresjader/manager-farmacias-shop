@@ -46,6 +46,7 @@ const Cadastro = () => {
       nomeFarmacia: "",
       cnpj: "",
       nomeResponsavel: "",
+      emailResponsavel: "",
       telefoneResponsavel: "",
       senha: "",
       confirmarSenha: "",
@@ -154,6 +155,21 @@ const Cadastro = () => {
                     <FormLabel>Nome do Responsável *</FormLabel>
                     <FormControl>
                       <Input placeholder="Nome completo do responsável" className="h-12" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* E-mail do Responsável */}
+              <FormField
+                control={form.control}
+                name="emailResponsavel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>E-mail do Responsável *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="email@exemplo.com" className="h-12" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
