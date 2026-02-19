@@ -69,7 +69,15 @@ const Cadastro = () => {
       return;
     }
 
-    navigate("/validar-token", { state: { email: data.emailResponsavel } });
+    const slug = generateSlug(data.nomeFarmacia);
+    const storeUrl = `https://${slug}.farmacias.shop`;
+    navigate("/validar-token", {
+      state: {
+        email: data.emailResponsavel,
+        nomeFarmacia: data.nomeFarmacia,
+        storeUrl,
+      },
+    });
   };
 
   const handleCaptchaChange = (value: string | null) => {
