@@ -62,10 +62,10 @@ const CadastroSucesso = () => {
           </div>
 
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/", { replace: true })}
             className="w-full h-12 text-base font-semibold"
           >
-            Começar a Gerenciar
+            Começar
           </Button>
         </div>
       </div>
