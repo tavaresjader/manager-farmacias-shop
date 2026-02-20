@@ -111,8 +111,11 @@ const Aplicativos = () => {
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               Integrador
             </h3>
-            <p className="text-sm text-muted-foreground mb-3">
+            <p className="text-sm text-muted-foreground mb-1">
               Integrador instalado em seu computador para sincronizar produtos, estoque e pedidos
+            </p>
+            <p className="text-xs text-amber-600 mb-3">
+              *Verifique se seu sistema já está integrado com a Farmácias Shop
             </p>
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
