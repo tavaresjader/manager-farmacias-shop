@@ -344,7 +344,7 @@ const Relatorios = () => {
           {/* Top 10 Produtos Mais Pesquisados Sem Disponibilidade */}
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
-              Top 10 Produtos Pesquisados Sem Estoque
+              Top 10 Produtos Visitados Sem Estoque
             </h3>
             <div className="space-y-2">
               {[
