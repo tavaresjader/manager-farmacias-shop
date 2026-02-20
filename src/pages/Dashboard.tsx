@@ -53,6 +53,7 @@ interface Order {
   items: number;
   date: string;
   origem: Origem;
+  unidade: string;
 }
 
 const mockOrders: Order[] = [
@@ -65,6 +66,7 @@ const mockOrders: Order[] = [
     items: 5,
     date: "2024-01-05",
     origem: "ifood",
+    unidade: "Unidade Centro",
   },
   {
     id: "2",
@@ -75,6 +77,7 @@ const mockOrders: Order[] = [
     items: 3,
     date: "2024-01-05",
     origem: "keeta",
+    unidade: "Unidade Norte",
   },
   {
     id: "3",
@@ -85,6 +88,7 @@ const mockOrders: Order[] = [
     items: 2,
     date: "2024-01-04",
     origem: "farmacia-shop",
+    unidade: "Unidade Sul",
   },
   {
     id: "4",
@@ -95,6 +99,7 @@ const mockOrders: Order[] = [
     items: 8,
     date: "2024-01-04",
     origem: "pede-pronto",
+    unidade: "Unidade Centro",
   },
   {
     id: "5",
@@ -105,6 +110,7 @@ const mockOrders: Order[] = [
     items: 2,
     date: "2024-01-03",
     origem: "aiqfome",
+    unidade: "Unidade Norte",
   },
 ];
 
@@ -129,6 +135,14 @@ const columns: Column<Order>[] = [
           className="w-6 h-6 rounded object-cover"
         />
       </div>
+    ),
+  },
+  {
+    key: "unidade",
+    label: "Unidade",
+    sortable: true,
+    render: (item) => (
+      <span className="text-foreground">{item.unidade}</span>
     ),
   },
   {
