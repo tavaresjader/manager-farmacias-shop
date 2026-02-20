@@ -70,7 +70,7 @@ const Aplicativos = () => {
           <div
             onClick={() => setShowWhatsAppModal(true)}
             className={cn(
-              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group"
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
             )}
           >
             <div className="flex items-start justify-between mb-4">
@@ -85,7 +85,7 @@ const Aplicativos = () => {
             <p className="text-sm text-muted-foreground mb-3">
               Configurar mensagem automática de resposta
             </p>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mt-auto">
               <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
                 Mensagens
               </span>
@@ -99,14 +99,14 @@ const Aplicativos = () => {
           <div
             onClick={() => window.open("https://integrador.farmacias.shop?utm_source=MANAGER", "_blank")}
             className={cn(
-              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group"
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
             )}
           >
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Monitor className="w-6 h-6 text-primary" />
               </div>
-              <StatusBadge status="inactive" />
+              <StatusBadge status="active" />
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               Integrador
@@ -117,7 +117,7 @@ const Aplicativos = () => {
             <p className="text-xs text-amber-600 mb-3">
               *Verifique se seu sistema já está integrado com a Farmácias Shop
             </p>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mt-auto">
               <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
                 Sincronização
               </span>
