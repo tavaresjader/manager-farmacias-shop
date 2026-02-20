@@ -22,16 +22,7 @@ interface Aplicativo {
   icon?: "chart" | "shopping";
 }
 
-const mockAplicativos: Aplicativo[] = [
-  {
-    id: "1",
-    name: "Google Analytics",
-    description: "Análise de tráfego e comportamento do usuário",
-    category: "Analytics",
-    status: "active",
-    icon: "chart",
-  },
-];
+const mockAplicativos: Aplicativo[] = [];
 
 const getAppIcon = (icon?: Aplicativo["icon"]) => {
   if (!icon) return ShoppingBag;
