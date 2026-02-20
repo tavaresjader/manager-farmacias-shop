@@ -144,7 +144,26 @@ const Cadastro = () => {
                   <FormItem>
                     <FormLabel>CNPJ *</FormLabel>
                     <FormControl>
-                      <Input placeholder="00.000.000/0000-00" className="h-12" {...field} />
+                      <Input
+                        placeholder="00.000.000/0000-00"
+                        className="h-12"
+                        maxLength={18}
+                        {...field}
+                        onChange={(e) => {
+                          let value = e.target.value.replace(/\D/g, "");
+                          if (value.length > 14) value = value.slice(0, 14);
+                          if (value.length > 12) {
+                            value = `${value.slice(0, 2)}.${value.slice(2, 5)}.${value.slice(5, 8)}/${value.slice(8, 12)}-${value.slice(12)}`;
+                          } else if (value.length > 8) {
+                            value = `${value.slice(0, 2)}.${value.slice(2, 5)}.${value.slice(5, 8)}/${value.slice(8)}`;
+                          } else if (value.length > 5) {
+                            value = `${value.slice(0, 2)}.${value.slice(2, 5)}.${value.slice(5)}`;
+                          } else if (value.length > 2) {
+                            value = `${value.slice(0, 2)}.${value.slice(2)}`;
+                          }
+                          field.onChange(value);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
