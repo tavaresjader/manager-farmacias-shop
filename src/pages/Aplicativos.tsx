@@ -165,11 +165,6 @@ const Aplicativos = () => {
           })}
         </div>
 
-        {filteredApps.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            Nenhum aplicativo encontrado
-          </div>
-        )}
       </div>
     </MainLayout>
   );
