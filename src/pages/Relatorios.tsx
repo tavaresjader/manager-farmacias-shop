@@ -199,9 +199,21 @@ const Relatorios = () => {
             icon={DollarSign}
           />
           <MetricCard
-            title="Novos Clientes"
-            value="2.847"
-            change={{ value: 23, type: "positive" }}
+            title="Pedidos"
+            value="1.432"
+            change={{ value: 18, type: "positive" }}
+            icon={BarChart3}
+          />
+          <MetricCard
+            title="Cancelamentos"
+            value="24"
+            change={{ value: 8, type: "negative" }}
+            icon={Megaphone}
+          />
+          <MetricCard
+            title="Ticket Médio"
+            value="R$ 89,50"
+            change={{ value: 12, type: "positive" }}
             icon={Target}
           />
           <MetricCard
@@ -211,22 +223,10 @@ const Relatorios = () => {
             icon={TrendingUp}
           />
           <MetricCard
-            title="Cancelamentos"
-            value="24"
-            change={{ value: 8, type: "positive" }}
-            icon={Megaphone}
-          />
-          <MetricCard
             title="Clientes"
-            value="18"
-            change={{ value: 3, type: "positive" }}
+            value="2.847"
+            change={{ value: 23, type: "positive" }}
             icon={Users}
-          />
-          <MetricCard
-            title="Ticket Médio"
-            value="R$ 89,50"
-            change={{ value: 12, type: "positive" }}
-            icon={BarChart3}
           />
         </div>
 
