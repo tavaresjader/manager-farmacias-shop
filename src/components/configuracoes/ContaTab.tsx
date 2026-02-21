@@ -85,8 +85,7 @@ export function ContaTab() {
             <AlertDialogHeader>
               <AlertDialogTitle>Tem certeza que deseja excluir sua conta?</AlertDialogTitle>
               <AlertDialogDescription>
-                Esta ação não pode ser desfeita. Todos os seus dados, incluindo faturas, integrações e
-                colaboradores, serão permanentemente removidos.
+                Esta ação não pode ser desfeita. Todos os seus dados, incluindo pedidos, integrações, colaboradores e outros dados importantes, serão permanentemente removidos.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
