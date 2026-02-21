@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Plus, Eye, EyeOff, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
 const mockIntegracoes = [
@@ -31,7 +35,10 @@ const mockIntegracoes = [
 export function IntegracoesTab() {
   const { toast } = useToast();
   const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [novaIntegracao, setNovaIntegracao] = useState({ nome: "", unidade: "" });
 
+  const unidades = ["Matriz", "Filial Centro", "Filial Shopping"];
   const toggleSecretVisibility = (id: string) => {
     setVisibleSecrets((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -47,11 +54,63 @@ export function IntegracoesTab() {
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-foreground">Integrações</h2>
-        <Button onClick={() => console.log("Adicionar integração")}>
+        <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Adicionar integração
         </Button>
       </div>
+      
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Adicionar integração</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="nome-integracao">Nome da integração</Label>
+              <Input
+                id="nome-integracao"
+                placeholder="Ex: Integração 01"
+                value={novaIntegracao.nome}
+                onChange={(e) => setNovaIntegracao((prev) => ({ ...prev, nome: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="unidade-integracao">Unidade</Label>
+              <Select
+                value={novaIntegracao.unidade}
+                onValueChange={(value) => setNovaIntegracao((prev) => ({ ...prev, unidade: value }))}
+              >
+                <SelectTrigger id="unidade-integracao">
+                  <SelectValue placeholder="Selecione a unidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {unidades.map((unidade) => (
+                    <SelectItem key={unidade} value={unidade}>
+                      {unidade}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                toast({ description: "Integração adicionada com sucesso" });
+                setNovaIntegracao({ nome: "", unidade: "" });
+                setIsModalOpen(false);
+              }}
+              disabled={!novaIntegracao.nome || !novaIntegracao.unidade}
+            >
+              Adicionar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <div className="border border-border rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
