@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Plus, Eye, EyeOff, Copy } from "lucide-react";
+import { Plus, Eye, EyeOff, Copy, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -36,6 +37,7 @@ export function IntegracoesTab() {
   const { toast } = useToast();
   const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [novaIntegracao, setNovaIntegracao] = useState({ nome: "", unidade: "" });
 
   const unidades = ["Matriz", "Filial Centro", "Filial Shopping"];
@@ -119,6 +121,7 @@ export function IntegracoesTab() {
               <TableHead>Client ID</TableHead>
               <TableHead>Client Secret</TableHead>
               <TableHead>Unidade</TableHead>
+              <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -168,11 +171,44 @@ export function IntegracoesTab() {
                 <TableCell>
                   <span className="font-medium">{integracao.unidade}</span>
                 </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                    onClick={() => setDeleteId(integracao.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir integração</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir esta integração? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                toast({ description: "Integração excluída com sucesso" });
+                setDeleteId(null);
+              }}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
