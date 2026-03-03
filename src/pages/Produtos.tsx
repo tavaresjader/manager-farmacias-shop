@@ -111,11 +111,6 @@ const columns: Column<Produto>[] = [
       <span className="text-foreground">{item.categoria}</span>
     ),
   },
-  {
-    key: "status",
-    label: "Status",
-    render: (item) => <StatusBadge status={item.status} />,
-  },
 ];
 
 const Produtos = () => {
