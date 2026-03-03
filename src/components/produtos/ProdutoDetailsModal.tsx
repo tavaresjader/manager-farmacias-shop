@@ -23,7 +23,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Pencil, Save, Power, PowerOff, Package } from "lucide-react";
+import { Pencil, Save, Package } from "lucide-react";
 
 interface Produto {
   id: string;
@@ -88,8 +88,6 @@ export function ProdutoDetailsModal({
   onOpenChange,
 }: ProdutoDetailsModalProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [showInactivateConfirm, setShowInactivateConfirm] = useState(false);
-  const [showActivateConfirm, setShowActivateConfirm] = useState(false);
   const [unidades, setUnidades] = useState<UnidadeDisponibilidade[]>([]);
   const [editedUnidades, setEditedUnidades] = useState<UnidadeDisponibilidade[]>([]);
 
@@ -133,25 +131,6 @@ export function ProdutoDetailsModal({
     );
   };
 
-  const handleToggleStatus = () => {
-    if (produto.status === "active") {
-      setShowInactivateConfirm(true);
-    } else {
-      setShowActivateConfirm(true);
-    }
-  };
-
-  const handleConfirmActivate = () => {
-    toast.success(`Produto "${produto.nome}" ativado com sucesso!`);
-    setShowActivateConfirm(false);
-    onOpenChange(false);
-  };
-
-  const handleConfirmInactivate = () => {
-    toast.success(`Produto "${produto.nome}" inativado com sucesso!`);
-    setShowInactivateConfirm(false);
-    onOpenChange(false);
-  };
 
   const handleClose = (open: boolean) => {
     if (!open) {
@@ -323,67 +302,14 @@ export function ProdutoDetailsModal({
               </Button>
             </>
           ) : (
-            <>
-              <Button
-                variant={produto.status === "active" ? "outline" : "default"}
-                onClick={handleToggleStatus}
-                className="sm:mr-auto"
-              >
-                {produto.status === "active" ? (
-                  <>
-                    <PowerOff className="w-4 h-4 mr-2" />
-                    Inativar
-                  </>
-                ) : (
-                  <>
-                    <Power className="w-4 h-4 mr-2" />
-                    Ativar
-                  </>
-                )}
-              </Button>
-              <Button onClick={handleEdit}>
-                <Pencil className="w-4 h-4 mr-2" />
-                Editar
-              </Button>
-            </>
+            <Button onClick={handleEdit}>
+              <Pencil className="w-4 h-4 mr-2" />
+              Editar
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>
 
-      <AlertDialog open={showInactivateConfirm} onOpenChange={setShowInactivateConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar inativação</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja inativar o produto "{produto.nome}"? 
-              Esta ação pode ser revertida posteriormente.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmInactivate}>
-              Inativar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={showActivateConfirm} onOpenChange={setShowActivateConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar ativação</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja ativar o produto "{produto.nome}"?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmActivate}>
-              Ativar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </Dialog>
   );
 }
