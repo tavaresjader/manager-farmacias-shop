@@ -112,26 +112,6 @@ const columns: Column<Produto>[] = [
     ),
   },
   {
-    key: "preco",
-    label: "Preço",
-    sortable: true,
-    render: (item) => (
-      <span className="text-primary font-medium">
-        {item.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-      </span>
-    ),
-  },
-  {
-    key: "estoque",
-    label: "Estoque",
-    sortable: true,
-    render: (item) => (
-      <span className={item.estoque === 0 ? "text-destructive font-medium" : "text-foreground"}>
-        {item.estoque}
-      </span>
-    ),
-  },
-  {
     key: "status",
     label: "Status",
     render: (item) => <StatusBadge status={item.status} />,
