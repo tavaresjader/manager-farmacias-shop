@@ -62,7 +62,7 @@ const Login = () => {
       });
 
       if (response.error || !response.data) {
-        toast.error(response.error || "Credenciais inválidas");
+        toast.error("Login ou senha podem estar incorretos. Verifique e tente novamente.");
         return;
       }
 
