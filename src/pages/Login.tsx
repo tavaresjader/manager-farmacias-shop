@@ -76,7 +76,7 @@ const Login = () => {
         toast.error("Token não encontrado na resposta.");
       }
     } catch (error) {
-      toast.error("Erro ao realizar login. Tente novamente.");
+      toast.error("Login ou senha podem estar incorretos. Verifique e tente novamente.");
     } finally {
       setIsLoading(false);
     }
