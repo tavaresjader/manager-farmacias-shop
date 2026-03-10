@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { useAuth } from "@/contexts/AuthContext";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
 import { loginSchema, forgotPasswordSchema, type LoginFormData } from "@/lib/validations";
 import {
   Form,
@@ -54,12 +55,31 @@ const Login = () => {
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setAuthToken("temp_token_" + Date.now());
-      toast.success("Login realizado com sucesso!");
-      navigate(from, { replace: true });
+    try {
+      const response = await managerBackendBff.signIn({
+        email: data.email,
+        password: data.senha,
+      });
+
+      if (response.error || !response.data) {
+        toast.error(response.error || "Credenciais inválidas");
+        return;
+      }
+
+      const accessToken = (response.data as any).access_token;
+      if (accessToken) {
+        sessionStorage.setItem("FarmaciasShopManagerAccessToken", accessToken);
+        setAuthToken(accessToken);
+        toast.success("Login realizado com sucesso!");
+        navigate(from, { replace: true });
+      } else {
+        toast.error("Token não encontrado na resposta.");
+      }
+    } catch (error) {
+      toast.error("Erro ao realizar login. Tente novamente.");
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   return (

@@ -88,7 +88,7 @@ export class ManagerBackendBff {
    */
   async signIn(credentials: SignInRequest): Promise<ApiResponse<SignInResponse>> {
     try {
-      const url = this.buildUrl("/auth/signin");
+      const url = this.buildUrl("/v1/SignIn/validate");
       const response = await fetch(url, {
         method: "POST",
         headers: this.defaultHeaders,
