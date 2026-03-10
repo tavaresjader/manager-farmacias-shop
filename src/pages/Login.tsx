@@ -54,12 +54,31 @@ const Login = () => {
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setAuthToken("temp_token_" + Date.now());
-      toast.success("Login realizado com sucesso!");
-      navigate(from, { replace: true });
+    try {
+      const response = await managerBackendBff.signIn({
+        email: data.email,
+        password: data.senha,
+      });
+
+      if (response.error || !response.data) {
+        toast.error(response.error || "Credenciais inválidas");
+        return;
+      }
+
+      const accessToken = (response.data as any).access_token;
+      if (accessToken) {
+        sessionStorage.setItem("FarmaciasShopManagerAccessToken", accessToken);
+        setAuthToken(accessToken);
+        toast.success("Login realizado com sucesso!");
+        navigate(from, { replace: true });
+      } else {
+        toast.error("Token não encontrado na resposta.");
+      }
+    } catch (error) {
+      toast.error("Erro ao realizar login. Tente novamente.");
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   return (
