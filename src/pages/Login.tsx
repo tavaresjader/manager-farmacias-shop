@@ -11,14 +11,7 @@ import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
 import { loginSchema, forgotPasswordSchema, type LoginFormData } from "@/lib/validations";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 
 interface LocationState {
   from?: {
@@ -31,9 +24,9 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setAuthToken } = useAuth();
-  
+
   const from = (location.state as LocationState)?.from?.pathname || "/";
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
@@ -66,7 +59,7 @@ const Login = () => {
         return;
       }
 
-      const accessToken = (response.data as any).access_token;
+      const accessToken = (response.data as any).accessToken;
       if (accessToken) {
         sessionStorage.setItem("FarmaciasShopManagerAccessToken", accessToken);
         setAuthToken(accessToken);
@@ -88,18 +81,14 @@ const Login = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <img 
-              src={logoFarmaciaShop} 
-              alt="Farmácia Shop" 
-              className="w-16 h-16 rounded-xl"
-            />
+            <img src={logoFarmaciaShop} alt="Farmácia Shop" className="w-16 h-16 rounded-xl" />
           </div>
           <h1 className="font-heading text-3xl font-bold text-foreground mb-2">
             {isForgotPassword ? "Recuperar senha" : "Bem-vindo de volta"}
           </h1>
           <p className="text-muted-foreground">
-            {isForgotPassword 
-              ? "Digite seu e-mail para receber o link de recuperação" 
+            {isForgotPassword
+              ? "Digite seu e-mail para receber o link de recuperação"
               : "Entre na sua conta para continuar"}
           </p>
         </div>
@@ -119,12 +108,7 @@ const Login = () => {
                       E-mail
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="seu@email.com"
-                        className="h-12"
-                        {...field}
-                      />
+                      <Input type="email" placeholder="seu@email.com" className="h-12" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -155,11 +139,7 @@ const Login = () => {
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                           >
-                            {showPassword ? (
-                              <EyeOff className="w-5 h-5" />
-                            ) : (
-                              <Eye className="w-5 h-5" />
-                            )}
+                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                           </button>
                         </div>
                       </FormControl>
@@ -183,14 +163,14 @@ const Login = () => {
               )}
 
               {/* Submit Button */}
-              <Button 
-                type="submit" 
-                className="w-full h-12 text-base font-semibold"
-                disabled={isLoading}
-              >
-                {isLoading 
-                  ? (isForgotPassword ? "Enviando..." : "Entrando...") 
-                  : (isForgotPassword ? "Recuperar senha" : "Entrar")}
+              <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={isLoading}>
+                {isLoading
+                  ? isForgotPassword
+                    ? "Enviando..."
+                    : "Entrando..."
+                  : isForgotPassword
+                    ? "Recuperar senha"
+                    : "Entrar"}
               </Button>
 
               {/* Voltar ao login */}
