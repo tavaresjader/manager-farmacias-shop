@@ -1,8 +1,10 @@
 const MANAGER_API_URL = "https://manager-api.farmacias.shop";
+const BACKBONE_API_URL = "https://backbone-api.farmacias.shop";
 
 interface RequestOptions {
   headers?: Record<string, string>;
   params?: Record<string, string | number | boolean>;
+  baseUrl?: string;
 }
 
 interface ApiResponse<T> {
