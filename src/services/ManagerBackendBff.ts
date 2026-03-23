@@ -1,5 +1,5 @@
 const MANAGER_API_URL = "https://manager-api.farmacias.shop";
-const BACKBONE_API_URL = "https://backbone-api.farmacias.shop";
+export const BACKBONE_API_URL = "https://backbone-api.farmacias.shop";
 
 interface RequestOptions {
   headers?: Record<string, string>;
