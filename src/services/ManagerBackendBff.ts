@@ -1,8 +1,10 @@
 const MANAGER_API_URL = "https://manager-api.farmacias.shop";
+export const BACKBONE_API_URL = "https://backbone-api.farmacias.shop";
 
 interface RequestOptions {
   headers?: Record<string, string>;
   params?: Record<string, string | number | boolean>;
+  baseUrl?: string;
 }
 
 interface ApiResponse<T> {
@@ -37,8 +39,8 @@ export class ManagerBackendBff {
     };
   }
 
-  private buildUrl(endpoint: string, params?: Record<string, string | number | boolean>): string {
-    const url = new URL(`${this.baseUrl}${endpoint}`);
+  private buildUrl(endpoint: string, params?: Record<string, string | number | boolean>, baseUrl?: string): string {
+    const url = new URL(`${baseUrl || this.baseUrl}${endpoint}`);
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         url.searchParams.append(key, String(value));
@@ -136,7 +138,7 @@ export class ManagerBackendBff {
       // Require authentication for all API calls
       this.requireAuth();
       
-      const url = this.buildUrl(endpoint, options?.params);
+      const url = this.buildUrl(endpoint, options?.params, options?.baseUrl);
       const response = await fetch(url, {
         method: "GET",
         headers: this.mergeHeaders(options?.headers),

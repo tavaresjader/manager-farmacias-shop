@@ -1,15 +1,20 @@
-import { Plus, Eye } from "lucide-react";
- import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Plus, Eye, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { managerBackendBff, BACKBONE_API_URL } from "@/services/ManagerBackendBff";
+import { toast } from "sonner";
 
-const mockColaboradores = [
-  { id: "1", nome: "João Silva", email: "joao.silva@empresa.com", situacao: "ativo" },
-  { id: "2", nome: "Maria Santos", email: "maria.santos@empresa.com", situacao: "ativo" },
-  { id: "3", nome: "Carlos Oliveira", email: "carlos.oliveira@empresa.com", situacao: "inativo" },
-  { id: "4", nome: "Ana Costa", email: "ana.costa@empresa.com", situacao: "ativo" },
-];
+interface Employee {
+  id: string;
+  name: string;
+  email: string;
+  active: boolean;
+  master: boolean;
+  merchants?: string[];
+}
 
 const colaboradorStatusConfig: Record<string, { label: string; variant: "default" | "secondary" }> = {
   ativo: { label: "Ativo", variant: "default" },
@@ -17,8 +22,37 @@ const colaboradorStatusConfig: Record<string, { label: string; variant: "default
 };
 
 export function ColaboradoresTab() {
-   const navigate = useNavigate();
- 
+  const navigate = useNavigate();
+  const [colaboradores, setColaboradores] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchColaboradores();
+  }, []);
+
+  const fetchColaboradores = async () => {
+    setIsLoading(true);
+    try {
+      const response = await managerBackendBff.get<Employee[]>("/v1/Accounts/employees", {
+        baseUrl: BACKBONE_API_URL,
+      });
+
+      if (response.error) {
+        toast.error("Erro ao carregar colaboradores.");
+        console.error(response.error);
+      } else if (response.data) {
+        setColaboradores(response.data);
+      }
+    } catch (error) {
+      toast.error("Erro ao carregar colaboradores.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getSituacao = (active: boolean) => (active ? "ativo" : "inativo");
+
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
@@ -39,27 +73,44 @@ export function ColaboradoresTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockColaboradores.map((colaborador) => (
-              <TableRow key={colaborador.id}>
-                <TableCell className="font-medium">{colaborador.nome}</TableCell>
-                <TableCell>{colaborador.email}</TableCell>
-                <TableCell>
-                  <Badge variant={colaboradorStatusConfig[colaborador.situacao].variant}>
-                    {colaboradorStatusConfig[colaborador.situacao].label}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                     onClick={() => navigate(`/configuracoes/colaboradores/${colaborador.id}`)}
-                  >
-                    <Eye className="w-4 h-4" />
-                  </Button>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8">
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto text-muted-foreground" />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : colaboradores.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                  Nenhum colaborador encontrado.
+                </TableCell>
+              </TableRow>
+            ) : (
+              colaboradores.map((colaborador) => {
+                const situacao = getSituacao(colaborador.active);
+                return (
+                  <TableRow key={colaborador.id}>
+                    <TableCell className="font-medium">{colaborador.name}</TableCell>
+                    <TableCell>{colaborador.email}</TableCell>
+                    <TableCell>
+                      <Badge variant={colaboradorStatusConfig[situacao].variant}>
+                        {colaboradorStatusConfig[situacao].label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                        onClick={() => navigate(`/configuracoes/colaboradores/${colaborador.id}`)}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </div>
