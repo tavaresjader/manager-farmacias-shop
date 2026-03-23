@@ -33,9 +33,7 @@ export function ColaboradoresTab() {
   const fetchColaboradores = async () => {
     setIsLoading(true);
     try {
-      const response = await managerBackendBff.get<Employee[]>("/v1/Accounts/employees", {
-        baseUrl: BACKBONE_API_URL,
-      });
+      const response = await managerBackendBff.get<Employee[]>("/v1/Accounts/employees");
 
       if (response.error) {
         toast.error("Erro ao carregar colaboradores.");
