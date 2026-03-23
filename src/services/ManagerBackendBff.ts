@@ -138,7 +138,7 @@ export class ManagerBackendBff {
       // Require authentication for all API calls
       this.requireAuth();
       
-      const url = this.buildUrl(endpoint, options?.params);
+      const url = this.buildUrl(endpoint, options?.params, options?.baseUrl);
       const response = await fetch(url, {
         method: "GET",
         headers: this.mergeHeaders(options?.headers),
