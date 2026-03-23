@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { managerBackendBff, BACKBONE_API_URL } from "@/services/ManagerBackendBff";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
 import { toast } from "sonner";
 
 interface Employee {
@@ -33,9 +33,7 @@ export function ColaboradoresTab() {
   const fetchColaboradores = async () => {
     setIsLoading(true);
     try {
-      const response = await managerBackendBff.get<Employee[]>("/v1/Accounts/employees", {
-        baseUrl: BACKBONE_API_URL,
-      });
+      const response = await managerBackendBff.get<Employee[]>("/v1/Accounts/employees");
 
       if (response.error) {
         toast.error("Erro ao carregar colaboradores.");
