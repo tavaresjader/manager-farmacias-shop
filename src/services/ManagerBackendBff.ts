@@ -39,8 +39,8 @@ export class ManagerBackendBff {
     };
   }
 
-  private buildUrl(endpoint: string, params?: Record<string, string | number | boolean>): string {
-    const url = new URL(`${this.baseUrl}${endpoint}`);
+  private buildUrl(endpoint: string, params?: Record<string, string | number | boolean>, baseUrl?: string): string {
+    const url = new URL(`${baseUrl || this.baseUrl}${endpoint}`);
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         url.searchParams.append(key, String(value));
