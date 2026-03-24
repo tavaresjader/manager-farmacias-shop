@@ -160,8 +160,10 @@ const Produtos = () => {
       <div className="space-y-4">
         <SearchBar
           placeholder="Pesquisar por nome, SKU ou categoria..."
+          value={searchQuery}
           onSearch={(value) => {
             setSearchQuery(value);
+            setFilters((prev) => ({ ...prev, nome: value }));
             setCurrentPage(1);
           }}
           onFilter={() => setFilterModalOpen(true)}
