@@ -95,10 +95,21 @@ const Produtos = () => {
       if (filters.categoria && filters.categoria !== "all") params.category = filters.categoria;
       if (filters.nome) params.name = filters.nome;
 
-      const response = await managerBackendBff.get<{ items: Produto[]; totalItems: number }>("/v1/Products", { params });
+      const response = await managerBackendBff.get<{ results: any[]; totalPages: number }>("/v1/Products", { params });
       if (response.data) {
-        setProdutos(response.data.items ?? response.data as any);
-        setTotalItems(response.data.totalItems ?? (Array.isArray(response.data) ? (response.data as any).length : 0));
+        const results = response.data.results ?? [];
+        setProdutos(results.map((p: any) => ({
+          id: p.id,
+          nome: p.name ?? "",
+          sku: p.externalCode ?? "",
+          ean: "",
+          categoria: p.categoryName ?? "",
+          preco: 0,
+          estoque: 0,
+          status: "active" as const,
+          controlado: false,
+        })));
+        setTotalItems((response.data.totalPages ?? 1) * pageSize);
       } else if (response.error) {
         toast.error("Erro ao carregar produtos: " + response.error);
       }
