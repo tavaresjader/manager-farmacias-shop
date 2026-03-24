@@ -26,7 +26,7 @@ export function SearchBar({
   };
 
   const handleClear = () => {
-    setValue("");
+    setInternalValue("");
     onSearch?.("");
   };
 
