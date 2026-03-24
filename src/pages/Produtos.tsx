@@ -87,9 +87,11 @@ const Produtos = () => {
   useEffect(() => {
     const fetchProdutos = async () => {
       setLoadingProdutos(true);
+      const limit = pageSize;
+      const offset = (currentPage - 1) * pageSize;
       const params: Record<string, string | number | boolean> = {
-        page: currentPage,
-        pageSize,
+        limit,
+        offset,
       };
       if (searchQuery) params.search = searchQuery;
       if (filters.categoria && filters.categoria !== "all") params.category = filters.categoria;
