@@ -25,64 +25,6 @@ interface Produto {
   controlado: boolean;
 }
 
-const mockProdutos: Produto[] = [
-  {
-    id: "1",
-    nome: "Camiseta Básica",
-    sku: "CAM-001",
-    ean: "7891234567890",
-    categoria: "Vestuário",
-    preco: 59.90,
-    estoque: 150,
-    status: "active",
-    controlado: false,
-  },
-  {
-    id: "2",
-    nome: "Tênis Esportivo",
-    sku: "TEN-002",
-    ean: "7891234567891",
-    categoria: "Calçados",
-    preco: 299.90,
-    estoque: 45,
-    status: "active",
-    controlado: false,
-  },
-  {
-    id: "3",
-    nome: "Bolsa Couro",
-    sku: "BOL-003",
-    ean: "7891234567892",
-    categoria: "Acessórios",
-    preco: 189.90,
-    estoque: 0,
-    status: "inactive",
-    controlado: true,
-  },
-  {
-    id: "4",
-    nome: "Relógio Digital",
-    sku: "REL-004",
-    ean: "7891234567893",
-    categoria: "Acessórios",
-    preco: 459.90,
-    estoque: 23,
-    status: "active",
-    controlado: false,
-  },
-  {
-    id: "5",
-    nome: "Jaqueta Jeans",
-    sku: "JAQ-005",
-    ean: "7891234567894",
-    categoria: "Vestuário",
-    preco: 349.90,
-    estoque: 8,
-    status: "pending",
-    controlado: true,
-  },
-];
-
 const initialFilters: ProdutoFilters = {
   categoria: "all",
   nome: "",
@@ -126,6 +68,9 @@ const Produtos = () => {
   const [selectedProduto, setSelectedProduto] = useState<Produto | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [categorias, setCategorias] = useState<CategoriaOption[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [loadingProdutos, setLoadingProdutos] = useState(false);
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -139,27 +84,30 @@ const Produtos = () => {
     fetchCategorias();
   }, []);
 
-  const filteredProdutos = mockProdutos.filter((produto) => {
-    const matchesSearch =
-      produto.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      produto.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      produto.categoria.toLowerCase().includes(searchQuery.toLowerCase());
+  useEffect(() => {
+    const fetchProdutos = async () => {
+      setLoadingProdutos(true);
+      const params: Record<string, string | number | boolean> = {
+        page: currentPage,
+        pageSize,
+      };
+      if (searchQuery) params.search = searchQuery;
+      if (filters.categoria && filters.categoria !== "all") params.category = filters.categoria;
+      if (filters.nome) params.name = filters.nome;
 
-    const matchesCategoria =
-      filters.categoria === "all" || produto.categoria === filters.categoria;
+      const response = await managerBackendBff.get<{ items: Produto[]; totalItems: number }>("/v1/Products", { params });
+      if (response.data) {
+        setProdutos(response.data.items ?? response.data as any);
+        setTotalItems(response.data.totalItems ?? (Array.isArray(response.data) ? (response.data as any).length : 0));
+      } else if (response.error) {
+        toast.error("Erro ao carregar produtos: " + response.error);
+      }
+      setLoadingProdutos(false);
+    };
+    fetchProdutos();
+  }, [currentPage, pageSize, searchQuery, filters]);
 
-    const matchesNome =
-      !filters.nome ||
-      produto.nome.toLowerCase().includes(filters.nome.toLowerCase());
-
-    return matchesSearch && matchesCategoria && matchesNome;
-  });
-
-  const totalPages = Math.ceil(filteredProdutos.length / pageSize);
-  const paginatedProdutos = filteredProdutos.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const totalPages = Math.ceil(totalItems / pageSize);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -208,14 +156,14 @@ const Produtos = () => {
 
         <DataTable
           columns={columns}
-          data={paginatedProdutos}
+          data={produtos}
           emptyMessage="Nenhum produto encontrado"
           onRowClick={handleRowClick}
           pagination={{
             currentPage,
             totalPages,
             pageSize,
-            totalItems: filteredProdutos.length,
+            totalItems,
             onPageChange: handlePageChange,
             onPageSizeChange: handlePageSizeChange,
           }}
