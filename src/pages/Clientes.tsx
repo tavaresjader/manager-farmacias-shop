@@ -319,6 +319,7 @@ const Clientes = () => {
           columns={columns}
           data={filteredClients}
           emptyMessage="Nenhum cliente encontrado"
+          loading={isLoading}
           onRowClick={handleRowClick}
         />
 

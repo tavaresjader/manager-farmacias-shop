@@ -293,6 +293,7 @@ const Dashboard = () => {
           columns={columns}
           data={paginatedOrders}
           emptyMessage="Nenhum pedido encontrado"
+          loading={isLoading}
         />
 
         {/* Pagination */}

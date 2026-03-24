@@ -327,6 +327,7 @@ const Pedidos = () => {
           columns={columns}
           data={paginatedPedidos}
           emptyMessage="Nenhum pedido encontrado"
+          loading={isLoading}
           onRowClick={handleRowClick}
         />
 
