@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -43,6 +43,12 @@ export function ProdutoFilterModal({
   categorias,
 }: ProdutoFilterModalProps) {
   const [localFilters, setLocalFilters] = useState<ProdutoFilters>(filters);
+
+  useEffect(() => {
+    if (open) {
+      setLocalFilters(filters);
+    }
+  }, [open, filters]);
 
   const handleApply = () => {
     onApplyFilters(localFilters);
