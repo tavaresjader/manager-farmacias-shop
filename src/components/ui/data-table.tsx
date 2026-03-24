@@ -44,6 +44,7 @@ export function DataTable<T extends { id: string | number }>({
   onRowClick,
   emptyMessage = "Nenhum registro encontrado",
   pagination,
+  loading = false,
 }: DataTableProps<T>) {
   return (
     <div className="card-elevated overflow-hidden">
