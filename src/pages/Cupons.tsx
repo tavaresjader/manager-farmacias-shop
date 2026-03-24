@@ -190,6 +190,7 @@ const Cupons = () => {
           columns={columns}
           data={filteredCupons}
           emptyMessage="Nenhum cupom encontrado"
+          loading={isLoading}
           onRowClick={handleRowClick}
           pagination={{
             currentPage: 1,
