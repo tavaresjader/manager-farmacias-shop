@@ -133,6 +133,7 @@ const Produtos = () => {
 
   const handleApplyFilters = (newFilters: ProdutoFilters) => {
     setFilters(newFilters);
+    setSearchQuery(newFilters.nome);
     setCurrentPage(1);
   };
 
