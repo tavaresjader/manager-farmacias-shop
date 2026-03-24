@@ -79,19 +79,19 @@ import {
      );
    }
  
-   if (!colaborador) {
-     return (
-       <MainLayout>
-         <div className="p-6">
-           <p className="text-muted-foreground">Colaborador não encontrado.</p>
-           <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")} className="mt-4">
-             <ArrowLeft className="w-4 h-4 mr-2" />
-             Voltar
-           </Button>
-         </div>
-       </MainLayout>
-     );
-   }
+    if (!isNew && !colaborador) {
+      return (
+        <MainLayout>
+          <div className="p-6">
+            <p className="text-muted-foreground">Colaborador não encontrado.</p>
+            <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")} className="mt-4">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar
+            </Button>
+          </div>
+        </MainLayout>
+      );
+    }
  
    return (
      <MainLayout>
