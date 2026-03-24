@@ -95,7 +95,6 @@ const Produtos = () => {
       };
       if (searchQuery) params.Term = searchQuery;
       if (filters.categoria && filters.categoria !== "all") params.CategoryId = filters.categoria;
-      if (filters.nome) params.Term = filters.nome;
 
       const response = await managerBackendBff.get<{ results: any[]; totalPages: number }>("/v1/Products", { params });
       if (response.data) {
@@ -133,6 +132,7 @@ const Produtos = () => {
 
   const handleApplyFilters = (newFilters: ProdutoFilters) => {
     setFilters(newFilters);
+    setSearchQuery(newFilters.nome);
     setCurrentPage(1);
   };
 
@@ -159,8 +159,10 @@ const Produtos = () => {
       <div className="space-y-4">
         <SearchBar
           placeholder="Pesquisar por nome, SKU ou categoria..."
+          value={searchQuery}
           onSearch={(value) => {
             setSearchQuery(value);
+            setFilters((prev) => ({ ...prev, nome: value }));
             setCurrentPage(1);
           }}
           onFilter={() => setFilterModalOpen(true)}
