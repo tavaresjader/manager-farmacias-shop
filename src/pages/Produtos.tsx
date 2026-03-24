@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -8,8 +8,10 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
 import { Package } from "lucide-react";
-import { ProdutoFilterModal, ProdutoFilters } from "@/components/produtos/ProdutoFilterModal";
+import { ProdutoFilterModal, ProdutoFilters, CategoriaOption } from "@/components/produtos/ProdutoFilterModal";
 import { ProdutoDetailsModal } from "@/components/produtos/ProdutoDetailsModal";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { toast } from "sonner";
 
 interface Produto {
   id: string;

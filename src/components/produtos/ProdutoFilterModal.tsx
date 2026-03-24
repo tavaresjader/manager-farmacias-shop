@@ -80,7 +80,7 @@ export function ProdutoFilterModal({
                 <SelectValue placeholder="Selecione a categoria" />
               </SelectTrigger>
               <SelectContent>
-                {categoriaOptions.map((option) => (
+                {[{ value: "all", label: "Todas as categorias" }, ...categorias].map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
