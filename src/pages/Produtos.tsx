@@ -25,64 +25,6 @@ interface Produto {
   controlado: boolean;
 }
 
-const mockProdutos: Produto[] = [
-  {
-    id: "1",
-    nome: "Camiseta Básica",
-    sku: "CAM-001",
-    ean: "7891234567890",
-    categoria: "Vestuário",
-    preco: 59.90,
-    estoque: 150,
-    status: "active",
-    controlado: false,
-  },
-  {
-    id: "2",
-    nome: "Tênis Esportivo",
-    sku: "TEN-002",
-    ean: "7891234567891",
-    categoria: "Calçados",
-    preco: 299.90,
-    estoque: 45,
-    status: "active",
-    controlado: false,
-  },
-  {
-    id: "3",
-    nome: "Bolsa Couro",
-    sku: "BOL-003",
-    ean: "7891234567892",
-    categoria: "Acessórios",
-    preco: 189.90,
-    estoque: 0,
-    status: "inactive",
-    controlado: true,
-  },
-  {
-    id: "4",
-    nome: "Relógio Digital",
-    sku: "REL-004",
-    ean: "7891234567893",
-    categoria: "Acessórios",
-    preco: 459.90,
-    estoque: 23,
-    status: "active",
-    controlado: false,
-  },
-  {
-    id: "5",
-    nome: "Jaqueta Jeans",
-    sku: "JAQ-005",
-    ean: "7891234567894",
-    categoria: "Vestuário",
-    preco: 349.90,
-    estoque: 8,
-    status: "pending",
-    controlado: true,
-  },
-];
-
 const initialFilters: ProdutoFilters = {
   categoria: "all",
   nome: "",
