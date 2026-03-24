@@ -55,7 +55,7 @@ export function ColaboradoresTab() {
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-foreground">Colaboradores</h2>
-        <Button onClick={() => console.log("Adicionar colaborador")}>
+        <Button onClick={() => navigate("/configuracoes/colaboradores/novo")}>
           <Plus className="w-4 h-4 mr-2" />
           Adicionar colaborador
         </Button>

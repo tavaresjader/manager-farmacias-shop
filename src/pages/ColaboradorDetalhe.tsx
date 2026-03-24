@@ -209,42 +209,44 @@ import {
            </Card>
             )}
  
-            {/* Botões de Ação */}
-            <div className="flex justify-between">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Remover
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Remover colaborador</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Tem certeza que deseja remover este colaborador? Esta ação não pode ser desfeita.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRemove}>
-                      Confirmar remoção
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+             {/* Botões de Ação */}
+             <div className="flex justify-between">
+               {!isNew ? (
+                 <AlertDialog>
+                   <AlertDialogTrigger asChild>
+                     <Button variant="destructive">
+                       <Trash2 className="w-4 h-4 mr-2" />
+                       Remover
+                     </Button>
+                   </AlertDialogTrigger>
+                   <AlertDialogContent>
+                     <AlertDialogHeader>
+                       <AlertDialogTitle>Remover colaborador</AlertDialogTitle>
+                       <AlertDialogDescription>
+                         Tem certeza que deseja remover este colaborador? Esta ação não pode ser desfeita.
+                       </AlertDialogDescription>
+                     </AlertDialogHeader>
+                     <AlertDialogFooter>
+                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                       <AlertDialogAction onClick={handleRemove}>
+                         Confirmar remoção
+                       </AlertDialogAction>
+                     </AlertDialogFooter>
+                   </AlertDialogContent>
+                 </AlertDialog>
+               ) : <div />}
 
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Voltar
-                </Button>
-                <Button onClick={handleSave}>
-               <Save className="w-4 h-4 mr-2" />
-               Salvar alterações
-             </Button>
-              </div>
-           </div>
+               <div className="flex gap-3">
+                 <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")}>
+                   <ArrowLeft className="w-4 h-4 mr-2" />
+                   Voltar
+                 </Button>
+                 <Button onClick={handleSave}>
+                   <Save className="w-4 h-4 mr-2" />
+                   {isNew ? "Criar colaborador" : "Salvar alterações"}
+                 </Button>
+               </div>
+            </div>
          </div>
        </div>
      </MainLayout>
