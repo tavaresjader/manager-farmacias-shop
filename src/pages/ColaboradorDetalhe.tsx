@@ -96,7 +96,7 @@ import {
    return (
      <MainLayout>
        <div className="p-6 max-w-4xl">
-          <h1 className="text-2xl font-semibold text-foreground mb-6">Colaborador</h1>
+          <h1 className="text-2xl font-semibold text-foreground mb-6">{isNew ? "Novo Colaborador" : "Colaborador"}</h1>
  
          <div className="space-y-6">
            {/* Dados do Colaborador */}
