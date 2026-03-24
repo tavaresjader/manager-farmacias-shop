@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -8,8 +8,10 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
 import { Package } from "lucide-react";
-import { ProdutoFilterModal, ProdutoFilters } from "@/components/produtos/ProdutoFilterModal";
+import { ProdutoFilterModal, ProdutoFilters, CategoriaOption } from "@/components/produtos/ProdutoFilterModal";
 import { ProdutoDetailsModal } from "@/components/produtos/ProdutoDetailsModal";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { toast } from "sonner";
 
 interface Produto {
   id: string;
@@ -123,6 +125,19 @@ const Produtos = () => {
   const [filters, setFilters] = useState<ProdutoFilters>(initialFilters);
   const [selectedProduto, setSelectedProduto] = useState<Produto | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [categorias, setCategorias] = useState<CategoriaOption[]>([]);
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      const response = await managerBackendBff.get<string[]>("/v1/Products/categories");
+      if (response.data) {
+        setCategorias(response.data.map((cat) => ({ value: cat, label: cat })));
+      } else if (response.error) {
+        toast.error("Erro ao carregar categorias: " + response.error);
+      }
+    };
+    fetchCategorias();
+  }, []);
 
   const filteredProdutos = mockProdutos.filter((produto) => {
     const matchesSearch =
@@ -212,6 +227,7 @@ const Produtos = () => {
         onOpenChange={setFilterModalOpen}
         filters={filters}
         onApplyFilters={handleApplyFilters}
+        categorias={categorias}
       />
 
       <ProdutoDetailsModal

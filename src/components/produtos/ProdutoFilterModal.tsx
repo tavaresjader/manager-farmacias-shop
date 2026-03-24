@@ -22,27 +22,25 @@ export interface ProdutoFilters {
   nome: string;
 }
 
+export interface CategoriaOption {
+  value: string;
+  label: string;
+}
+
 interface ProdutoFilterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   filters: ProdutoFilters;
   onApplyFilters: (filters: ProdutoFilters) => void;
+  categorias: CategoriaOption[];
 }
-
-const categoriaOptions = [
-  { value: "all", label: "Todas as categorias" },
-  { value: "Vestuário", label: "Vestuário" },
-  { value: "Calçados", label: "Calçados" },
-  { value: "Acessórios", label: "Acessórios" },
-  { value: "Eletrônicos", label: "Eletrônicos" },
-  { value: "Alimentos", label: "Alimentos" },
-];
 
 export function ProdutoFilterModal({
   open,
   onOpenChange,
   filters,
   onApplyFilters,
+  categorias,
 }: ProdutoFilterModalProps) {
   const [localFilters, setLocalFilters] = useState<ProdutoFilters>(filters);
 
@@ -82,7 +80,7 @@ export function ProdutoFilterModal({
                 <SelectValue placeholder="Selecione a categoria" />
               </SelectTrigger>
               <SelectContent>
-                {categoriaOptions.map((option) => (
+                {[{ value: "all", label: "Todas as categorias" }, ...categorias].map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
