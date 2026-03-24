@@ -156,14 +156,14 @@ const Produtos = () => {
 
         <DataTable
           columns={columns}
-          data={paginatedProdutos}
+          data={produtos}
           emptyMessage="Nenhum produto encontrado"
           onRowClick={handleRowClick}
           pagination={{
             currentPage,
             totalPages,
             pageSize,
-            totalItems: filteredProdutos.length,
+            totalItems,
             onPageChange: handlePageChange,
             onPageSizeChange: handlePageSizeChange,
           }}
