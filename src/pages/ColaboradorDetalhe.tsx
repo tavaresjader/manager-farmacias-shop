@@ -39,19 +39,20 @@ import {
  ];
  
  const ColaboradorDetalhe = () => {
-   const { id } = useParams();
-   const navigate = useNavigate();
-   usePageTitle("Editar Colaborador");
-   const isLoading = usePageLoading();
- 
-   const colaborador = mockColaboradores.find((c) => c.id === id);
- 
-   const [nome, setNome] = useState(colaborador?.nome || "");
-   const [email, setEmail] = useState(colaborador?.email || "");
-   const [ativo, setAtivo] = useState(colaborador?.situacao === "ativo");
-  const [master, setMaster] = useState(colaborador?.master || false);
-   const [unidadesSelecionadas, setUnidadesSelecionadas] = useState<string[]>(["1", "2"]);
- 
+  const { id } = useParams();
+    const navigate = useNavigate();
+    const isNew = id === "novo";
+    usePageTitle(isNew ? "Novo Colaborador" : "Editar Colaborador");
+    const isLoading = usePageLoading();
+  
+    const colaborador = isNew ? null : mockColaboradores.find((c) => c.id === id);
+  
+    const [nome, setNome] = useState(colaborador?.nome || "");
+    const [email, setEmail] = useState(colaborador?.email || "");
+    const [ativo, setAtivo] = useState(isNew ? true : colaborador?.situacao === "ativo");
+    const [master, setMaster] = useState(colaborador?.master || false);
+    const [unidadesSelecionadas, setUnidadesSelecionadas] = useState<string[]>(isNew ? [] : ["1", "2"]);
+  
    const handleUnidadeToggle = (unidadeId: string) => {
      setUnidadesSelecionadas((prev) =>
        prev.includes(unidadeId)
@@ -78,24 +79,24 @@ import {
      );
    }
  
-   if (!colaborador) {
-     return (
-       <MainLayout>
-         <div className="p-6">
-           <p className="text-muted-foreground">Colaborador não encontrado.</p>
-           <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")} className="mt-4">
-             <ArrowLeft className="w-4 h-4 mr-2" />
-             Voltar
-           </Button>
-         </div>
-       </MainLayout>
-     );
-   }
+    if (!isNew && !colaborador) {
+      return (
+        <MainLayout>
+          <div className="p-6">
+            <p className="text-muted-foreground">Colaborador não encontrado.</p>
+            <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")} className="mt-4">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar
+            </Button>
+          </div>
+        </MainLayout>
+      );
+    }
  
    return (
      <MainLayout>
        <div className="p-6 max-w-4xl">
-          <h1 className="text-2xl font-semibold text-foreground mb-6">Colaborador</h1>
+          <h1 className="text-2xl font-semibold text-foreground mb-6">{isNew ? "Novo Colaborador" : "Colaborador"}</h1>
  
          <div className="space-y-6">
            {/* Dados do Colaborador */}
@@ -208,42 +209,44 @@ import {
            </Card>
             )}
  
-            {/* Botões de Ação */}
-            <div className="flex justify-between">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Remover
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Remover colaborador</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Tem certeza que deseja remover este colaborador? Esta ação não pode ser desfeita.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRemove}>
-                      Confirmar remoção
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+             {/* Botões de Ação */}
+             <div className="flex justify-between">
+               {!isNew ? (
+                 <AlertDialog>
+                   <AlertDialogTrigger asChild>
+                     <Button variant="destructive">
+                       <Trash2 className="w-4 h-4 mr-2" />
+                       Remover
+                     </Button>
+                   </AlertDialogTrigger>
+                   <AlertDialogContent>
+                     <AlertDialogHeader>
+                       <AlertDialogTitle>Remover colaborador</AlertDialogTitle>
+                       <AlertDialogDescription>
+                         Tem certeza que deseja remover este colaborador? Esta ação não pode ser desfeita.
+                       </AlertDialogDescription>
+                     </AlertDialogHeader>
+                     <AlertDialogFooter>
+                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                       <AlertDialogAction onClick={handleRemove}>
+                         Confirmar remoção
+                       </AlertDialogAction>
+                     </AlertDialogFooter>
+                   </AlertDialogContent>
+                 </AlertDialog>
+               ) : <div />}
 
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Voltar
-                </Button>
-                <Button onClick={handleSave}>
-               <Save className="w-4 h-4 mr-2" />
-               Salvar alterações
-             </Button>
-              </div>
-           </div>
+               <div className="flex gap-3">
+                 <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")}>
+                   <ArrowLeft className="w-4 h-4 mr-2" />
+                   Voltar
+                 </Button>
+                 <Button onClick={handleSave}>
+                   <Save className="w-4 h-4 mr-2" />
+                   {isNew ? "Criar colaborador" : "Salvar alterações"}
+                 </Button>
+               </div>
+            </div>
          </div>
        </div>
      </MainLayout>
