@@ -1,6 +1,7 @@
-import { MoreHorizontal, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
