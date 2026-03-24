@@ -125,6 +125,19 @@ const Produtos = () => {
   const [filters, setFilters] = useState<ProdutoFilters>(initialFilters);
   const [selectedProduto, setSelectedProduto] = useState<Produto | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [categorias, setCategorias] = useState<CategoriaOption[]>([]);
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      const response = await managerBackendBff.get<string[]>("/v1/Products/categories");
+      if (response.data) {
+        setCategorias(response.data.map((cat) => ({ value: cat, label: cat })));
+      } else if (response.error) {
+        toast.error("Erro ao carregar categorias: " + response.error);
+      }
+    };
+    fetchCategorias();
+  }, []);
 
   const filteredProdutos = mockProdutos.filter((produto) => {
     const matchesSearch =
