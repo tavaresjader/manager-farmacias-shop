@@ -76,7 +76,7 @@ const Produtos = () => {
     const fetchCategorias = async () => {
       const response = await managerBackendBff.get<Array<{ id: string; name: string }>>("/v1/Products/categories");
       if (response.data) {
-        setCategorias(response.data.map((cat) => ({ value: cat.name, label: cat.name })));
+        setCategorias(response.data.map((cat) => ({ value: cat.id, label: cat.name })));
       } else if (response.error) {
         toast.error("Erro ao carregar categorias: " + response.error);
       }
@@ -93,9 +93,9 @@ const Produtos = () => {
         limit,
         offset,
       };
-      if (searchQuery) params.search = searchQuery;
-      if (filters.categoria && filters.categoria !== "all") params.category = filters.categoria;
-      if (filters.nome) params.name = filters.nome;
+      if (searchQuery) params.Term = searchQuery;
+      if (filters.categoria && filters.categoria !== "all") params.CategoryId = filters.categoria;
+      if (filters.nome) params.Term = filters.nome;
 
       const response = await managerBackendBff.get<{ results: any[]; totalPages: number }>("/v1/Products", { params });
       if (response.data) {
