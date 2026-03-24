@@ -72,7 +72,20 @@ export function DataTable<T extends { id: string | number }>({
             </tr>
           </thead>
           <tbody>
-            {data.length === 0 ? (
+            {loading ? (
+              Array.from({ length: pagination?.pageSize ?? 5 }).map((_, i) => (
+                <tr key={`skeleton-${i}`} className="border-b border-border last:border-0">
+                  {columns.map((column) => (
+                    <td key={String(column.key)} className={cn("px-4 py-3", column.className)}>
+                      <Skeleton className="h-5 w-full max-w-[180px]" />
+                    </td>
+                  ))}
+                  <td className="px-4 py-3">
+                    <Skeleton className="h-4 w-4" />
+                  </td>
+                </tr>
+              ))
+            ) : data.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length + 1}
