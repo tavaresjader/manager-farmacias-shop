@@ -95,7 +95,6 @@ const Produtos = () => {
       };
       if (searchQuery) params.Term = searchQuery;
       if (filters.categoria && filters.categoria !== "all") params.CategoryId = filters.categoria;
-      if (filters.nome) params.Term = filters.nome;
 
       const response = await managerBackendBff.get<{ results: any[]; totalPages: number }>("/v1/Products", { params });
       if (response.data) {
