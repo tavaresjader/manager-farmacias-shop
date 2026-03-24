@@ -22,21 +22,18 @@ export interface ProdutoFilters {
   nome: string;
 }
 
+export interface CategoriaOption {
+  value: string;
+  label: string;
+}
+
 interface ProdutoFilterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   filters: ProdutoFilters;
   onApplyFilters: (filters: ProdutoFilters) => void;
+  categorias: CategoriaOption[];
 }
-
-const categoriaOptions = [
-  { value: "all", label: "Todas as categorias" },
-  { value: "Vestuário", label: "Vestuário" },
-  { value: "Calçados", label: "Calçados" },
-  { value: "Acessórios", label: "Acessórios" },
-  { value: "Eletrônicos", label: "Eletrônicos" },
-  { value: "Alimentos", label: "Alimentos" },
-];
 
 export function ProdutoFilterModal({
   open,
