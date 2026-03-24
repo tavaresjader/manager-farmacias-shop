@@ -227,6 +227,7 @@ const Produtos = () => {
         onOpenChange={setFilterModalOpen}
         filters={filters}
         onApplyFilters={handleApplyFilters}
+        categorias={categorias}
       />
 
       <ProdutoDetailsModal
