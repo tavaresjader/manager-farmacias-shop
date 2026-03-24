@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface SearchBarProps {
   placeholder?: string;
+  value?: string;
   onSearch?: (value: string) => void;
   onFilter?: () => void;
   className?: string;
@@ -11,11 +12,13 @@ interface SearchBarProps {
 
 export function SearchBar({
   placeholder = "Pesquisar...",
+  value: controlledValue,
   onSearch,
   onFilter,
   className,
 }: SearchBarProps) {
-  const [value, setValue] = useState("");
+  const [internalValue, setInternalValue] = useState("");
+  const value = controlledValue ?? internalValue;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
