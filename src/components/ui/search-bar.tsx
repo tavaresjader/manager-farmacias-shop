@@ -21,7 +21,7 @@ export function SearchBar({
   const value = controlledValue ?? internalValue;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    setInternalValue(e.target.value);
     onSearch?.(e.target.value);
   };
 
