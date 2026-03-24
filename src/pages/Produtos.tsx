@@ -129,9 +129,9 @@ const Produtos = () => {
 
   useEffect(() => {
     const fetchCategorias = async () => {
-      const response = await managerBackendBff.get<string[]>("/v1/Products/categories");
+      const response = await managerBackendBff.get<Array<{ id: string; name: string }>>("/v1/Products/categories");
       if (response.data) {
-        setCategorias(response.data.map((cat) => ({ value: cat, label: cat })));
+        setCategorias(response.data.map((cat) => ({ value: cat.name, label: cat.name })));
       } else if (response.error) {
         toast.error("Erro ao carregar categorias: " + response.error);
       }
