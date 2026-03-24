@@ -44,6 +44,12 @@ export function ProdutoFilterModal({
 }: ProdutoFilterModalProps) {
   const [localFilters, setLocalFilters] = useState<ProdutoFilters>(filters);
 
+  useEffect(() => {
+    if (open) {
+      setLocalFilters(filters);
+    }
+  }, [open, filters]);
+
   const handleApply = () => {
     onApplyFilters(localFilters);
     onOpenChange(false);
