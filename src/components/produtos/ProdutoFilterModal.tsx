@@ -40,6 +40,7 @@ export function ProdutoFilterModal({
   onOpenChange,
   filters,
   onApplyFilters,
+  categorias,
 }: ProdutoFilterModalProps) {
   const [localFilters, setLocalFilters] = useState<ProdutoFilters>(filters);
 
