@@ -68,6 +68,9 @@ const Produtos = () => {
   const [selectedProduto, setSelectedProduto] = useState<Produto | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [categorias, setCategorias] = useState<CategoriaOption[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [loadingProdutos, setLoadingProdutos] = useState(false);
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -81,27 +84,30 @@ const Produtos = () => {
     fetchCategorias();
   }, []);
 
-  const filteredProdutos = mockProdutos.filter((produto) => {
-    const matchesSearch =
-      produto.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      produto.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      produto.categoria.toLowerCase().includes(searchQuery.toLowerCase());
+  useEffect(() => {
+    const fetchProdutos = async () => {
+      setLoadingProdutos(true);
+      const params: Record<string, string | number | boolean> = {
+        page: currentPage,
+        pageSize,
+      };
+      if (searchQuery) params.search = searchQuery;
+      if (filters.categoria && filters.categoria !== "all") params.category = filters.categoria;
+      if (filters.nome) params.name = filters.nome;
 
-    const matchesCategoria =
-      filters.categoria === "all" || produto.categoria === filters.categoria;
+      const response = await managerBackendBff.get<{ items: Produto[]; totalItems: number }>("/v1/Products", { params });
+      if (response.data) {
+        setProdutos(response.data.items ?? response.data as any);
+        setTotalItems(response.data.totalItems ?? (Array.isArray(response.data) ? (response.data as any).length : 0));
+      } else if (response.error) {
+        toast.error("Erro ao carregar produtos: " + response.error);
+      }
+      setLoadingProdutos(false);
+    };
+    fetchProdutos();
+  }, [currentPage, pageSize, searchQuery, filters]);
 
-    const matchesNome =
-      !filters.nome ||
-      produto.nome.toLowerCase().includes(filters.nome.toLowerCase());
-
-    return matchesSearch && matchesCategoria && matchesNome;
-  });
-
-  const totalPages = Math.ceil(filteredProdutos.length / pageSize);
-  const paginatedProdutos = filteredProdutos.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const totalPages = Math.ceil(totalItems / pageSize);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
