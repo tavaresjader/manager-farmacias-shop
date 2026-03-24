@@ -1,6 +1,7 @@
-import { MoreHorizontal, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -33,6 +34,7 @@ interface DataTableProps<T> {
   onRowClick?: (item: T) => void;
   emptyMessage?: string;
   pagination?: PaginationProps;
+  loading?: boolean;
 }
 
 export function DataTable<T extends { id: string | number }>({
@@ -42,6 +44,7 @@ export function DataTable<T extends { id: string | number }>({
   onRowClick,
   emptyMessage = "Nenhum registro encontrado",
   pagination,
+  loading = false,
 }: DataTableProps<T>) {
   return (
     <div className="card-elevated overflow-hidden">
@@ -69,7 +72,20 @@ export function DataTable<T extends { id: string | number }>({
             </tr>
           </thead>
           <tbody>
-            {data.length === 0 ? (
+            {loading ? (
+              Array.from({ length: pagination?.pageSize ?? 5 }).map((_, i) => (
+                <tr key={`skeleton-${i}`} className="border-b border-border last:border-0">
+                  {columns.map((column) => (
+                    <td key={String(column.key)} className={cn("px-4 py-3", column.className)}>
+                      <Skeleton className="h-5 w-full max-w-[180px]" />
+                    </td>
+                  ))}
+                  <td className="px-4 py-3">
+                    <Skeleton className="h-4 w-4" />
+                  </td>
+                </tr>
+              ))
+            ) : data.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length + 1}

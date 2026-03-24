@@ -171,6 +171,7 @@ const Produtos = () => {
           columns={columns}
           data={produtos}
           emptyMessage="Nenhum produto encontrado"
+          loading={loadingProdutos}
           onRowClick={handleRowClick}
           pagination={{
             currentPage,
