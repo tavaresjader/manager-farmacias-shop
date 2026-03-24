@@ -39,19 +39,20 @@ import {
  ];
  
  const ColaboradorDetalhe = () => {
-   const { id } = useParams();
-   const navigate = useNavigate();
-   usePageTitle("Editar Colaborador");
-   const isLoading = usePageLoading();
- 
-   const colaborador = mockColaboradores.find((c) => c.id === id);
- 
-   const [nome, setNome] = useState(colaborador?.nome || "");
-   const [email, setEmail] = useState(colaborador?.email || "");
-   const [ativo, setAtivo] = useState(colaborador?.situacao === "ativo");
-  const [master, setMaster] = useState(colaborador?.master || false);
-   const [unidadesSelecionadas, setUnidadesSelecionadas] = useState<string[]>(["1", "2"]);
- 
+  const { id } = useParams();
+    const navigate = useNavigate();
+    const isNew = id === "novo";
+    usePageTitle(isNew ? "Novo Colaborador" : "Editar Colaborador");
+    const isLoading = usePageLoading();
+  
+    const colaborador = isNew ? null : mockColaboradores.find((c) => c.id === id);
+  
+    const [nome, setNome] = useState(colaborador?.nome || "");
+    const [email, setEmail] = useState(colaborador?.email || "");
+    const [ativo, setAtivo] = useState(isNew ? true : colaborador?.situacao === "ativo");
+    const [master, setMaster] = useState(colaborador?.master || false);
+    const [unidadesSelecionadas, setUnidadesSelecionadas] = useState<string[]>(isNew ? [] : ["1", "2"]);
+  
    const handleUnidadeToggle = (unidadeId: string) => {
      setUnidadesSelecionadas((prev) =>
        prev.includes(unidadeId)
