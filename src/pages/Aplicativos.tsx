@@ -10,6 +10,7 @@ import { usePageLoading } from "@/hooks/usePageLoading";
 import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
 import { Plus, ExternalLink, BarChart3, MessageCircle, Monitor, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ultramaxLogo from "@/assets/ultramax-logo.png";
 
 
 interface Aplicativo {
