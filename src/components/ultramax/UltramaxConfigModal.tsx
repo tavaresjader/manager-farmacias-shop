@@ -38,7 +38,7 @@ export const UltramaxConfigModal = ({ open, onOpenChange }: UltramaxConfigModalP
 
         <div className="space-y-4 pt-2">
           <p className="text-sm text-muted-foreground">
-            Ao iniciar a integração, você será redirecionado para o painel do integrador onde poderá configurar a sincronização com seu sistema Ultramax.
+            Ao iniciar a integração, será enviado uma solicitação de integração à Ultramax e sua loja estará disponível para iniciar a integração de Pedidos, Produtos e estoque automaticamente com a Farmácias Shop.
           </p>
 
           <Button onClick={handleStartIntegration} className="w-full gap-2">
