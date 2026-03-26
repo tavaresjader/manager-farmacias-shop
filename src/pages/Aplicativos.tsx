@@ -62,6 +62,10 @@ const Aplicativos = () => {
         open={showWhatsAppModal} 
         onOpenChange={setShowWhatsAppModal} 
       />
+      <UltramaxConfigModal
+        open={showUltramaxModal}
+        onOpenChange={setShowUltramaxModal}
+      />
       <PageHeader
         title="Aplicativos"
         breadcrumbs={[]}
