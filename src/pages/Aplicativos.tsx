@@ -132,7 +132,7 @@ const Aplicativos = () => {
 
           {/* Integrador Ultramax Card */}
           <div
-            onClick={() => window.open("https://integrador.farmacias.shop?utm_source=MANAGER&utm_campaign=ULTRAMAX", "_blank")}
+            onClick={() => setShowUltramaxModal(true)}
             className={cn(
               "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
             )}
