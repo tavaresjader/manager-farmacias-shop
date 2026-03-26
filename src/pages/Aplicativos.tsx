@@ -10,6 +10,7 @@ import { usePageLoading } from "@/hooks/usePageLoading";
 import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
 import { Plus, ExternalLink, BarChart3, MessageCircle, Monitor, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ultramaxLogo from "@/assets/ultramax-logo.png";
 
 
 interface Aplicativo {
@@ -116,6 +117,38 @@ const Aplicativos = () => {
             </p>
             <p className="text-xs text-amber-600 mb-3">
               *Verifique se seu sistema já está integrado com a Farmácias Shop
+            </p>
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
+                Sincronização
+              </span>
+              <button className="text-muted-foreground hover:text-primary transition-colors">
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Integrador Ultramax Card */}
+          <div
+            onClick={() => window.open("https://integrador.farmacias.shop?utm_source=MANAGER&utm_campaign=ULTRAMAX", "_blank")}
+            className={cn(
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
+            )}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
+                <img src={ultramaxLogo} alt="Ultramax" className="w-10 h-auto object-contain" />
+              </div>
+              <StatusBadge status="active" />
+            </div>
+            <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+              Integrador Ultramax
+            </h3>
+            <p className="text-sm text-muted-foreground mb-1">
+              Integrador instalado em seu computador para sincronizar produtos, estoque e pedidos
+            </p>
+            <p className="text-xs text-amber-600 mb-3">
+              *Exclusivo para clientes Ultramax
             </p>
             <div className="flex items-center justify-between mt-auto">
               <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
