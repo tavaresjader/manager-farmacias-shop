@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -39,7 +40,9 @@ export const UltramaxConfigModal = ({
 
   const handleStartIntegration = () => {
     onActivate?.();
-    window.open("https://integrador.farmacias.shop?utm_source=MANAGER&utm_campaign=ULTRAMAX", "_blank");
+    toast.success("Integração Ativa", {
+      description: "A integração com a Ultramax foi ativada com sucesso.",
+    });
   };
 
   const handleDeactivate = () => {
