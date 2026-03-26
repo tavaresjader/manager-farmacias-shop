@@ -40,6 +40,7 @@ export const UltramaxConfigModal = ({
 
   const handleStartIntegration = () => {
     onActivate?.();
+    onOpenChange(false);
     toast.success("Integração Ativa", {
       description: "A integração com a Ultramax foi ativada com sucesso.",
     });
