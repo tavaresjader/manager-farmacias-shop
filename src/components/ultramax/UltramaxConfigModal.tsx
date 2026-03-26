@@ -87,9 +87,8 @@ export const UltramaxConfigModal = ({
                 Inativar Integração
               </Button>
             ) : (
-              <Button onClick={handleStartIntegration} className="w-full gap-2">
-                <ExternalLink className="w-4 h-4" />
-                Iniciar Integração
+              <Button onClick={handleStartIntegration} className="w-full">
+                Ativar Integração
               </Button>
             )}
           </div>
