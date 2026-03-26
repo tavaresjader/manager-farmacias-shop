@@ -40,6 +40,7 @@ const Aplicativos = () => {
   const isLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  const [showUltramaxModal, setShowUltramaxModal] = useState(false);
 
   const filteredApps = mockAplicativos.filter(
     (app) =>
