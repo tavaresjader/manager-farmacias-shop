@@ -160,7 +160,7 @@ const Aplicativos = () => {
             </div>
           </div>
 
-
+          {filteredApps.map((app) => {
             const Icon = getAppIcon(app.icon);
             return (
               <div
