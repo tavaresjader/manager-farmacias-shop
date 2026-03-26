@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
 import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
+import { UltramaxConfigModal } from "@/components/ultramax/UltramaxConfigModal";
 import { Plus, ExternalLink, BarChart3, MessageCircle, Monitor, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ultramaxLogo from "@/assets/ultramax-logo.png";
@@ -39,6 +40,7 @@ const Aplicativos = () => {
   const isLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  const [showUltramaxModal, setShowUltramaxModal] = useState(false);
 
   const filteredApps = mockAplicativos.filter(
     (app) =>
@@ -59,6 +61,10 @@ const Aplicativos = () => {
       <WhatsAppConfigModal
         open={showWhatsAppModal} 
         onOpenChange={setShowWhatsAppModal} 
+      />
+      <UltramaxConfigModal
+        open={showUltramaxModal}
+        onOpenChange={setShowUltramaxModal}
       />
       <PageHeader
         title="Aplicativos"
@@ -130,7 +136,7 @@ const Aplicativos = () => {
 
           {/* Integrador Ultramax Card */}
           <div
-            onClick={() => window.open("https://integrador.farmacias.shop?utm_source=MANAGER&utm_campaign=ULTRAMAX", "_blank")}
+            onClick={() => setShowUltramaxModal(true)}
             className={cn(
               "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
             )}
