@@ -17,8 +17,12 @@ const Entregas = () => {
 
   return (
     <MainLayout>
-      <div className="p-6">
-        <h1 className="text-2xl font-semibold text-foreground mb-4">Entregas</h1>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-semibold text-foreground">Entregas</h1>
+        </div>
+
         <p className="text-muted-foreground">Gerencie suas entregas aqui.</p>
       </div>
     </MainLayout>
