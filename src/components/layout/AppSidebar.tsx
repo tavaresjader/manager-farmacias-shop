@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   Package,
   Ticket,
+  Bike,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ const mainNavItems = [
   { icon: Package, label: "Produtos", path: "/produtos" },
   { icon: Users, label: "Clientes", path: "/clientes" },
   { icon: Ticket, label: "Cupons", path: "/cupons" },
+  { icon: Bike, label: "Entregas", path: "/entregas" },
   { icon: AppWindow, label: "Aplicativos", path: "/aplicativos" },
   { icon: BarChart3, label: "Insights", path: "/relatorios" },
 ];

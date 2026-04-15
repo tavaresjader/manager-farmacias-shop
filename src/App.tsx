@@ -12,6 +12,7 @@ import Produtos from "./pages/Produtos";
 import Clientes from "./pages/Clientes";
 import Cupons from "./pages/Cupons";
 import Aplicativos from "./pages/Aplicativos";
+import Entregas from "./pages/Entregas";
 import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
 import UnidadeDetalhe from "./pages/UnidadeDetalhe";
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/produtos" element={<ProtectedRoute><Produtos /></ProtectedRoute>} />
               <Route path="/clientes" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
               <Route path="/cupons" element={<ProtectedRoute><Cupons /></ProtectedRoute>} />
+              <Route path="/entregas" element={<ProtectedRoute><Entregas /></ProtectedRoute>} />
               <Route path="/aplicativos" element={<ProtectedRoute><Aplicativos /></ProtectedRoute>} />
               <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
               <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
