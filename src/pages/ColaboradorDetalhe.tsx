@@ -49,6 +49,7 @@ import {
   
     const [nome, setNome] = useState(colaborador?.nome || "");
     const [email, setEmail] = useState(colaborador?.email || "");
+    const [senha, setSenha] = useState("");
     const [ativo, setAtivo] = useState(isNew ? true : colaborador?.situacao === "ativo");
     const [master, setMaster] = useState(colaborador?.master || false);
     const [unidadesSelecionadas, setUnidadesSelecionadas] = useState<string[]>(isNew ? [] : ["1", "2"]);
@@ -62,7 +63,7 @@ import {
    };
  
    const handleSave = () => {
-    console.log("Salvando colaborador:", { nome, email, ativo, master, unidadesSelecionadas });
+    console.log("Salvando colaborador:", { nome, email, senhaDefinida: senha.length > 0, ativo, master, unidadesSelecionadas });
      navigate("/configuracoes?tab=colaboradores");
    };
  
@@ -131,7 +132,21 @@ import {
                    />
                  </div>
                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                   <Label htmlFor="senha">Senha</Label>
+                   <Input
+                     id="senha"
+                     type="password"
+                     value={senha}
+                     onChange={(e) => setSenha(e.target.value)}
+                     placeholder={isNew ? "Defina a senha de acesso" : "Deixe em branco para manter a senha atual"}
+                     autoComplete="new-password"
+                     className="bg-white dark:bg-background"
+                   />
+                 </div>
+               </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                   <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                  <div className="space-y-0.5">
                    <Label htmlFor="ativo">Situação</Label>
