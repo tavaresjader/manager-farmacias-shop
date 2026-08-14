@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Eye, EyeOff, Copy, Trash2 } from "lucide-react";
+import { Plus, Copy, Trash2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -35,15 +35,12 @@ const mockIntegracoes = [
 
 export function IntegracoesTab() {
   const { toast } = useToast();
-  const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [novaIntegracao, setNovaIntegracao] = useState({ nome: "", unidade: "" });
 
   const unidades = ["Matriz", "Filial Centro", "Filial Shopping"];
-  const toggleSecretVisibility = (id: string) => {
-    setVisibleSecrets((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -119,8 +116,8 @@ export function IntegracoesTab() {
             <TableRow>
               <TableHead>Nome</TableHead>
               <TableHead>Client ID</TableHead>
-              <TableHead>Client Secret</TableHead>
               <TableHead>Unidade</TableHead>
+              <TableHead>Credencial</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -142,34 +139,22 @@ export function IntegracoesTab() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <code className="text-sm bg-muted px-2 py-1 rounded">
-                      {visibleSecrets[integracao.id] ? integracao.clientSecret : "••••••••••••••••"}
-                    </code>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
-                      onClick={() => toggleSecretVisibility(integracao.id)}
-                    >
-                      {visibleSecrets[integracao.id] ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
-                      onClick={() => copyToClipboard(integracao.clientSecret, "Client Secret")}
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  <span className="font-medium">{integracao.unidade}</span>
                 </TableCell>
                 <TableCell>
-                  <span className="font-medium">{integracao.unidade}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-white dark:bg-background"
+                    onClick={() =>
+                      toast({
+                        description: "Credencial enviada por e-mail com sucesso",
+                      })
+                    }
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    Enviar por e-mail
+                  </Button>
                 </TableCell>
                 <TableCell>
                   <Button
@@ -184,6 +169,7 @@ export function IntegracoesTab() {
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </div>
 
