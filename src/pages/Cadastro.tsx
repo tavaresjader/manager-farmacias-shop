@@ -264,11 +264,17 @@ const Cadastro = () => {
 
               {/* reCAPTCHA */}
               <div className="flex justify-center">
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  onChange={handleCaptchaChange}
-                />
+                {RECAPTCHA_SITE_KEY ? (
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={RECAPTCHA_SITE_KEY}
+                    onChange={handleCaptchaChange}
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center">
+                    Verificação de segurança indisponível no momento. Tente novamente mais tarde.
+                  </p>
+                )}
               </div>
 
               {/* Submit Button */}
