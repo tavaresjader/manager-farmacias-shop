@@ -28,7 +28,7 @@ import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { registrationSchema, type RegistrationFormData } from "@/lib/validations";
 import { useState } from "react";
 
-// Chave de teste do Google reCAPTCHA (substituir em produção)
+// Chave pública do reCAPTCHA vinda de variável de ambiente
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
 const Cadastro = () => {
