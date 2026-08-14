@@ -29,7 +29,7 @@ import { registrationSchema, type RegistrationFormData } from "@/lib/validations
 import { useState } from "react";
 
 // Chave de teste do Google reCAPTCHA (substituir em produção)
-const RECAPTCHA_SITE_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
 const Cadastro = () => {
   usePageTitle("Cadastro");
