@@ -59,9 +59,8 @@ const Login = () => {
         return;
       }
 
-      const accessToken = (response.data as any).accessToken;
+      const accessToken = (response.data as { accessToken?: string }).accessToken;
       if (accessToken) {
-        sessionStorage.setItem("FarmaciasShopManagerAccessToken", accessToken);
         setAuthToken(accessToken);
         toast.success("Login realizado com sucesso!");
         navigate(from, { replace: true });

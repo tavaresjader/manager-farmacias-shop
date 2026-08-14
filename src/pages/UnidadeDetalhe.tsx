@@ -84,8 +84,8 @@ const mockUnidades: Unidade[] = [
       { id: "3", raio: 10, compraMinima: 80, preco: 12, tempo: 60 },
     ],
     convenios: [
-      { id: "1", nome: "Unimed", codigo: "UNI001", senha: "senha123", ativo: true },
-      { id: "2", nome: "Bradesco Saúde", codigo: "BRA002", senha: "brad456", ativo: true },
+      { id: "1", nome: "Unimed", codigo: "UNI001", senha: "", ativo: true },
+      { id: "2", nome: "Bradesco Saúde", codigo: "BRA002", senha: "", ativo: true },
       { id: "3", nome: "SulAmérica", codigo: "SUL003", senha: "", ativo: false },
     ],
   },

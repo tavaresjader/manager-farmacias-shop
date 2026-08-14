@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { authTokenStorage, isTokenExpired } from "@/lib/authToken";
 
 interface AuthContextType {
   token: string | null;
@@ -10,30 +11,45 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_TOKEN_KEY = "FarmaciasShopManagerAccessToken";
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
 
-  // Load token from storage on mount
+  const clearAuth = useCallback(() => {
+    setToken(null);
+    authTokenStorage.clear();
+    managerBackendBff.removeAuthToken();
+  }, []);
+
+  // Load token from storage on mount (expired tokens are discarded)
   useEffect(() => {
-    const storedToken = sessionStorage.getItem(AUTH_TOKEN_KEY);
+    const storedToken = authTokenStorage.get();
     if (storedToken) {
       setToken(storedToken);
       managerBackendBff.setAuthToken(storedToken);
+    } else {
+      managerBackendBff.removeAuthToken();
     }
   }, []);
 
-  const setAuthToken = (newToken: string) => {
-    setToken(newToken);
-    sessionStorage.setItem(AUTH_TOKEN_KEY, newToken);
-    managerBackendBff.setAuthToken(newToken);
-  };
+  // Periodically drop expired tokens from memory and storage
+  useEffect(() => {
+    if (!token) return;
+    const interval = window.setInterval(() => {
+      if (isTokenExpired(token)) {
+        clearAuth();
+      }
+    }, 30000);
+    return () => window.clearInterval(interval);
+  }, [token, clearAuth]);
 
-  const clearAuth = () => {
-    setToken(null);
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    managerBackendBff.removeAuthToken();
+  const setAuthToken = (newToken: string) => {
+    if (isTokenExpired(newToken)) {
+      clearAuth();
+      return;
+    }
+    setToken(newToken);
+    authTokenStorage.set(newToken);
+    managerBackendBff.setAuthToken(newToken);
   };
 
   return (

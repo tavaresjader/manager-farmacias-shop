@@ -1,4 +1,42 @@
-const MANAGER_API_URL = "https://manager-api.farmacias.shop";
+const MANAGER_API_URL =
+  (import.meta.env.VITE_MANAGER_API_URL as string | undefined) ??
+  "https://manager-api.farmacias.shop";
+
+const REQUEST_TIMEOUT_MS = 30000;
+
+/** Executa fetch com timeout, garantindo que a requisição não fique pendurada. */
+async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+/** Mensagem genérica para o usuário, sem expor detalhes internos. */
+function genericError(fallback: string): string {
+  return fallback;
+}
+
+/** Converte erros técnicos em mensagens seguras para o usuário. */
+function mapRequestError(error: unknown): string {
+  if (error instanceof DOMException && error.name === "AbortError") {
+    return "Tempo de resposta esgotado. Tente novamente.";
+  }
+  if (error instanceof AuthRequiredError) {
+    return error.message;
+  }
+  return genericError("Não foi possível concluir a solicitação. Tente novamente.");
+}
+
+class AuthRequiredError extends Error {
+  constructor() {
+    super("Autenticação necessária. Faça login novamente.");
+    this.name = "AuthRequiredError";
+  }
+}
 export const BACKBONE_API_URL = "https://backbone-api.farmacias.shop";
 
 interface RequestOptions {
@@ -69,7 +107,7 @@ export class ManagerBackendBff {
 
   private requireAuth(): void {
     if (!this.isAuthenticated()) {
-      throw new Error("Autenticação necessária. Faça login novamente.");
+      throw new AuthRequiredError();
     }
   }
 
@@ -91,13 +129,13 @@ export class ManagerBackendBff {
   async signIn(credentials: SignInRequest): Promise<ApiResponse<SignInResponse>> {
     try {
       const url = this.buildUrl("/v1/SignIn/validate");
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method: "POST",
         headers: this.defaultHeaders,
         body: JSON.stringify(credentials),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         return {
@@ -139,12 +177,12 @@ export class ManagerBackendBff {
       this.requireAuth();
       
       const url = this.buildUrl(endpoint, options?.params, options?.baseUrl);
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method: "GET",
         headers: this.mergeHeaders(options?.headers),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       // Handle unauthorized responses
       if (response.status === 401) {
@@ -172,7 +210,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: error instanceof Error ? error.message : "Erro de conexão",
+        error: mapRequestError(error),
         status: 0,
       };
     }
@@ -184,13 +222,13 @@ export class ManagerBackendBff {
       this.requireAuth();
       
       const url = this.buildUrl(endpoint, options?.params);
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method: "POST",
         headers: this.mergeHeaders(options?.headers),
         body: body ? JSON.stringify(body) : undefined,
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       // Handle unauthorized responses
       if (response.status === 401) {
@@ -218,7 +256,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: error instanceof Error ? error.message : "Erro de conexão",
+        error: mapRequestError(error),
         status: 0,
       };
     }
@@ -230,13 +268,13 @@ export class ManagerBackendBff {
       this.requireAuth();
       
       const url = this.buildUrl(endpoint, options?.params);
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method: "PUT",
         headers: this.mergeHeaders(options?.headers),
         body: body ? JSON.stringify(body) : undefined,
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       // Handle unauthorized responses
       if (response.status === 401) {
@@ -264,7 +302,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: error instanceof Error ? error.message : "Erro de conexão",
+        error: mapRequestError(error),
         status: 0,
       };
     }
@@ -276,13 +314,13 @@ export class ManagerBackendBff {
       this.requireAuth();
       
       const url = this.buildUrl(endpoint, options?.params);
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method: "PATCH",
         headers: this.mergeHeaders(options?.headers),
         body: body ? JSON.stringify(body) : undefined,
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       // Handle unauthorized responses
       if (response.status === 401) {
@@ -310,7 +348,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: error instanceof Error ? error.message : "Erro de conexão",
+        error: mapRequestError(error),
         status: 0,
       };
     }
@@ -322,7 +360,7 @@ export class ManagerBackendBff {
       this.requireAuth();
       
       const url = this.buildUrl(endpoint, options?.params);
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method: "DELETE",
         headers: this.mergeHeaders(options?.headers),
       });
@@ -345,7 +383,7 @@ export class ManagerBackendBff {
         };
       }
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         return {
@@ -363,7 +401,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: error instanceof Error ? error.message : "Erro de conexão",
+        error: mapRequestError(error),
         status: 0,
       };
     }

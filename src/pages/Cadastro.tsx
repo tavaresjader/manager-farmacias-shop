@@ -28,8 +28,8 @@ import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { registrationSchema, type RegistrationFormData } from "@/lib/validations";
 import { useState } from "react";
 
-// Chave de teste do Google reCAPTCHA (substituir em produção)
-const RECAPTCHA_SITE_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
+// Chave pública do reCAPTCHA vinda de variável de ambiente
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
 const Cadastro = () => {
   usePageTitle("Cadastro");
@@ -264,11 +264,17 @@ const Cadastro = () => {
 
               {/* reCAPTCHA */}
               <div className="flex justify-center">
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  onChange={handleCaptchaChange}
-                />
+                {RECAPTCHA_SITE_KEY ? (
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={RECAPTCHA_SITE_KEY}
+                    onChange={handleCaptchaChange}
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center">
+                    Verificação de segurança indisponível no momento. Tente novamente mais tarde.
+                  </p>
+                )}
               </div>
 
               {/* Submit Button */}
