@@ -19,6 +19,24 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
 function genericError(fallback: string): string {
   return fallback;
 }
+
+/** Converte erros técnicos em mensagens seguras para o usuário. */
+function mapRequestError(error: unknown): string {
+  if (error instanceof DOMException && error.name === "AbortError") {
+    return "Tempo de resposta esgotado. Tente novamente.";
+  }
+  if (error instanceof AuthRequiredError) {
+    return error.message;
+  }
+  return genericError("Não foi possível concluir a solicitação. Tente novamente.");
+}
+
+class AuthRequiredError extends Error {
+  constructor() {
+    super("Autenticação necessária. Faça login novamente.");
+    this.name = "AuthRequiredError";
+  }
+}
 export const BACKBONE_API_URL = "https://backbone-api.farmacias.shop";
 
 interface RequestOptions {
@@ -89,7 +107,7 @@ export class ManagerBackendBff {
 
   private requireAuth(): void {
     if (!this.isAuthenticated()) {
-      throw new Error("Autenticação necessária. Faça login novamente.");
+      throw new AuthRequiredError();
     }
   }
 
@@ -192,7 +210,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: genericError("Não foi possível concluir a solicitação. Tente novamente."),
+        error: mapRequestError(error),
         status: 0,
       };
     }
@@ -238,7 +256,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: genericError("Não foi possível concluir a solicitação. Tente novamente."),
+        error: mapRequestError(error),
         status: 0,
       };
     }
@@ -284,7 +302,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: genericError("Não foi possível concluir a solicitação. Tente novamente."),
+        error: mapRequestError(error),
         status: 0,
       };
     }
@@ -330,7 +348,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: genericError("Não foi possível concluir a solicitação. Tente novamente."),
+        error: mapRequestError(error),
         status: 0,
       };
     }
@@ -383,7 +401,7 @@ export class ManagerBackendBff {
     } catch (error) {
       return {
         data: null,
-        error: genericError("Não foi possível concluir a solicitação. Tente novamente."),
+        error: mapRequestError(error),
         status: 0,
       };
     }
