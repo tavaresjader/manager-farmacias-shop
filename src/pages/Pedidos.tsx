@@ -22,7 +22,7 @@ import {
 
 import ifoodLogo from "@/assets/channels/ifood.webp";
 import keetaLogo from "@/assets/channels/keeta.png";
-import farmaciaShopLogo from "@/assets/channels/farmacia-shop.png";
+import farmaciaShopLogo from "@/assets/logo-farmacia-shop.png";
 import pedeProntoLogo from "@/assets/channels/pede-pronto.png";
 import aiqfomeLogo from "@/assets/channels/aiqfome.jfif";
 
