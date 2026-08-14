@@ -10,6 +10,8 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { isFeatureEnabled } from "@/config/featureFlags";
+import { mockAuth } from "@/services/mockAuth";
 import { loginSchema, forgotPasswordSchema, type LoginFormData } from "@/lib/validations";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 
@@ -49,6 +51,17 @@ const Login = () => {
 
     setIsLoading(true);
     try {
+      if (isFeatureEnabled("mockAuth")) {
+        const { accessToken } = await mockAuth.signIn({
+          email: data.email,
+          password: data.senha,
+        });
+        setAuthToken(accessToken);
+        toast.success("Login realizado com sucesso! (modo mock)");
+        navigate(from, { replace: true });
+        return;
+      }
+
       const response = await managerBackendBff.signIn({
         email: data.email,
         password: data.senha,
