@@ -35,15 +35,12 @@ const mockIntegracoes = [
 
 export function IntegracoesTab() {
   const { toast } = useToast();
-  const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [novaIntegracao, setNovaIntegracao] = useState({ nome: "", unidade: "" });
 
   const unidades = ["Matriz", "Filial Centro", "Filial Shopping"];
-  const toggleSecretVisibility = (id: string) => {
-    setVisibleSecrets((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
