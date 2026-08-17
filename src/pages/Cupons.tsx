@@ -144,16 +144,26 @@ const Cupons = () => {
   usePageTitle("Cupons");
   const isLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
+  const [cupons, setCupons] = useState<Cupom[]>(mockCupons);
   const [selectedCupom, setSelectedCupom] = useState<Cupom | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const filteredCupons = mockCupons.filter((cupom) =>
+  const filteredCupons = cupons.filter((cupom) =>
     cupom.codigo.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleRowClick = (cupom: Cupom) => {
     setSelectedCupom(cupom);
     setIsModalOpen(true);
+  };
+
+  const handleCupomSave = (cupom: Cupom) => {
+    setCupons((prev) => {
+      const exists = prev.some((c) => c.id === cupom.id);
+      return exists ? prev.map((c) => (c.id === cupom.id ? cupom : c)) : [cupom, ...prev];
+    });
+    setSelectedCupom((prev) => (prev && prev.id === cupom.id ? cupom : prev));
   };
 
   if (isLoading) {
@@ -179,7 +189,7 @@ const Cupons = () => {
             onSearch={setSearchQuery}
             className="flex-1"
           />
-          <Button onClick={() => setIsModalOpen(true)}>
+          <Button onClick={() => setIsCreateModalOpen(true)}>
             <Plus className="w-4 h-4" />
             Adicionar
           </Button>
@@ -192,14 +202,6 @@ const Cupons = () => {
           emptyMessage="Nenhum cupom encontrado"
           loading={isLoading}
           onRowClick={handleRowClick}
-          pagination={{
-            currentPage: 1,
-            totalPages: 1,
-            pageSize: 10,
-            totalItems: filteredCupons.length,
-            onPageChange: () => {},
-            onPageSizeChange: () => {},
-          }}
         />
       </div>
 
@@ -208,9 +210,19 @@ const Cupons = () => {
         cupom={selectedCupom}
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
+        onCupomUpdate={handleCupomSave}
+      />
+
+      {/* Modal de Cadastro */}
+      <CupomEditModal
+        cupom={null}
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+        onSave={handleCupomSave}
       />
     </MainLayout>
   );
 };
 
 export default Cupons;
+
