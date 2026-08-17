@@ -8,6 +8,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { CupomDetailsModal } from "@/components/cupons/CupomDetailsModal";
+import { CupomEditModal } from "@/components/cupons/CupomEditModal";
 import { Plus, Percent, DollarSign, Tag } from "lucide-react";
 
 interface Cupom {
