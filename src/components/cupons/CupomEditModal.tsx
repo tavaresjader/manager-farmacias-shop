@@ -38,27 +38,32 @@ interface CupomEditModalProps {
   onSave?: (cupom: Cupom) => void;
 }
 
+const emptyForm = {
+  codigo: "",
+  desconto: "",
+  tipo: "percentual" as "percentual" | "fixo",
+  minimo: "",
+  limite: "",
+  validade: "",
+  status: "active" as "active" | "inactive" | "cancelled",
+};
+
 export function CupomEditModal({
   cupom,
   open,
   onOpenChange,
   onSave,
 }: CupomEditModalProps) {
-  const [formData, setFormData] = useState({
-    codigo: "",
-    desconto: "",
-    tipo: "percentual" as "percentual" | "fixo",
-    minimo: "",
-    limite: "",
-    validade: "",
-    status: "active" as "active" | "inactive" | "cancelled",
-  });
+  const isCreating = !cupom;
+  const [formData, setFormData] = useState(emptyForm);
 
   useEffect(() => {
+    if (!open) return;
+
     if (cupom) {
       // Parse desconto to get just the number
       const descontoValue = cupom.desconto.replace("%", "").replace("R$ ", "").replace(",", ".");
-      
+
       setFormData({
         codigo: cupom.codigo,
         desconto: descontoValue,
@@ -68,16 +73,17 @@ export function CupomEditModal({
         validade: cupom.validade,
         status: cupom.status,
       });
+    } else {
+      setFormData(emptyForm);
     }
-  }, [cupom]);
+  }, [cupom, open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!cupom) return;
 
     const updatedCupom: Cupom = {
-      ...cupom,
+      id: cupom?.id ?? `cupom-${Date.now()}`,
+      usos: cupom?.usos ?? 0,
       codigo: formData.codigo,
       tipo: formData.tipo,
       desconto: formData.tipo === "percentual" ? `${formData.desconto}%` : `R$ ${formData.desconto}`,
@@ -88,23 +94,22 @@ export function CupomEditModal({
     };
 
     onSave?.(updatedCupom);
-    
+
     toast({
-      title: "Cupom atualizado",
-      description: `O cupom ${formData.codigo} foi atualizado com sucesso.`,
+      title: isCreating ? "Cupom cadastrado" : "Cupom atualizado",
+      description: `O cupom ${formData.codigo} foi ${isCreating ? "cadastrado" : "atualizado"} com sucesso.`,
     });
-    
+
     onOpenChange(false);
   };
-
-  if (!cupom) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Editar Cupom</DialogTitle>
+          <DialogTitle>{isCreating ? "Novo Cupom" : "Editar Cupom"}</DialogTitle>
         </DialogHeader>
+
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
