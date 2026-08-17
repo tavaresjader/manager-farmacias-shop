@@ -192,7 +192,7 @@ const Cupons = () => {
           />
           <Button onClick={() => setIsCreateModalOpen(true)}>
             <Plus className="w-4 h-4" />
-            Adicionar
+            Adicionar cupom
           </Button>
         </div>
 
