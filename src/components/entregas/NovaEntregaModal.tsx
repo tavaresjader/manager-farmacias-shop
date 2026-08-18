@@ -228,12 +228,24 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
               <Label htmlFor="endereco">Endereço de entrega</Label>
               <Input
                 id="endereco"
-                className="bg-card"
-                value={form.endereco}
-                onChange={(e) => setField("endereco", e.target.value)}
-                placeholder="Rua, número, bairro, cidade"
+                readOnly
+                tabIndex={-1}
+                className="bg-muted text-muted-foreground cursor-not-allowed"
+                value={buscandoCep ? "Buscando endereço..." : form.endereco}
+                placeholder="Preenchido automaticamente pelo CEP"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="numero">Número do endereço</Label>
+            <Input
+              id="numero"
+              className="bg-card"
+              value={form.numero}
+              onChange={(e) => setField("numero", e.target.value)}
+              placeholder="Ex: 1234"
+            />
           </div>
 
           <div className="space-y-2">
@@ -247,16 +259,36 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="valor">Valor do pedido (R$)</Label>
-            <Input
-              id="valor"
-              className="bg-card"
-              value={form.valor}
-              onChange={(e) => setField("valor", e.target.value)}
-              placeholder="0,00"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="valorEntrega">Valor da entrega (R$)</Label>
+              <Input
+                id="valorEntrega"
+                readOnly
+                tabIndex={-1}
+                className="bg-muted text-muted-foreground cursor-not-allowed"
+                value={
+                  calculando
+                    ? "Calculando..."
+                    : valorEntrega !== null
+                      ? valorEntrega.toFixed(2).replace(".", ",")
+                      : ""
+                }
+                placeholder="Informe CEP e número"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="valor">Valor do pedido (R$)</Label>
+              <Input
+                id="valor"
+                className="bg-card"
+                value={form.valor}
+                onChange={(e) => setField("valor", e.target.value)}
+                placeholder="0,00"
+              />
+            </div>
           </div>
+
 
           <div className="space-y-2">
             <Label htmlFor="observacoes">Observações</Label>
