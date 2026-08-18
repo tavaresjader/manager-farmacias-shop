@@ -37,20 +37,84 @@ const emptyForm = {
   telefone: "",
   cep: "",
   endereco: "",
+  numero: "",
   complemento: "",
   valor: "",
   observacoes: "",
 };
 
+const onlyDigits = (v: string) => v.replace(/\D/g, "");
+
 export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaModalProps) {
   const [form, setForm] = useState(emptyForm);
+  const [buscandoCep, setBuscandoCep] = useState(false);
+  const [valorEntrega, setValorEntrega] = useState<number | null>(null);
+  const [calculando, setCalculando] = useState(false);
 
   useEffect(() => {
-    if (open) setForm(emptyForm);
+    if (open) {
+      setForm(emptyForm);
+      setValorEntrega(null);
+    }
   }, [open]);
 
   const setField = (key: keyof typeof emptyForm, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
+
+  // Preenche o endereço automaticamente a partir do CEP (campo não digitável)
+  useEffect(() => {
+    const cep = onlyDigits(form.cep);
+    if (cep.length !== 8) {
+      setForm((prev) => (prev.endereco ? { ...prev, endereco: "" } : prev));
+      return;
+    }
+    let cancelled = false;
+    setBuscandoCep(true);
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data?.erro) {
+          toast.error("CEP não encontrado.");
+          setForm((prev) => ({ ...prev, endereco: "" }));
+          return;
+        }
+        setForm((prev) => ({
+          ...prev,
+          endereco: [data.logradouro, data.bairro, data.localidade && `${data.localidade}/${data.uf}`]
+            .filter(Boolean)
+            .join(", "),
+        }));
+      })
+      .catch(() => {
+        if (!cancelled) toast.error("Não foi possível consultar o CEP.");
+      })
+      .finally(() => !cancelled && setBuscandoCep(false));
+    return () => {
+      cancelled = true;
+    };
+  }, [form.cep]);
+
+  // Calcula o valor da entrega após CEP + número informados
+  useEffect(() => {
+    const cep = onlyDigits(form.cep);
+    if (cep.length !== 8 || !form.numero.trim() || !form.endereco) {
+      setValorEntrega(null);
+      return;
+    }
+    setCalculando(true);
+    const timer = setTimeout(() => {
+      const base = 7.9;
+      const variacao = (Number(cep.slice(-3)) % 12) * 0.85;
+      setValorEntrega(Number((base + variacao).toFixed(2)));
+      setCalculando(false);
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+      setCalculando(false);
+    };
+  }, [form.cep, form.numero, form.endereco]);
+
 
   const handleSubmit = () => {
     if (!form.cliente.trim() || !form.telefone.trim() || !form.endereco.trim()) {
