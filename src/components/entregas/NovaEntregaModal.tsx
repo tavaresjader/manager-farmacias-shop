@@ -36,6 +36,7 @@ const emptyForm = {
   cliente: "",
   telefone: "",
   endereco: "",
+  complemento: "",
   valor: "",
   observacoes: "",
 };
@@ -66,6 +67,7 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
       cliente: form.cliente.trim(),
       telefone: form.telefone.trim(),
       endereco: form.endereco.trim(),
+      complemento: form.complemento.trim() || undefined,
       valor: Number(form.valor.replace(",", ".")) || 0,
       observacoes: form.observacoes.trim() || undefined,
       status: "aguardando",
