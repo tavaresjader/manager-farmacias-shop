@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Percent, ShoppingCart, Hash, Target, Pencil, DollarSign, Tag } from "lucide-react";
+import { Calendar, Percent, ShoppingCart, Hash, Target, Pencil, DollarSign, Tag, Truck } from "lucide-react";
 import { CupomEditModal } from "./CupomEditModal";
 
 interface Utilizacao {
@@ -24,7 +24,7 @@ interface Cupom {
   id: string;
   codigo: string;
   desconto: string;
-  tipo: "percentual" | "fixo";
+  tipo: "percentual" | "fixo" | "frete_gratis";
   minimo: number;
   usos: number;
   limite: number;
@@ -107,7 +107,11 @@ export function CupomDetailsModal({
               <div>
                 <p className="text-xs text-muted-foreground">Tipo</p>
                 <p className="font-semibold">
-                  {cupom.tipo === "percentual" ? "Percentual" : "Valor Fixo"}
+                  {cupom.tipo === "percentual"
+                    ? "Percentual"
+                    : cupom.tipo === "fixo"
+                    ? "Valor Fixo"
+                    : "Frete Grátis"}
                 </p>
               </div>
             </div>
@@ -115,8 +119,10 @@ export function CupomDetailsModal({
             <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
               {cupom.tipo === "percentual" ? (
                 <Percent className="w-4 h-4 text-primary" />
-              ) : (
+              ) : cupom.tipo === "fixo" ? (
                 <DollarSign className="w-4 h-4 text-primary" />
+              ) : (
+                <Truck className="w-4 h-4 text-primary" />
               )}
               <div>
                 <p className="text-xs text-muted-foreground">Desconto</p>
