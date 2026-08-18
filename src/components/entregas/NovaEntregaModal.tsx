@@ -32,6 +32,7 @@ const unidades = ["Unidade Centro", "Unidade Jardins", "Unidade Zona Sul"];
 
 const emptyForm = {
   unidade: unidades[0],
+  numeroPedido: "",
   cliente: "",
   telefone: "",
   endereco: "",
