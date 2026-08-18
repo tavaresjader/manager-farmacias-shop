@@ -41,7 +41,7 @@ export const statusLabels: Record<EntregaStatus, string> = {
 };
 
 export const situacaoLabels: Record<EntregaSituacao, string> = {
-  ok: "Tudo certo",
+  ok: "Em andamento",
   atraso: "Em atraso",
   problema: "Problema",
 };
