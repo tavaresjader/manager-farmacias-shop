@@ -36,6 +36,7 @@ const emptyForm = {
   cliente: "",
   telefone: "",
   endereco: "",
+  complemento: "",
   valor: "",
   observacoes: "",
 };
@@ -66,6 +67,7 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
       cliente: form.cliente.trim(),
       telefone: form.telefone.trim(),
       endereco: form.endereco.trim(),
+      complemento: form.complemento.trim() || undefined,
       valor: Number(form.valor.replace(",", ".")) || 0,
       observacoes: form.observacoes.trim() || undefined,
       status: "aguardando",
@@ -153,6 +155,17 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
               value={form.endereco}
               onChange={(e) => setField("endereco", e.target.value)}
               placeholder="Rua, número, bairro, cidade"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="complemento">Complemento / Ponto de referência</Label>
+            <Input
+              id="complemento"
+              className="bg-card"
+              value={form.complemento}
+              onChange={(e) => setField("complemento", e.target.value)}
+              placeholder="Apto, bloco, ponto de referência (opcional)"
             />
           </div>
 
