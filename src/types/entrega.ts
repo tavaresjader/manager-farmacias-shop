@@ -22,6 +22,7 @@ export interface Entrega {
   cliente: string;
   telefone: string;
   endereco: string;
+  complemento?: string;
   valor: number;
   observacoes?: string;
   status: EntregaStatus;
