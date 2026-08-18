@@ -23,7 +23,7 @@ interface Cupom {
   id: string;
   codigo: string;
   desconto: string;
-  tipo: "percentual" | "fixo";
+  tipo: "percentual" | "fixo" | "frete_gratis";
   minimo: number;
   usos: number;
   limite: number;
@@ -41,7 +41,7 @@ interface CupomEditModalProps {
 const emptyForm = {
   codigo: "",
   desconto: "",
-  tipo: "percentual" as "percentual" | "fixo",
+  tipo: "percentual" as "percentual" | "fixo" | "frete_gratis",
   minimo: "",
   limite: "",
   validade: "",
@@ -86,7 +86,12 @@ export function CupomEditModal({
       usos: cupom?.usos ?? 0,
       codigo: formData.codigo,
       tipo: formData.tipo,
-      desconto: formData.tipo === "percentual" ? `${formData.desconto}%` : `R$ ${formData.desconto}`,
+      desconto:
+        formData.tipo === "percentual"
+          ? `${formData.desconto}%`
+          : formData.tipo === "fixo"
+          ? `R$ ${formData.desconto}`
+          : "Frete Grátis",
       minimo: parseFloat(formData.minimo) || 0,
       limite: parseInt(formData.limite) || 0,
       validade: formData.validade,
@@ -128,7 +133,7 @@ export function CupomEditModal({
             <Label htmlFor="tipo">Tipo de Desconto</Label>
             <Select
               value={formData.tipo}
-              onValueChange={(value: "percentual" | "fixo") =>
+              onValueChange={(value: "percentual" | "fixo" | "frete_gratis") =>
                 setFormData({ ...formData, tipo: value })
               }
             >
@@ -138,19 +143,23 @@ export function CupomEditModal({
               <SelectContent>
                 <SelectItem value="percentual">Percentual (%)</SelectItem>
                 <SelectItem value="fixo">Valor Fixo (R$)</SelectItem>
+                <SelectItem value="frete_gratis">Frete Grátis</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="desconto">
-              Desconto ({formData.tipo === "percentual" ? "%" : "R$"})
+              {formData.tipo === "frete_gratis"
+                ? "Desconto"
+                : `Desconto (${formData.tipo === "percentual" ? "%" : "R$"})`}
             </Label>
             <Input
               id="desconto"
-              type="number"
-              step="0.01"
-              value={formData.desconto}
+              type={formData.tipo === "frete_gratis" ? "text" : "number"}
+              step={formData.tipo === "frete_gratis" ? undefined : "0.01"}
+              value={formData.tipo === "frete_gratis" ? "Frete Grátis" : formData.desconto}
+              disabled={formData.tipo === "frete_gratis"}
               onChange={(e) =>
                 setFormData({ ...formData, desconto: e.target.value })
               }
