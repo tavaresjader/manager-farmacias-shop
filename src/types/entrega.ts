@@ -16,6 +16,7 @@ export interface Entregador {
 export interface Entrega {
   id: string;
   codigo: string;
+  numeroPedido?: string;
   origem: "avulsa" | "farmacia-shop" | "ifood" | "keeta" | "pede-pronto" | "aiqfome";
   unidade: string;
   cliente: string;

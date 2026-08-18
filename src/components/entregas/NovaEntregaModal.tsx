@@ -32,6 +32,7 @@ const unidades = ["Unidade Centro", "Unidade Jardins", "Unidade Zona Sul"];
 
 const emptyForm = {
   unidade: unidades[0],
+  numeroPedido: "",
   cliente: "",
   telefone: "",
   endereco: "",
@@ -59,6 +60,7 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
     const entrega: Entrega = {
       id: crypto.randomUUID(),
       codigo: `AV-${String(Math.floor(Math.random() * 9000) + 1000)}`,
+      numeroPedido: form.numeroPedido.trim() || undefined,
       origem: "avulsa",
       unidade: form.unidade,
       cliente: form.cliente.trim(),
@@ -107,6 +109,17 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="numeroPedido">Número do pedido</Label>
+            <Input
+              id="numeroPedido"
+              className="bg-card"
+              value={form.numeroPedido}
+              onChange={(e) => setField("numeroPedido", e.target.value)}
+              placeholder="Ex: 12345"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
