@@ -37,20 +37,84 @@ const emptyForm = {
   telefone: "",
   cep: "",
   endereco: "",
+  numero: "",
   complemento: "",
   valor: "",
   observacoes: "",
 };
 
+const onlyDigits = (v: string) => v.replace(/\D/g, "");
+
 export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaModalProps) {
   const [form, setForm] = useState(emptyForm);
+  const [buscandoCep, setBuscandoCep] = useState(false);
+  const [valorEntrega, setValorEntrega] = useState<number | null>(null);
+  const [calculando, setCalculando] = useState(false);
 
   useEffect(() => {
-    if (open) setForm(emptyForm);
+    if (open) {
+      setForm(emptyForm);
+      setValorEntrega(null);
+    }
   }, [open]);
 
   const setField = (key: keyof typeof emptyForm, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
+
+  // Preenche o endereço automaticamente a partir do CEP (campo não digitável)
+  useEffect(() => {
+    const cep = onlyDigits(form.cep);
+    if (cep.length !== 8) {
+      setForm((prev) => (prev.endereco ? { ...prev, endereco: "" } : prev));
+      return;
+    }
+    let cancelled = false;
+    setBuscandoCep(true);
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data?.erro) {
+          toast.error("CEP não encontrado.");
+          setForm((prev) => ({ ...prev, endereco: "" }));
+          return;
+        }
+        setForm((prev) => ({
+          ...prev,
+          endereco: [data.logradouro, data.bairro, data.localidade && `${data.localidade}/${data.uf}`]
+            .filter(Boolean)
+            .join(", "),
+        }));
+      })
+      .catch(() => {
+        if (!cancelled) toast.error("Não foi possível consultar o CEP.");
+      })
+      .finally(() => !cancelled && setBuscandoCep(false));
+    return () => {
+      cancelled = true;
+    };
+  }, [form.cep]);
+
+  // Calcula o valor da entrega após CEP + número informados
+  useEffect(() => {
+    const cep = onlyDigits(form.cep);
+    if (cep.length !== 8 || !form.numero.trim() || !form.endereco) {
+      setValorEntrega(null);
+      return;
+    }
+    setCalculando(true);
+    const timer = setTimeout(() => {
+      const base = 7.9;
+      const variacao = (Number(cep.slice(-3)) % 12) * 0.85;
+      setValorEntrega(Number((base + variacao).toFixed(2)));
+      setCalculando(false);
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+      setCalculando(false);
+    };
+  }, [form.cep, form.numero, form.endereco]);
+
 
   const handleSubmit = () => {
     if (!form.cliente.trim() || !form.telefone.trim() || !form.endereco.trim()) {
@@ -69,7 +133,9 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
       telefone: form.telefone.trim(),
       cep: form.cep.trim() || undefined,
       endereco: form.endereco.trim(),
+      numero: form.numero.trim() || undefined,
       complemento: form.complemento.trim() || undefined,
+      valorEntrega: valorEntrega ?? undefined,
       valor: Number(form.valor.replace(",", ".")) || 0,
       observacoes: form.observacoes.trim() || undefined,
       status: "aguardando",
@@ -164,12 +230,24 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
               <Label htmlFor="endereco">Endereço de entrega</Label>
               <Input
                 id="endereco"
-                className="bg-card"
-                value={form.endereco}
-                onChange={(e) => setField("endereco", e.target.value)}
-                placeholder="Rua, número, bairro, cidade"
+                readOnly
+                tabIndex={-1}
+                className="bg-muted text-muted-foreground cursor-not-allowed"
+                value={buscandoCep ? "Buscando endereço..." : form.endereco}
+                placeholder="Preenchido automaticamente pelo CEP"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="numero">Número do endereço</Label>
+            <Input
+              id="numero"
+              className="bg-card"
+              value={form.numero}
+              onChange={(e) => setField("numero", e.target.value)}
+              placeholder="Ex: 1234"
+            />
           </div>
 
           <div className="space-y-2">
@@ -183,16 +261,36 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="valor">Valor do pedido (R$)</Label>
-            <Input
-              id="valor"
-              className="bg-card"
-              value={form.valor}
-              onChange={(e) => setField("valor", e.target.value)}
-              placeholder="0,00"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="valorEntrega">Valor da entrega (R$)</Label>
+              <Input
+                id="valorEntrega"
+                readOnly
+                tabIndex={-1}
+                className="bg-muted text-muted-foreground cursor-not-allowed"
+                value={
+                  calculando
+                    ? "Calculando..."
+                    : valorEntrega !== null
+                      ? valorEntrega.toFixed(2).replace(".", ",")
+                      : ""
+                }
+                placeholder="Informe CEP e número"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="valor">Valor do pedido (R$)</Label>
+              <Input
+                id="valor"
+                className="bg-card"
+                value={form.valor}
+                onChange={(e) => setField("valor", e.target.value)}
+                placeholder="0,00"
+              />
+            </div>
           </div>
+
 
           <div className="space-y-2">
             <Label htmlFor="observacoes">Observações</Label>
