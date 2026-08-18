@@ -21,6 +21,7 @@ export interface Entrega {
   unidade: string;
   cliente: string;
   telefone: string;
+  cep?: string;
   endereco: string;
   complemento?: string;
   valor: number;

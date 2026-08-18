@@ -35,6 +35,7 @@ const emptyForm = {
   numeroPedido: "",
   cliente: "",
   telefone: "",
+  cep: "",
   endereco: "",
   complemento: "",
   valor: "",
@@ -66,6 +67,7 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
       unidade: form.unidade,
       cliente: form.cliente.trim(),
       telefone: form.telefone.trim(),
+      cep: form.cep.trim() || undefined,
       endereco: form.endereco.trim(),
       complemento: form.complemento.trim() || undefined,
       valor: Number(form.valor.replace(",", ".")) || 0,
@@ -147,15 +149,27 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="endereco">Endereço de entrega</Label>
-            <Input
-              id="endereco"
-              className="bg-card"
-              value={form.endereco}
-              onChange={(e) => setField("endereco", e.target.value)}
-              placeholder="Rua, número, bairro, cidade"
-            />
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="cep">CEP</Label>
+              <Input
+                id="cep"
+                className="bg-card"
+                value={form.cep}
+                onChange={(e) => setField("cep", e.target.value)}
+                placeholder="00000-000"
+              />
+            </div>
+            <div className="col-span-2 space-y-2">
+              <Label htmlFor="endereco">Endereço de entrega</Label>
+              <Input
+                id="endereco"
+                className="bg-card"
+                value={form.endereco}
+                onChange={(e) => setField("endereco", e.target.value)}
+                placeholder="Rua, número, bairro, cidade"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
