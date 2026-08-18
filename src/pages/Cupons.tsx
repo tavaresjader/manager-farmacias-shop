@@ -9,13 +9,13 @@ import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { CupomDetailsModal } from "@/components/cupons/CupomDetailsModal";
 import { CupomEditModal } from "@/components/cupons/CupomEditModal";
-import { Plus, Percent, DollarSign, Tag } from "lucide-react";
+import { Plus, Percent, DollarSign, Tag, Truck } from "lucide-react";
 
 interface Cupom {
   id: string;
   codigo: string;
   desconto: string;
-  tipo: "percentual" | "fixo";
+  tipo: "percentual" | "fixo" | "frete_gratis";
   minimo: number;
   usos: number;
   limite: number;
@@ -93,10 +93,18 @@ const columns: Column<Cupom>[] = [
       <div className="flex items-center gap-1.5">
         {cupom.tipo === "percentual" ? (
           <Percent className="w-4 h-4 text-muted-foreground" />
-        ) : (
+        ) : cupom.tipo === "fixo" ? (
           <DollarSign className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <Truck className="w-4 h-4 text-muted-foreground" />
         )}
-        <span>{cupom.tipo === "percentual" ? "Percentual" : "Valor Fixo"}</span>
+        <span>
+          {cupom.tipo === "percentual"
+            ? "Percentual"
+            : cupom.tipo === "fixo"
+            ? "Valor Fixo"
+            : "Frete Grátis"}
+        </span>
       </div>
     ),
   },
