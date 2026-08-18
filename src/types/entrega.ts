@@ -23,7 +23,9 @@ export interface Entrega {
   telefone: string;
   cep?: string;
   endereco: string;
+  numero?: string;
   complemento?: string;
+  valorEntrega?: number;
   valor: number;
   observacoes?: string;
   status: EntregaStatus;
