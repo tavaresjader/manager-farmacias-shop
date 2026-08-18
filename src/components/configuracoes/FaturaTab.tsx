@@ -1,4 +1,4 @@
-import { FileText, Receipt } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -64,19 +64,10 @@ export function FaturaTab() {
                       variant="ghost"
                       size="sm"
                       className="h-8 px-2 text-muted-foreground hover:text-foreground"
-                      onClick={() => console.log("Baixar PDF:", fatura.id)}
+                      onClick={() => console.log("Download:", fatura.id)}
                     >
-                      <FileText className="w-4 h-4 mr-1" />
-                      PDF
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 px-2 text-muted-foreground hover:text-foreground"
-                      onClick={() => console.log("Baixar NF:", fatura.id)}
-                    >
-                      <Receipt className="w-4 h-4 mr-1" />
-                      NF
+                      <Download className="w-4 h-4 mr-1" />
+                      Download
                     </Button>
                   </div>
                 </TableCell>
