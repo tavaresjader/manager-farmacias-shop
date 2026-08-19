@@ -142,7 +142,6 @@ const Aplicativos = () => {
               <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
                 <img src={ultramaxLogo} alt="Ultramax" className="w-10 h-auto object-contain" />
               </div>
-              <StatusBadge status="active" />
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               Integrador Ultramax
