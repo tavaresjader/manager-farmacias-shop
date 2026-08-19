@@ -3,7 +3,6 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/ui/search-bar";
-import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
@@ -84,7 +83,6 @@ const Aplicativos = () => {
               <div className="w-12 h-12 rounded-xl bg-[#25D366]/10 flex items-center justify-center">
                 <MessageCircle className="w-6 h-6 text-[#25D366]" />
               </div>
-              <StatusBadge status="active" />
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-[#25D366] transition-colors">
               WhatsApp Business
@@ -113,7 +111,6 @@ const Aplicativos = () => {
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Monitor className="w-6 h-6 text-primary" />
               </div>
-              <StatusBadge status="active" />
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               Integrador
@@ -145,7 +142,6 @@ const Aplicativos = () => {
               <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
                 <img src={ultramaxLogo} alt="Ultramax" className="w-10 h-auto object-contain" />
               </div>
-              <StatusBadge status="active" />
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               Integrador Ultramax
@@ -183,7 +179,6 @@ const Aplicativos = () => {
                       <Icon className="w-6 h-6 text-primary" />
                     )}
                   </div>
-                  <StatusBadge status={app.status} />
                 </div>
                 <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
                   {app.name}
