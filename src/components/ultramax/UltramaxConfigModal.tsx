@@ -93,6 +93,27 @@ export const UltramaxConfigModal = ({
               Ao iniciar a integração, será enviado uma solicitação de integração à Ultramax e sua loja estará disponível para iniciar a integração de Pedidos, Produtos e estoque automaticamente com a Farmácias Shop.
             </p>
 
+            {!isActive && (
+              <div className="space-y-2">
+                <Label htmlFor="unidade">Unidade</Label>
+                <Select
+                  value={unidadeSelecionada}
+                  onValueChange={setUnidadeSelecionada}
+                >
+                  <SelectTrigger id="unidade">
+                    <SelectValue placeholder="Selecione uma unidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mockUnidades.map((unidade) => (
+                      <SelectItem key={unidade.id} value={unidade.id}>
+                        {unidade.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             {isActive ? (
               <Button
                 onClick={handleDeactivate}
@@ -103,7 +124,11 @@ export const UltramaxConfigModal = ({
                 Inativar Integração
               </Button>
             ) : (
-              <Button onClick={handleStartIntegration} className="w-full">
+              <Button
+                onClick={handleStartIntegration}
+                disabled={!unidadeSelecionada}
+                className="w-full"
+              >
                 Ativar Integração
               </Button>
             )}
