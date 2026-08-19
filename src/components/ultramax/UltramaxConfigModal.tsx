@@ -17,9 +17,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Power } from "lucide-react";
 import ultramaxLogo from "@/assets/ultramax-logo.png";
+
+const mockUnidades = [
+  { id: "1", nome: "Matriz" },
+  { id: "2", nome: "Filial Centro" },
+  { id: "3", nome: "Filial Shopping" },
+];
 
 interface UltramaxConfigModalProps {
   open: boolean;
