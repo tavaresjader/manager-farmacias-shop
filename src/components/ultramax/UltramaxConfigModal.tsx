@@ -51,6 +51,7 @@ export const UltramaxConfigModal = ({
   onDeactivate,
 }: UltramaxConfigModalProps) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [unidadeSelecionada, setUnidadeSelecionada] = useState("");
 
   const handleStartIntegration = () => {
     onActivate?.();
