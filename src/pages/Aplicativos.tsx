@@ -179,7 +179,6 @@ const Aplicativos = () => {
                       <Icon className="w-6 h-6 text-primary" />
                     )}
                   </div>
-                  <StatusBadge status={app.status} />
                 </div>
                 <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
                   {app.name}
