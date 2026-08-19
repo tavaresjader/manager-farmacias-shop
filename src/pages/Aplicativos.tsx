@@ -83,7 +83,6 @@ const Aplicativos = () => {
               <div className="w-12 h-12 rounded-xl bg-[#25D366]/10 flex items-center justify-center">
                 <MessageCircle className="w-6 h-6 text-[#25D366]" />
               </div>
-              <StatusBadge status="active" />
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-[#25D366] transition-colors">
               WhatsApp Business
