@@ -411,6 +411,20 @@ const Relatorios = () => {
           </div>
         </div>
       </div>
+    </>
+  );
+
+  if (isPrintMode) {
+    return (
+      <div className="min-h-screen bg-background p-6 lg:p-8">
+        {pageContent}
+      </div>
+    );
+  }
+
+  return (
+    <MainLayout>
+      {pageContent}
     </MainLayout>
   );
 };
