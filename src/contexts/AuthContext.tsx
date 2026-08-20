@@ -12,23 +12,22 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(null);
+  // Load token from storage synchronously on first render so protected routes
+  // don't flash a redirect while auth state is still hydrating.
+  const [token, setToken] = useState<string | null>(() => {
+    const storedToken = authTokenStorage.get();
+    if (storedToken) {
+      managerBackendBff.setAuthToken(storedToken);
+    } else {
+      managerBackendBff.removeAuthToken();
+    }
+    return storedToken;
+  });
 
   const clearAuth = useCallback(() => {
     setToken(null);
     authTokenStorage.clear();
     managerBackendBff.removeAuthToken();
-  }, []);
-
-  // Load token from storage on mount (expired tokens are discarded)
-  useEffect(() => {
-    const storedToken = authTokenStorage.get();
-    if (storedToken) {
-      setToken(storedToken);
-      managerBackendBff.setAuthToken(storedToken);
-    } else {
-      managerBackendBff.removeAuthToken();
-    }
   }, []);
 
   // Periodically drop expired tokens from memory and storage
