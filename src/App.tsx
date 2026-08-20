@@ -14,6 +14,8 @@ import Cupons from "./pages/Cupons";
 import Aplicativos from "./pages/Aplicativos";
 import Entregas from "./pages/Entregas";
 import Relatorios from "./pages/Relatorios";
+import RelatorioImpressao from "./pages/RelatorioImpressao";
+
 import Configuracoes from "./pages/Configuracoes";
 import UnidadeDetalhe from "./pages/UnidadeDetalhe";
 import PagamentoOnlineConfig from "./pages/PagamentoOnlineConfig";
