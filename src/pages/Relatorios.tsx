@@ -39,7 +39,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
-import { useSearchParams } from "react-router-dom";
+
 
 // Mock data for daily sales chart
 const dailySalesData = [
