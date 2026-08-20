@@ -95,8 +95,6 @@ const unidadeOptions = [
 const Relatorios = () => {
   usePageTitle("Relatórios");
   const isLoading = usePageLoading();
-  const [searchParams] = useSearchParams();
-  const isPrintMode = searchParams.get("print") === "true";
 
   const [unidade, setUnidade] = useState<string>("todas");
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
@@ -104,24 +102,19 @@ const Relatorios = () => {
   );
   const [dateTo, setDateTo] = useState<Date | undefined>(new Date());
 
-  useEffect(() => {
-    if (isPrintMode) {
-      const timer = setTimeout(() => {
-        window.print();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isPrintMode]);
+  const unidadeLabel = unidadeOptions.find((o) => o.value === unidade)?.label || unidade;
 
   const handlePrint = () => {
+    const params = new URLSearchParams({ unidade: unidadeLabel });
+    if (dateFrom) params.set("de", format(dateFrom, "yyyy-MM-dd"));
+    if (dateTo) params.set("ate", format(dateTo, "yyyy-MM-dd"));
     window.open(
-      `${window.location.origin}/relatorios?print=true`,
+      `${window.location.origin}/relatorios/impressao?${params.toString()}`,
       "_blank",
       "width=1200,height=800,scrollbars=yes"
     );
   };
 
-  const unidadeLabel = unidadeOptions.find((o) => o.value === unidade)?.label || unidade;
 
   if (isLoading) {
     return (
