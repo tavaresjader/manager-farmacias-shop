@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -31,7 +31,7 @@ import {
   Megaphone,
   CalendarIcon,
   Filter,
-  Download,
+  Printer,
 } from "lucide-react";
 import {
   ChartContainer,
@@ -39,6 +39,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
+import { useSearchParams } from "react-router-dom";
 
 // Mock data for daily sales chart
 const dailySalesData = [
@@ -94,12 +95,33 @@ const unidadeOptions = [
 const Relatorios = () => {
   usePageTitle("Relatórios");
   const isLoading = usePageLoading();
-  
+  const [searchParams] = useSearchParams();
+  const isPrintMode = searchParams.get("print") === "true";
+
   const [unidade, setUnidade] = useState<string>("todas");
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
     new Date(new Date().setDate(new Date().getDate() - 30))
   );
   const [dateTo, setDateTo] = useState<Date | undefined>(new Date());
+
+  useEffect(() => {
+    if (isPrintMode) {
+      const timer = setTimeout(() => {
+        window.print();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isPrintMode]);
+
+  const handlePrint = () => {
+    window.open(
+      `${window.location.origin}/relatorios?print=true`,
+      "_blank",
+      "width=1200,height=800,scrollbars=yes"
+    );
+  };
+
+  const unidadeLabel = unidadeOptions.find((o) => o.value === unidade)?.label || unidade;
 
   if (isLoading) {
     return (
@@ -109,8 +131,8 @@ const Relatorios = () => {
     );
   }
 
-  return (
-    <MainLayout>
+  const pageContent = (
+    <>
       <PageHeader
         title="Relatórios"
         breadcrumbs={[]}
@@ -118,7 +140,7 @@ const Relatorios = () => {
 
       <div className="space-y-6">
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className={cn("flex flex-wrap items-center gap-3", isPrintMode && "hidden")}>
           <span className="text-sm font-medium text-muted-foreground">Unidade:</span>
           <Select value={unidade} onValueChange={setUnidade}>
             <SelectTrigger className="w-[200px]">
@@ -184,11 +206,22 @@ const Relatorios = () => {
             <Filter className="h-4 w-4" />
             Filtrar
           </Button>
-          <Button variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
-            Exportar
+          <Button variant="outline" className="gap-2" onClick={handlePrint}>
+            <Printer className="h-4 w-4" />
+            Imprimir
           </Button>
         </div>
+
+        {/* Print summary */}
+        {isPrintMode && (
+          <div className="text-sm text-muted-foreground border-b pb-4">
+            <span className="font-medium">Unidade:</span> {unidadeLabel}{" "}
+            <span className="mx-2">|</span>
+            <span className="font-medium">Período:</span>{" "}
+            {dateFrom ? format(dateFrom, "dd/MM/yyyy", { locale: ptBR }) : "—"} até{" "}
+            {dateTo ? format(dateTo, "dd/MM/yyyy", { locale: ptBR }) : "—"}
+          </div>
+        )}
 
         {/* Overview Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -378,6 +411,20 @@ const Relatorios = () => {
           </div>
         </div>
       </div>
+    </>
+  );
+
+  if (isPrintMode) {
+    return (
+      <div className="min-h-screen bg-background p-6 lg:p-8">
+        {pageContent}
+      </div>
+    );
+  }
+
+  return (
+    <MainLayout>
+      {pageContent}
     </MainLayout>
   );
 };
