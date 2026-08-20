@@ -39,7 +39,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
-import { useSearchParams } from "react-router-dom";
+
 
 // Mock data for daily sales chart
 const dailySalesData = [
@@ -95,8 +95,6 @@ const unidadeOptions = [
 const Relatorios = () => {
   usePageTitle("Relatórios");
   const isLoading = usePageLoading();
-  const [searchParams] = useSearchParams();
-  const isPrintMode = searchParams.get("print") === "true";
 
   const [unidade, setUnidade] = useState<string>("todas");
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
@@ -104,24 +102,19 @@ const Relatorios = () => {
   );
   const [dateTo, setDateTo] = useState<Date | undefined>(new Date());
 
-  useEffect(() => {
-    if (isPrintMode) {
-      const timer = setTimeout(() => {
-        window.print();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isPrintMode]);
+  const unidadeLabel = unidadeOptions.find((o) => o.value === unidade)?.label || unidade;
 
   const handlePrint = () => {
+    const params = new URLSearchParams({ unidade: unidadeLabel });
+    if (dateFrom) params.set("de", format(dateFrom, "yyyy-MM-dd"));
+    if (dateTo) params.set("ate", format(dateTo, "yyyy-MM-dd"));
     window.open(
-      `${window.location.origin}/relatorios?print=true`,
+      `${window.location.origin}/relatorios/impressao?${params.toString()}`,
       "_blank",
       "width=1200,height=800,scrollbars=yes"
     );
   };
 
-  const unidadeLabel = unidadeOptions.find((o) => o.value === unidade)?.label || unidade;
 
   if (isLoading) {
     return (
@@ -140,7 +133,7 @@ const Relatorios = () => {
 
       <div className="space-y-6">
         {/* Filters */}
-        <div className={cn("flex flex-wrap items-center gap-3", isPrintMode && "hidden")}>
+        <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm font-medium text-muted-foreground">Unidade:</span>
           <Select value={unidade} onValueChange={setUnidade}>
             <SelectTrigger className="w-[200px]">
@@ -212,16 +205,8 @@ const Relatorios = () => {
           </Button>
         </div>
 
-        {/* Print summary */}
-        {isPrintMode && (
-          <div className="text-sm text-muted-foreground border-b pb-4">
-            <span className="font-medium">Unidade:</span> {unidadeLabel}{" "}
-            <span className="mx-2">|</span>
-            <span className="font-medium">Período:</span>{" "}
-            {dateFrom ? format(dateFrom, "dd/MM/yyyy", { locale: ptBR }) : "—"} até{" "}
-            {dateTo ? format(dateTo, "dd/MM/yyyy", { locale: ptBR }) : "—"}
-          </div>
-        )}
+
+
 
         {/* Overview Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -414,13 +399,8 @@ const Relatorios = () => {
     </>
   );
 
-  if (isPrintMode) {
-    return (
-      <div className="min-h-screen bg-background p-6 lg:p-8">
-        {pageContent}
-      </div>
-    );
-  }
+
+
 
   return (
     <MainLayout>
