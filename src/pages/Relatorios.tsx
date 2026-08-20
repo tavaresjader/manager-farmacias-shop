@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -31,7 +31,7 @@ import {
   Megaphone,
   CalendarIcon,
   Filter,
-  Download,
+  Printer,
 } from "lucide-react";
 import {
   ChartContainer,
@@ -39,6 +39,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
+import { useSearchParams } from "react-router-dom";
 
 // Mock data for daily sales chart
 const dailySalesData = [
