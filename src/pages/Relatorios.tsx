@@ -133,7 +133,7 @@ const Relatorios = () => {
 
       <div className="space-y-6">
         {/* Filters */}
-        <div className={cn("flex flex-wrap items-center gap-3", isPrintMode && "hidden")}>
+        <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm font-medium text-muted-foreground">Unidade:</span>
           <Select value={unidade} onValueChange={setUnidade}>
             <SelectTrigger className="w-[200px]">
