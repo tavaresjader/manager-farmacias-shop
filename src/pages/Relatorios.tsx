@@ -205,16 +205,8 @@ const Relatorios = () => {
           </Button>
         </div>
 
-        {/* Print summary */}
-        {isPrintMode && (
-          <div className="text-sm text-muted-foreground border-b pb-4">
-            <span className="font-medium">Unidade:</span> {unidadeLabel}{" "}
-            <span className="mx-2">|</span>
-            <span className="font-medium">Período:</span>{" "}
-            {dateFrom ? format(dateFrom, "dd/MM/yyyy", { locale: ptBR }) : "—"} até{" "}
-            {dateTo ? format(dateTo, "dd/MM/yyyy", { locale: ptBR }) : "—"}
-          </div>
-        )}
+
+
 
         {/* Overview Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
