@@ -5,7 +5,7 @@ export type EntregaStatus =
   | "entregue"
   | "problema";
 
-export type EntregaSituacao = "ok" | "atraso" | "problema";
+export type EntregaSituacao = "ok" | "finalizado" | "atraso" | "problema";
 
 export interface Entregador {
   nome: string;
@@ -47,6 +47,7 @@ export const statusLabels: Record<EntregaStatus, string> = {
 
 export const situacaoLabels: Record<EntregaSituacao, string> = {
   ok: "Em andamento",
+  finalizado: "Finalizado",
   atraso: "Em atraso",
   problema: "Problema",
 };

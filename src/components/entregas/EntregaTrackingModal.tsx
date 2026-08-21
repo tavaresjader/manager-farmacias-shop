@@ -18,6 +18,7 @@ interface EntregaTrackingModalProps {
 
 const dotColor: Record<Entrega["situacao"], string> = {
   ok: "bg-success",
+  finalizado: "bg-primary",
   atraso: "bg-warning",
   problema: "bg-destructive",
 };

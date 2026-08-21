@@ -10,6 +10,7 @@ interface EntregaCardProps {
 
 const semaforo: Record<Entrega["situacao"], { dot: string; bar: string; text: string }> = {
   ok: { dot: "bg-success", bar: "bg-success", text: "text-success" },
+  finalizado: { dot: "bg-primary", bar: "bg-primary", text: "text-primary" },
   atraso: { dot: "bg-warning", bar: "bg-warning", text: "text-warning" },
   problema: { dot: "bg-destructive", bar: "bg-destructive", text: "text-destructive" },
 };

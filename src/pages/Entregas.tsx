@@ -73,7 +73,7 @@ const mockEntregas: Entrega[] = [
     endereco: "Rua Augusta, 1200 - Consolação, São Paulo - SP",
     valor: 67.5,
     status: "entregue",
-    situacao: "ok",
+    situacao: "finalizado",
     entregador: { nome: "Carlos Souza", telefone: "(11) 97777-4321", veiculo: "Moto - Honda CG" },
     solicitadaEm: "18/08/2026 07:20",
     previsaoMinutos: 0,
@@ -101,6 +101,7 @@ const mockEntregas: Entrega[] = [
 const filtros: { key: EntregaSituacao | "todas"; label: string; dot?: string }[] = [
   { key: "todas", label: "Todas" },
   { key: "ok", label: "Em andamento", dot: "bg-success" },
+  { key: "finalizado", label: "Finalizados", dot: "bg-primary" },
   { key: "atraso", label: "Em atraso", dot: "bg-warning" },
   { key: "problema", label: "Problemas", dot: "bg-destructive" },
 ];
