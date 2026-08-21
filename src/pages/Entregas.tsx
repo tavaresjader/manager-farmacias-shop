@@ -100,8 +100,8 @@ const mockEntregas: Entrega[] = [
 
 const filtros: { key: EntregaSituacao | "todas"; label: string; dot?: string }[] = [
   { key: "todas", label: "Todas" },
-  { key: "ok", label: "Em andamento", dot: "bg-success" },
-  { key: "finalizado", label: "Finalizados", dot: "bg-primary" },
+  { key: "ok", label: "Em andamento", dot: "bg-black" },
+  { key: "finalizado", label: "Finalizados", dot: "bg-success" },
   { key: "atraso", label: "Em atraso", dot: "bg-warning" },
   { key: "problema", label: "Problemas", dot: "bg-destructive" },
 ];
