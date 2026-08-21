@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
-import { authTokenStorage, isTokenExpired } from "@/lib/authToken";
+import { authTokenStorage, isMockToken, isTokenExpired } from "@/lib/authToken";
 
 interface AuthContextType {
   token: string | null;
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [token, clearAuth]);
 
   const setAuthToken = (newToken: string) => {
-    if (isTokenExpired(newToken)) {
+    if (isTokenExpired(newToken) || isMockToken(newToken)) {
       clearAuth();
       return;
     }

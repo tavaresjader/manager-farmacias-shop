@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, type MouseEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,8 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { Mail, Phone, FileText, Calendar, ShoppingBag, UserX, UserCheck, MapPin } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Mail, Phone, FileText, Calendar, ShoppingBag, UserX, UserCheck, MapPin, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Address {
@@ -39,9 +38,7 @@ interface Client {
   email: string;
   phone: string;
   document: string;
-  segment: string;
-  status: "active" | "inactive";
-  campaigns: number;
+  status: "active" | "inactive" | "blocked";
   totalSpent: number;
   createdAt: string;
   addresses: Address[];
@@ -51,26 +48,30 @@ interface ClienteDetailsModalProps {
   client: Client | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  loading?: boolean;
+  onStatusChange: (client: Client) => Promise<boolean>;
 }
 
-export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetailsModalProps) {
-  const { toast } = useToast();
+export function ClienteDetailsModal({ client, open, onOpenChange, loading = false, onStatusChange }: ClienteDetailsModalProps) {
   const [statusConfirmOpen, setStatusConfirmOpen] = useState(false);
-
-  if (!client) return null;
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const isDeactivateAction = client?.status === "active";
 
   const handleToggleStatus = () => {
     setStatusConfirmOpen(true);
   };
 
-  const confirmToggleStatus = () => {
-    const newStatus = client.status === "active" ? "inativado" : "ativado";
-    toast({
-      title: `Cliente ${newStatus}`,
-      description: `O cliente ${client.name} foi ${newStatus} com sucesso.`,
-    });
-    setStatusConfirmOpen(false);
-    onOpenChange(false);
+  const confirmToggleStatus = async (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    if (!client) return;
+
+    setUpdatingStatus(true);
+    const updated = await onStatusChange(client);
+    setUpdatingStatus(false);
+
+    if (updated) {
+      setStatusConfirmOpen(false);
+    }
   };
 
   const getInitials = (name: string) => {
@@ -89,6 +90,11 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
           <DialogTitle>Detalhes do Cliente</DialogTitle>
         </DialogHeader>
 
+        {loading ? (
+          <div className="flex min-h-64 items-center justify-center" aria-live="polite">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : client ? (
         <ScrollArea className="max-h-[calc(90vh-100px)] pr-4">
           <div className="space-y-6">
             {/* Header com avatar e info principal */}
@@ -104,7 +110,7 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
                 <div className="mt-1">
                   <StatusBadge
                     status={client.status}
-                    label={client.status === "active" ? "Ativo" : "Inativo"}
+                    label={client.status === "active" ? "Ativo" : client.status === "inactive" ? "Inativo" : "Bloqueado"}
                   />
                 </div>
               </div>
@@ -200,9 +206,8 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
               </div>
             </div>
 
-            {/* Ações */}
             <div className="flex gap-2 pt-2">
-              {client.status === "active" ? (
+              {isDeactivateAction ? (
                 <Button
                   variant="outline"
                   className="flex-1 gap-2 text-destructive hover:text-destructive"
@@ -224,34 +229,36 @@ export function ClienteDetailsModal({ client, open, onOpenChange }: ClienteDetai
             </div>
           </div>
         </ScrollArea>
+        ) : null}
       </DialogContent>
 
-      <AlertDialog open={statusConfirmOpen} onOpenChange={setStatusConfirmOpen}>
+      {client && <AlertDialog open={statusConfirmOpen} onOpenChange={setStatusConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {client.status === "active" ? "Inativar" : "Ativar"} cliente
+              {isDeactivateAction ? "Inativar" : "Ativar"} cliente
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {client.status === "active"
+              {isDeactivateAction
                 ? `Tem certeza que deseja inativar o cliente ${client.name}?`
                 : `Tem certeza que deseja ativar o cliente ${client.name}?`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel disabled={updatingStatus}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmToggleStatus}
-              className={client.status === "active" 
+              disabled={updatingStatus}
+              className={isDeactivateAction
                 ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 : "bg-primary text-primary-foreground hover:bg-primary/90"
               }
             >
-              {client.status === "active" ? "Inativar" : "Ativar"}
+              {updatingStatus ? "Processando..." : isDeactivateAction ? "Inativar" : "Ativar"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>}
     </Dialog>
   );
 }

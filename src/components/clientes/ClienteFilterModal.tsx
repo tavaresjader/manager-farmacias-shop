@@ -43,6 +43,7 @@ const statusOptions = [
   { value: "all", label: "Todos os status" },
   { value: "active", label: "Ativo" },
   { value: "inactive", label: "Inativo" },
+  { value: "blocked", label: "Bloqueado" },
 ];
 
 export function ClienteFilterModal({

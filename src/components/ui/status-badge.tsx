@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-type Status = "active" | "pending" | "inactive" | "completed" | "draft" | "processing" | "cancelled";
+type Status = "active" | "pending" | "inactive" | "blocked" | "completed" | "draft" | "processing" | "cancelled";
 
 interface StatusBadgeProps {
   status: Status;
@@ -11,6 +11,7 @@ const statusConfig: Record<Status, { label: string; className: string }> = {
   active: { label: "Ativo", className: "badge-active" },
   pending: { label: "Pendente", className: "badge-pending" },
   inactive: { label: "Inativo", className: "badge-inactive" },
+  blocked: { label: "Bloqueado", className: "badge-inactive" },
   completed: { label: "Concluído", className: "badge-active" },
   draft: { label: "Rascunho", className: "badge-inactive" },
   processing: { label: "Processando", className: "badge-pending" },

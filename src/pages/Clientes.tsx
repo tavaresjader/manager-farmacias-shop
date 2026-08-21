@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -6,338 +6,205 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { TabsFilter } from "@/components/ui/tabs-filter";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
 import { Mail, Phone } from "lucide-react";
 import { ClienteFilterModal, ClienteFilters } from "@/components/clientes/ClienteFilterModal";
 import { ClienteDetailsModal } from "@/components/clientes/ClienteDetailsModal";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { toast } from "sonner";
 
-interface Address {
-  id: string;
-  street: string;
-  number: string;
-  complement?: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  isDefault?: boolean;
+interface Address { id: string; street: string; number: string; complement?: string; neighborhood: string; city: string; state: string; zipCode: string; isDefault?: boolean; }
+type CustomerStatus = "active" | "inactive" | "blocked";
+interface Client { id: string; name: string; email: string; phone: string; document: string; status: CustomerStatus; totalSpent: number; createdAt: string; addresses: Address[]; }
+interface CustomerApiResponse { id: string; name?: string | null; document?: string | null; email?: string | null; phone?: string | null; status?: "ACTIVE" | "INACTIVE" | "BLOCKED" | null; purchaseTotal: number; createdAt: string; }
+interface CustomerAddressApiResponse {
+  id?: string;
+  address?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  neighborhood?: string | null;
+  city?: string | null;
+  district?: string | null;
+  state?: string | null;
+  postalCode?: string | null;
+  default?: boolean | null;
+}
+interface CustomerDetailsApiResponse extends CustomerApiResponse {
+  addresses?: CustomerAddressApiResponse[] | null;
 }
 
-interface Client {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  document: string;
-  segment: string;
-  status: "active" | "inactive";
-  campaigns: number;
-  totalSpent: number;
-  createdAt: string;
-  addresses: Address[];
+const initialFilters: ClienteFilters = { status: "all", dataCadastro: undefined };
+const tabs = [{ id: "all", label: "Todos" }, { id: "active", label: "Ativos" }, { id: "inactive", label: "Inativos" }, { id: "blocked", label: "Bloqueados" }];
+const statusLabels: Record<CustomerStatus, string> = { active: "Ativo", inactive: "Inativo", blocked: "Bloqueado" };
+const statusParams: Record<string, number> = { active: 1, inactive: 2, blocked: 3 };
+
+function toClient(customer: CustomerApiResponse): Client {
+  const statuses: Record<NonNullable<CustomerApiResponse["status"]>, CustomerStatus> = { ACTIVE: "active", INACTIVE: "inactive", BLOCKED: "blocked" };
+  return {
+    id: customer.id,
+    name: customer.name?.trim() || "Cliente sem nome",
+    document: customer.document?.trim() || "Não informado",
+    email: customer.email?.trim() || "Não informado",
+    phone: customer.phone?.trim() || "Não informado",
+    status: customer.status ? statuses[customer.status] : "inactive",
+    totalSpent: customer.purchaseTotal,
+    createdAt: customer.createdAt,
+    addresses: [],
+  };
 }
 
-const mockClients: Client[] = [
-  {
-    id: "1",
-    name: "João Silva",
-    email: "joao@lojavirtualabc.com",
-    phone: "(11) 99999-1234",
-    document: "123.456.789-00",
-    segment: "São Paulo, SP",
-    status: "active",
-    campaigns: 5,
-    totalSpent: 45000,
-    createdAt: "2024-01-15",
-    addresses: [
-      {
-        id: "1",
-        street: "Rua das Flores",
-        number: "123",
-        complement: "Apto 45",
-        neighborhood: "Centro",
-        city: "São Paulo",
-        state: "SP",
-        zipCode: "01234-567",
-        isDefault: true,
-      },
-    ],
-  },
-  {
-    id: "2",
-    name: "Maria Santos",
-    email: "maria@techsolutions.com",
-    phone: "(11) 98888-5678",
-    document: "987.654.321-00",
-    segment: "São Paulo, SP",
-    status: "active",
-    campaigns: 3,
-    totalSpent: 75000,
-    createdAt: "2024-02-20",
-    addresses: [
-      {
-        id: "1",
-        street: "Av. Paulista",
-        number: "1000",
-        neighborhood: "Bela Vista",
-        city: "São Paulo",
-        state: "SP",
-        zipCode: "01310-100",
-        isDefault: true,
-      },
-      {
-        id: "2",
-        street: "Rua Augusta",
-        number: "500",
-        complement: "Sala 10",
-        neighborhood: "Consolação",
-        city: "São Paulo",
-        state: "SP",
-        zipCode: "01305-000",
-      },
-    ],
-  },
-  {
-    id: "3",
-    name: "Pedro Costa",
-    email: "pedro@modaexpress.com",
-    phone: "(21) 97777-9012",
-    document: "456.789.123-00",
-    segment: "Rio de Janeiro, RJ",
-    status: "active",
-    campaigns: 2,
-    totalSpent: 18000,
-    createdAt: "2024-03-10",
-    addresses: [],
-  },
-  {
-    id: "4",
-    name: "Ana Oliveira",
-    email: "ana@ecommerceplus.com",
-    phone: "(31) 96666-3456",
-    document: "789.123.456-00",
-    segment: "Belo Horizonte, MG",
-    status: "active",
-    campaigns: 1,
-    totalSpent: 5000,
-    createdAt: "2024-06-05",
-    addresses: [
-      {
-        id: "1",
-        street: "Rua da Bahia",
-        number: "200",
-        neighborhood: "Centro",
-        city: "Belo Horizonte",
-        state: "MG",
-        zipCode: "30160-011",
-        isDefault: true,
-      },
-    ],
-  },
-  {
-    id: "5",
-    name: "Carlos Ferreira",
-    email: "carlos@startupinc.com",
-    phone: "(41) 95555-7890",
-    document: "321.654.987-00",
-    segment: "Curitiba, PR",
-    status: "active",
-    campaigns: 4,
-    totalSpent: 32000,
-    createdAt: "2024-04-18",
-    addresses: [
-      {
-        id: "1",
-        street: "Rua XV de Novembro",
-        number: "300",
-        neighborhood: "Centro",
-        city: "Curitiba",
-        state: "PR",
-        zipCode: "80020-310",
-        isDefault: true,
-      },
-    ],
-  },
-  {
-    id: "6",
-    name: "Fernanda Lima",
-    email: "fernanda@consultoriaxyz.com",
-    phone: "(51) 94444-1234",
-    document: "654.987.321-00",
-    segment: "Porto Alegre, RS",
-    status: "inactive",
-    campaigns: 0,
-    totalSpent: 0,
-    createdAt: "2024-07-22",
-    addresses: [],
-  },
-];
+function toClientDetails(customer: CustomerDetailsApiResponse): Client {
+  const client = toClient(customer);
 
-const tabs = [
-  { id: "all", label: "Todos", count: 6 },
-  { id: "active", label: "Ativos", count: 5 },
-  { id: "inactive", label: "Inativos", count: 1 },
-];
+  return {
+    ...client,
+    addresses: (customer.addresses ?? []).map((address, index) => ({
+      id: address.id ?? `${customer.id}-${index}`,
+      street: address.address?.trim() || "Não informado",
+      number: address.number?.trim() || "S/N",
+      complement: address.complement?.trim() || undefined,
+      neighborhood: address.neighborhood?.trim() || "Não informado",
+      city: address.city?.trim() || "Não informado",
+      state: address.district?.trim() || address.state?.trim() || "Não informado",
+      zipCode: address.postalCode?.trim() || "Não informado",
+      isDefault: address.default ?? false,
+    })),
+  };
+}
 
 const columns: Column<Client>[] = [
-  {
-    key: "name",
-    label: "Cliente",
-    sortable: true,
-    render: (item) => (
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-          <span className="text-sm font-medium text-primary">
-            {item.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .slice(0, 2)}
-          </span>
-        </div>
-        <div>
-          <span className="font-medium text-foreground">{item.name}</span>
-          <p className="text-xs text-muted-foreground mt-0.5">{item.document}</p>
-        </div>
-      </div>
-    ),
-  },
-  {
-    key: "contact",
-    label: "Contato",
-    render: (item) => (
-      <div className="space-y-1">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Mail className="w-3 h-3" />
-          {item.email}
-        </div>
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Phone className="w-3 h-3" />
-          {item.phone}
-        </div>
-      </div>
-    ),
-  },
-  {
-    key: "status",
-    label: "Status",
-    render: (item) => (
-      <StatusBadge
-        status={item.status}
-        label={item.status === "active" ? "Ativo" : "Inativo"}
-      />
-    ),
-  },
-  {
-    key: "totalSpent",
-    label: "Total Compras",
-    sortable: true,
-    render: (item) => (
-      <span className="text-foreground font-medium">
-        {item.totalSpent.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        })}
-      </span>
-    ),
-  },
-  {
-    key: "createdAt",
-    label: "Cliente desde",
-    sortable: true,
-    render: (item) => (
-      <span className="text-muted-foreground">
-        {new Date(item.createdAt).toLocaleDateString("pt-BR")}
-      </span>
-    ),
-  },
+  { key: "name", label: "Cliente", sortable: true, render: (item) => <div className="flex items-center gap-3"><div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center"><span className="text-sm font-medium text-primary">{item.name.split(" ").map((name) => name[0]).join("").slice(0, 2).toUpperCase()}</span></div><div><span className="font-medium text-foreground">{item.name}</span><p className="text-xs text-muted-foreground mt-0.5">{item.document}</p></div></div> },
+  { key: "contact", label: "Contato", render: (item) => <div className="space-y-1"><div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Mail className="w-3 h-3" />{item.email}</div><div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Phone className="w-3 h-3" />{item.phone}</div></div> },
+  { key: "status", label: "Status", render: (item) => <StatusBadge status={item.status} label={statusLabels[item.status]} /> },
+  { key: "totalSpent", label: "Total Compras", sortable: true, render: (item) => <span className="text-foreground font-medium">{item.totalSpent.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span> },
+  { key: "createdAt", label: "Cliente desde", sortable: true, render: (item) => <span className="text-muted-foreground">{new Date(item.createdAt).toLocaleDateString("pt-BR")}</span> },
 ];
 
 const Clientes = () => {
   usePageTitle("Clientes");
-  const isLoading = usePageLoading();
+  const isPageLoading = usePageLoading();
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
-  const [filters, setFilters] = useState<ClienteFilters>({
-    status: "all",
-    dataCadastro: undefined,
-  });
+  const [filters, setFilters] = useState<ClienteFilters>(initialFilters);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loadingClients, setLoadingClients] = useState(false);
+  const [loadingCustomerDetails, setLoadingCustomerDetails] = useState(false);
+  const detailsRequestId = useRef(0);
 
-  const handleRowClick = (client: Client) => {
-    setSelectedClient(client);
-    setDetailsModalOpen(true);
+  const selectedStatus = activeTab;
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchClients = async () => {
+      setLoadingClients(true);
+      const params: Record<string, string | number | boolean> = {};
+      if (searchQuery.trim()) params.term = searchQuery.trim();
+      if (selectedStatus !== "all") params.status = statusParams[selectedStatus];
+      if (filters.dataCadastro) params.createdAt = filters.dataCadastro.toISOString();
+
+      const response = await managerBackendBff.get<CustomerApiResponse[]>("/v1/Customers", { params });
+      if (cancelled) return;
+      if (response.data) {
+        setClients(response.data.map(toClient));
+      } else {
+        setClients([]);
+        toast.error(`Erro ao carregar clientes: ${response.error ?? "Tente novamente."}`);
+      }
+      setLoadingClients(false);
+    };
+    fetchClients();
+    return () => { cancelled = true; };
+  }, [filters.dataCadastro, searchQuery, selectedStatus]);
+
+  const handleApplyFilters = (newFilters: ClienteFilters) => {
+    setFilters(newFilters);
+    setActiveTab(newFilters.status);
   };
 
-  const filteredClients = mockClients.filter((client) => {
-    const matchesSearch =
-      client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.document.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTab = activeTab === "all" || client.status === activeTab;
-    
-    // Filtros da modal
-    const matchesStatus = filters.status === "all" || client.status === filters.status;
-    const matchesData = !filters.dataCadastro || client.createdAt === filters.dataCadastro.toISOString().split("T")[0];
-    
-    return matchesSearch && matchesTab && matchesStatus && matchesData;
-  });
+  const handleTabChange = (status: string) => {
+    setActiveTab(status);
+    setFilters((currentFilters) => ({ ...currentFilters, status }));
+  };
 
-  if (isLoading) {
-    return (
-      <MainLayout>
-        <PageLoading />
-      </MainLayout>
+  const handleClientClick = async (client: Client) => {
+    const requestId = ++detailsRequestId.current;
+    setSelectedClient(null);
+    setDetailsModalOpen(true);
+    setLoadingCustomerDetails(true);
+
+    const response = await managerBackendBff.get<CustomerDetailsApiResponse>(
+      `/v1/Customers/${encodeURIComponent(client.id)}`,
     );
-  }
 
-  return (
-    <MainLayout>
-      <PageHeader
-        title="Clientes"
-        breadcrumbs={[]}
-      />
+    if (requestId !== detailsRequestId.current) return;
 
-      <div className="space-y-4">
-        <SearchBar
-          placeholder="Pesquisar por nome, empresa ou e-mail..."
-          onSearch={setSearchQuery}
-          onFilter={() => setFilterModalOpen(true)}
-        />
+    if (response.data) {
+      setSelectedClient(toClientDetails(response.data));
+    } else {
+      setDetailsModalOpen(false);
+      toast.error(`Erro ao carregar detalhes do cliente: ${response.error ?? "Tente novamente."}`);
+    }
 
-        <TabsFilter
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+    setLoadingCustomerDetails(false);
+  };
 
-        <DataTable
-          columns={columns}
-          data={filteredClients}
-          emptyMessage="Nenhum cliente encontrado"
-          loading={isLoading}
-          onRowClick={handleRowClick}
-        />
+  const handleDetailsModalOpenChange = (open: boolean) => {
+    setDetailsModalOpen(open);
+    if (!open) {
+      detailsRequestId.current += 1;
+      setLoadingCustomerDetails(false);
+      setSelectedClient(null);
+    }
+  };
 
-        <ClienteFilterModal
-          open={filterModalOpen}
-          onOpenChange={setFilterModalOpen}
-          filters={filters}
-          onApplyFilters={setFilters}
-        />
+  const handleCustomerStatusChange = async (client: Client): Promise<boolean> => {
+    const endpoint = client.status === "active" ? "block" : "unlock";
+    const response = await managerBackendBff.patch<unknown>(
+      `/v1/Customers/${encodeURIComponent(client.id)}/${endpoint}`,
+    );
 
-        <ClienteDetailsModal
-          client={selectedClient}
-          open={detailsModalOpen}
-          onOpenChange={setDetailsModalOpen}
-        />
-      </div>
-    </MainLayout>
-  );
+    if (response.error) {
+      toast.error(`Erro ao atualizar status do cliente: ${response.error}`);
+      return false;
+    }
+
+    const detailsResponse = await managerBackendBff.get<CustomerDetailsApiResponse>(
+      `/v1/Customers/${encodeURIComponent(client.id)}`,
+    );
+
+    if (!detailsResponse.data) {
+      toast.error(`Status atualizado, mas não foi possível recarregar os detalhes: ${detailsResponse.error ?? "Tente novamente."}`);
+      handleDetailsModalOpenChange(false);
+      return true;
+    }
+
+    const updatedClient = toClientDetails(detailsResponse.data);
+    setSelectedClient(updatedClient);
+    setClients((currentClients) => currentClients.map((currentClient) => (
+      currentClient.id === updatedClient.id
+        ? { ...currentClient, status: updatedClient.status }
+        : currentClient
+    )));
+    toast.success("Status do cliente atualizado com sucesso.");
+    return true;
+  };
+
+  if (isPageLoading) return <MainLayout><PageLoading /></MainLayout>;
+
+  return <MainLayout>
+    <PageHeader title="Clientes" breadcrumbs={[]} />
+    <div className="space-y-4">
+      <SearchBar placeholder="Pesquisar por nome, documento ou e-mail..." value={searchQuery} onSearch={setSearchQuery} onFilter={() => setFilterModalOpen(true)} />
+      <TabsFilter tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
+      <DataTable columns={columns} data={clients} emptyMessage="Nenhum cliente encontrado" loading={loadingClients} onRowClick={handleClientClick} />
+      <ClienteFilterModal open={filterModalOpen} onOpenChange={setFilterModalOpen} filters={filters} onApplyFilters={handleApplyFilters} />
+      <ClienteDetailsModal client={selectedClient} open={detailsModalOpen} onOpenChange={handleDetailsModalOpenChange} loading={loadingCustomerDetails} onStatusChange={handleCustomerStatusChange} />
+    </div>
+  </MainLayout>;
 };
 
 export default Clientes;

@@ -1,6 +1,6 @@
 const MANAGER_API_URL =
   (import.meta.env.VITE_MANAGER_API_URL as string | undefined) ??
-  "https://manager-api.farmacias.shop";
+  "https://localhost:7032";
 
 const REQUEST_TIMEOUT_MS = 30000;
 
