@@ -79,7 +79,7 @@ export function EntregaTrackingModal({ entrega, open, onOpenChange }: EntregaTra
                 </p>
               </div>
             </div>
-            <Progress value={entrega.progresso} />
+            <Progress value={entrega.progresso} indicatorClassName={dotColor[entrega.situacao]} />
             <div className="flex justify-between text-xs text-muted-foreground">
               {etapas.map((etapa, index) => (
                 <span
