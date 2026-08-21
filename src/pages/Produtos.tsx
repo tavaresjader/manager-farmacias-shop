@@ -25,6 +25,18 @@ interface Produto {
   controlado: boolean;
 }
 
+interface ProdutoApi {
+  id: string;
+  name?: string;
+  externalCode?: string;
+  categoryName?: string;
+}
+
+interface ProdutosResponse {
+  results?: ProdutoApi[];
+  totalPages?: number;
+}
+
 const initialFilters: ProdutoFilters = {
   categoria: "all",
   nome: "",
@@ -96,10 +108,10 @@ const Produtos = () => {
       if (searchQuery) params.Term = searchQuery;
       if (filters.categoria && filters.categoria !== "all") params.CategoryId = filters.categoria;
 
-      const response = await managerBackendBff.get<{ results: any[]; totalPages: number }>("/v1/Products", { params });
+      const response = await managerBackendBff.get<ProdutosResponse>("/v1/Products", { params });
       if (response.data) {
         const results = response.data.results ?? [];
-        setProdutos(results.map((p: any) => ({
+        setProdutos(results.map((p) => ({
           id: p.id,
           nome: p.name ?? "",
           sku: p.externalCode ?? "",

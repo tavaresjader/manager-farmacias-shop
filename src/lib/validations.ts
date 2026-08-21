@@ -39,7 +39,7 @@ export const registrationSchema = z
       .trim()
       .min(3, "Nome deve ter no mínimo 3 caracteres")
       .max(100, "Nome muito longo")
-      .regex(/^[a-zA-ZÀ-ÿ0-9\s\-]+$/, "Caracteres inválidos no nome"),
+      .regex(/^[a-zA-ZÀ-ÿ0-9\s-]+$/, "Caracteres inválidos no nome"),
     cnpj: z
       .string()
       .regex(
