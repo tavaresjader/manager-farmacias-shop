@@ -61,7 +61,7 @@ export function EntregaCard({ entrega, onClick }: EntregaCardProps) {
       </div>
 
       <div className="space-y-2">
-        <Progress value={entrega.progresso} />
+        <Progress value={entrega.progresso} indicatorClassName={cores.bar} />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{statusLabels[entrega.status]}</span>
           <span className="flex items-center gap-1">
