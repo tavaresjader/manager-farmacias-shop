@@ -57,7 +57,9 @@ interface SignInRequest {
 }
 
 interface SignInResponse {
-  token: string;
+  token?: string;
+  accessToken?: string;
+
   user?: {
     id: string;
     email: string;
