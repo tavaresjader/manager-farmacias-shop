@@ -12,6 +12,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
 import { loginSchema, forgotPasswordSchema, type LoginFormData } from "@/lib/validations";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { featureFlags } from "@/config/featureFlags";
+import { mockAuth } from "@/services/mockAuth";
+
 
 interface LocationState {
   from?: {
@@ -47,7 +50,16 @@ const Login = () => {
       return;
     }
 
+    if (featureFlags.mockAuth) {
+      const { accessToken } = mockAuth.signIn(data.email);
+      setAuthToken(accessToken);
+      toast.success("Login realizado com sucesso!");
+      navigate(from, { replace: true });
+      return;
+    }
+
     setIsLoading(true);
+
     try {
       const response = await managerBackendBff.signIn({
         email: data.email,
