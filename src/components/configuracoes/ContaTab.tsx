@@ -23,7 +23,13 @@ export function ContaTab() {
     cnpj: "",
     nome: "",
     situacao: "ativo",
+    endereco: "",
+    telefone: "",
+    farmaceutico: "",
+    horarioAtendimento: "",
+    autorizacaoFuncionamento: "",
   });
+
 
   const handleEmpresaChange = (field: string, value: string) => {
     setEmpresa((prev) => ({ ...prev, [field]: value }));
