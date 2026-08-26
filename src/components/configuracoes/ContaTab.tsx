@@ -58,6 +58,51 @@ export function ContaTab() {
           />
         </div>
         <div className="space-y-2">
+          <Label htmlFor="endereco">Endereço completo</Label>
+          <Input
+            id="endereco"
+            placeholder="Rua, número, bairro, cidade - UF, CEP"
+            value={empresa.endereco}
+            onChange={(e) => handleEmpresaChange("endereco", e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="telefone">Telefone / WhatsApp</Label>
+          <Input
+            id="telefone"
+            placeholder="(00) 00000-0000"
+            value={empresa.telefone}
+            onChange={(e) => handleEmpresaChange("telefone", e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="farmaceutico">Farmacêutico Responsável</Label>
+          <Input
+            id="farmaceutico"
+            placeholder="Nome e CRF do responsável técnico"
+            value={empresa.farmaceutico}
+            onChange={(e) => handleEmpresaChange("farmaceutico", e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="horarioAtendimento">Horário de atendimento</Label>
+          <Input
+            id="horarioAtendimento"
+            placeholder="Seg a Sex, 08h às 18h"
+            value={empresa.horarioAtendimento}
+            onChange={(e) => handleEmpresaChange("horarioAtendimento", e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="autorizacaoFuncionamento">Autorização de Funcionamento da Empresa</Label>
+          <Input
+            id="autorizacaoFuncionamento"
+            placeholder="Número da AFE"
+            value={empresa.autorizacaoFuncionamento}
+            onChange={(e) => handleEmpresaChange("autorizacaoFuncionamento", e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
           <Label htmlFor="situacao">Situação</Label>
           <Select value={empresa.situacao} onValueChange={(value) => handleEmpresaChange("situacao", value)}>
             <SelectTrigger id="situacao">
@@ -73,6 +118,7 @@ export function ContaTab() {
           Salvar alterações
         </Button>
       </form>
+
 
       <div className="mt-12 pt-6 border-t border-border">
         <h3 className="text-lg font-semibold text-destructive mb-2">Cuidado</h3>
