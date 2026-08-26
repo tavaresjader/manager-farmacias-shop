@@ -191,7 +191,7 @@ const PagamentoOnlineConfig = () => {
             <Button
               variant="outline"
               className="bg-white dark:bg-background"
-              onClick={() => navigate("/configuracoes?tab=pagamentos")}
+              onClick={() => navigate("/configuracoes/pagamentos")}
             >
               Voltar
             </Button>

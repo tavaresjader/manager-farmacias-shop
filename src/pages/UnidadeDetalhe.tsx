@@ -190,7 +190,7 @@ export default function UnidadeDetalhe() {
         </div>
         <div className="bg-card border border-border rounded-lg p-6">
           <p className="text-muted-foreground">A unidade solicitada não foi encontrada.</p>
-          <Button className="mt-4" onClick={() => navigate("/configuracoes")}>
+          <Button className="mt-4" onClick={() => navigate("/configuracoes/unidades")}>
             Voltar para Configurações
           </Button>
         </div>
@@ -223,7 +223,7 @@ export default function UnidadeDetalhe() {
       variant: "destructive",
     });
     setDeleteConfirmOpen(false);
-    navigate("/configuracoes");
+    navigate("/configuracoes/unidades");
   };
 
   const handleHorarioChange = (
@@ -696,7 +696,7 @@ export default function UnidadeDetalhe() {
                   <Pencil className="w-4 h-4 mr-2" />
                   Editar
                 </Button>
-                <Button variant="outline" onClick={() => navigate("/configuracoes")}>
+                <Button variant="outline" onClick={() => navigate("/configuracoes/unidades")}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar
                 </Button>

@@ -122,7 +122,7 @@ export function PagamentosTab() {
                     )}
                     {option.id === "agreement" && option.enabled && (
                       <Link
-                        to="/configuracoes?tab=unidades"
+                        to="/configuracoes/unidades"
                         className="flex items-center gap-1 text-xs text-destructive hover:underline mt-1"
                       >
                         Configure os convênios em suas unidades

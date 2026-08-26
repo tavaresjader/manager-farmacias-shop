@@ -64,12 +64,12 @@ import {
  
    const handleSave = () => {
     console.log("Salvando colaborador:", { nome, email, senhaDefinida: senha.length > 0, ativo, master, unidadesSelecionadas });
-     navigate("/configuracoes?tab=colaboradores");
+     navigate("/configuracoes/colaboradores");
    };
  
   const handleRemove = () => {
     console.log("Removendo colaborador:", id);
-    navigate("/configuracoes?tab=colaboradores");
+    navigate("/configuracoes/colaboradores");
   };
 
    if (isLoading) {
@@ -85,7 +85,7 @@ import {
         <MainLayout>
           <div className="p-6">
             <p className="text-muted-foreground">Colaborador não encontrado.</p>
-            <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")} className="mt-4">
+            <Button variant="outline" onClick={() => navigate("/configuracoes/colaboradores")} className="mt-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar
             </Button>
@@ -252,7 +252,7 @@ import {
                ) : <div />}
 
                <div className="flex gap-3">
-                 <Button variant="outline" onClick={() => navigate("/configuracoes?tab=colaboradores")}>
+                 <Button variant="outline" onClick={() => navigate("/configuracoes/colaboradores")}>
                    <ArrowLeft className="w-4 h-4 mr-2" />
                    Voltar
                  </Button>

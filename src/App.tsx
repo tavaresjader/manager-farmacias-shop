@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -16,7 +16,14 @@ import Entregas from "./pages/Entregas";
 import Relatorios from "./pages/Relatorios";
 import RelatorioImpressao from "./pages/RelatorioImpressao";
 
-import Configuracoes from "./pages/Configuracoes";
+import ConfiguracoesUnidades from "./pages/configuracoes/ConfiguracoesUnidades";
+import ConfiguracoesBanners from "./pages/configuracoes/ConfiguracoesBanners";
+import ConfiguracoesAparencia from "./pages/configuracoes/ConfiguracoesAparencia";
+import ConfiguracoesPagamentos from "./pages/configuracoes/ConfiguracoesPagamentos";
+import ConfiguracoesConta from "./pages/configuracoes/ConfiguracoesConta";
+import ConfiguracoesFaturas from "./pages/configuracoes/ConfiguracoesFaturas";
+import ConfiguracoesIntegracoes from "./pages/configuracoes/ConfiguracoesIntegracoes";
+import ConfiguracoesColaboradores from "./pages/configuracoes/ConfiguracoesColaboradores";
 import UnidadeDetalhe from "./pages/UnidadeDetalhe";
 import PagamentoOnlineConfig from "./pages/PagamentoOnlineConfig";
  import ColaboradorDetalhe from "./pages/ColaboradorDetalhe";
@@ -54,7 +61,15 @@ const App = () => (
               <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
               <Route path="/relatorios/impressao" element={<ProtectedRoute><RelatorioImpressao /></ProtectedRoute>} />
 
-              <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
+              <Route path="/configuracoes" element={<Navigate to="/configuracoes/unidades" replace />} />
+              <Route path="/configuracoes/unidades" element={<ProtectedRoute><ConfiguracoesUnidades /></ProtectedRoute>} />
+              <Route path="/configuracoes/banners" element={<ProtectedRoute><ConfiguracoesBanners /></ProtectedRoute>} />
+              <Route path="/configuracoes/aparencia" element={<ProtectedRoute><ConfiguracoesAparencia /></ProtectedRoute>} />
+              <Route path="/configuracoes/pagamentos" element={<ProtectedRoute><ConfiguracoesPagamentos /></ProtectedRoute>} />
+              <Route path="/configuracoes/conta" element={<ProtectedRoute><ConfiguracoesConta /></ProtectedRoute>} />
+              <Route path="/configuracoes/faturas" element={<ProtectedRoute><ConfiguracoesFaturas /></ProtectedRoute>} />
+              <Route path="/configuracoes/integracoes" element={<ProtectedRoute><ConfiguracoesIntegracoes /></ProtectedRoute>} />
+              <Route path="/configuracoes/colaboradores" element={<ProtectedRoute><ConfiguracoesColaboradores /></ProtectedRoute>} />
               <Route path="/configuracoes/unidades/:id" element={<ProtectedRoute><UnidadeDetalhe /></ProtectedRoute>} />
               <Route path="/configuracoes/pagamento-online" element={<ProtectedRoute><PagamentoOnlineConfig /></ProtectedRoute>} />
                <Route path="/configuracoes/colaboradores/:id" element={<ProtectedRoute><ColaboradorDetalhe /></ProtectedRoute>} />
