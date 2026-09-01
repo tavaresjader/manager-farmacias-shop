@@ -164,6 +164,141 @@ const Aplicativos = () => {
             </div>
           </div>
 
+          {/* Mercado Livre Card */}
+          <div
+            className={cn(
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
+            )}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-[#FFE600]/20 flex items-center justify-center">
+                <ShoppingBag className="w-6 h-6 text-[#2D3277]" />
+              </div>
+            </div>
+            <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+              Mercado Livre
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Integração com o marketplace Mercado Livre
+            </p>
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
+                Marketplace
+              </span>
+              <button className="text-muted-foreground hover:text-primary transition-colors">
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* iFood Card */}
+          <div
+            className={cn(
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
+            )}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
+                <img src={ifoodLogo} alt="iFood" className="w-10 h-auto object-contain" />
+              </div>
+            </div>
+            <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+              iFood
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Integração com o marketplace iFood
+            </p>
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
+                Marketplace
+              </span>
+              <button className="text-muted-foreground hover:text-primary transition-colors">
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Keeta Card */}
+          <div
+            className={cn(
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
+            )}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
+                <img src={keetaLogo} alt="Keeta" className="w-10 h-auto object-contain" />
+              </div>
+            </div>
+            <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+              Keeta
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Integração com o marketplace Keeta
+            </p>
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
+                Marketplace
+              </span>
+              <button className="text-muted-foreground hover:text-primary transition-colors">
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* TikTok Shop Card */}
+          <div
+            className={cn(
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
+            )}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
+                <ShoppingBag className="w-6 h-6 text-foreground" />
+              </div>
+            </div>
+            <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+              TikTok Shop
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Integração com o marketplace TikTok Shop
+            </p>
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
+                Marketplace
+              </span>
+              <button className="text-muted-foreground hover:text-primary transition-colors">
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Shopee Card */}
+          <div
+            className={cn(
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
+            )}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-[#EE4D2D]/10 flex items-center justify-center">
+                <ShoppingBag className="w-6 h-6 text-[#EE4D2D]" />
+              </div>
+            </div>
+            <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+              Shopee
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Integração com o marketplace Shopee
+            </p>
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
+                Marketplace
+              </span>
+              <button className="text-muted-foreground hover:text-primary transition-colors">
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
           {filteredApps.map((app) => {
             const Icon = getAppIcon(app.icon);
             return (
