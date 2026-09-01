@@ -181,8 +181,8 @@ const Aplicativos = () => {
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               Mercado Livre
-
             </h3>
+
             <p className="text-sm text-muted-foreground mb-3">
               Integração com o marketplace Mercado Livre
             </p>
@@ -263,8 +263,8 @@ const Aplicativos = () => {
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               TikTok Shop
-
             </h3>
+
             <p className="text-sm text-muted-foreground mb-3">
               Integração com o marketplace TikTok Shop
             </p>
@@ -291,8 +291,8 @@ const Aplicativos = () => {
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               Shopee
-
             </h3>
+
             <p className="text-sm text-muted-foreground mb-3">
               Integração com o marketplace Shopee
             </p>
