@@ -11,6 +11,8 @@ import { UltramaxConfigModal } from "@/components/ultramax/UltramaxConfigModal";
 import { Plus, ExternalLink, BarChart3, MessageCircle, Monitor, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ultramaxLogo from "@/assets/ultramax-logo.png";
+import ifoodLogo from "@/assets/channels/ifood.webp";
+import keetaLogo from "@/assets/channels/keeta.png";
 
 
 interface Aplicativo {
