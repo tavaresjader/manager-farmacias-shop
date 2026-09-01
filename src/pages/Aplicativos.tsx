@@ -13,6 +13,10 @@ import { cn } from "@/lib/utils";
 import ultramaxLogo from "@/assets/ultramax-logo.png";
 import ifoodLogo from "@/assets/channels/ifood.webp";
 import keetaLogo from "@/assets/channels/keeta.png";
+import mercadoLivreLogo from "@/assets/channels/mercado-livre.png";
+import tiktokShopLogo from "@/assets/channels/tiktok-shop.png";
+import shopeeLogo from "@/assets/channels/shopee.png";
+
 
 
 interface Aplicativo {
@@ -171,13 +175,14 @@ const Aplicativos = () => {
             )}
           >
             <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-[#FFE600]/20 flex items-center justify-center">
-                <ShoppingBag className="w-6 h-6 text-[#2D3277]" />
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
+                <img src={mercadoLivreLogo} alt="Mercado Livre" className="w-10 h-auto object-contain" />
               </div>
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               Mercado Livre
             </h3>
+
             <p className="text-sm text-muted-foreground mb-3">
               Integração com o marketplace Mercado Livre
             </p>
@@ -252,13 +257,14 @@ const Aplicativos = () => {
             )}
           >
             <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
-                <ShoppingBag className="w-6 h-6 text-foreground" />
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
+                <img src={tiktokShopLogo} alt="TikTok Shop" className="w-10 h-auto object-contain" />
               </div>
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               TikTok Shop
             </h3>
+
             <p className="text-sm text-muted-foreground mb-3">
               Integração com o marketplace TikTok Shop
             </p>
@@ -279,13 +285,14 @@ const Aplicativos = () => {
             )}
           >
             <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-[#EE4D2D]/10 flex items-center justify-center">
-                <ShoppingBag className="w-6 h-6 text-[#EE4D2D]" />
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
+                <img src={shopeeLogo} alt="Shopee" className="w-10 h-auto object-contain" />
               </div>
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
               Shopee
             </h3>
+
             <p className="text-sm text-muted-foreground mb-3">
               Integração com o marketplace Shopee
             </p>
