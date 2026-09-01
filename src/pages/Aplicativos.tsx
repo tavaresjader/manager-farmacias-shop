@@ -13,6 +13,10 @@ import { cn } from "@/lib/utils";
 import ultramaxLogo from "@/assets/ultramax-logo.png";
 import ifoodLogo from "@/assets/channels/ifood.webp";
 import keetaLogo from "@/assets/channels/keeta.png";
+import mercadoLivreLogo from "@/assets/channels/mercado-livre.png";
+import tiktokShopLogo from "@/assets/channels/tiktok-shop.png";
+import shopeeLogo from "@/assets/channels/shopee.png";
+
 
 
 interface Aplicativo {
