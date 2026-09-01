@@ -16,6 +16,7 @@ import keetaLogo from "@/assets/channels/keeta.png";
 import mercadoLivreLogo from "@/assets/channels/mercado-livre.png";
 import tiktokShopLogo from "@/assets/channels/tiktok-shop.png";
 import shopeeLogo from "@/assets/channels/shopee.png";
+import rdSaudeLogo from "@/assets/channels/rd-saude.png";
 
 
 
