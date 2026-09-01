@@ -16,6 +16,7 @@ import keetaLogo from "@/assets/channels/keeta.png";
 import mercadoLivreLogo from "@/assets/channels/mercado-livre.png";
 import tiktokShopLogo from "@/assets/channels/tiktok-shop.png";
 import shopeeLogo from "@/assets/channels/shopee.png";
+import rdSaudeLogo from "@/assets/channels/rd-saude.png";
 
 
 
@@ -295,6 +296,34 @@ const Aplicativos = () => {
 
             <p className="text-sm text-muted-foreground mb-3">
               Integração com o marketplace Shopee
+            </p>
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
+                Marketplace
+              </span>
+              <button className="text-muted-foreground hover:text-primary transition-colors">
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* RD Saúde Card */}
+          <div
+            className={cn(
+              "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
+            )}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
+                <img src={rdSaudeLogo} alt="RD Saúde" className="w-10 h-auto object-contain" />
+              </div>
+            </div>
+            <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+              RD Saúde
+            </h3>
+
+            <p className="text-sm text-muted-foreground mb-3">
+              Integração com Drogasil e DrogaRaia via RD Saúde
             </p>
             <div className="flex items-center justify-between mt-auto">
               <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
