@@ -3,13 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { 
-  Truck, 
-  Banknote, 
-  Building2,
-  ArrowRight
-} from "lucide-react";
-import { Link } from "react-router-dom";
+import { Truck, Banknote } from "lucide-react";
 
 interface PaymentOption {
   id: string;
@@ -27,13 +21,6 @@ const initialPaymentOptions: PaymentOption[] = [
     description: "Aceitar pagamentos no momento da entrega ou retirada",
     icon: Truck,
     enabled: true,
-  },
-  {
-    id: "agreement",
-    name: "Convênio",
-    description: "Aceitar pagamentos via convênio empresarial",
-    icon: Building2,
-    enabled: false,
   },
 ];
 
@@ -110,15 +97,6 @@ export function PagamentosTab() {
                       >
                         Configurar pagamento online
                       </button>
-                    )}
-                    {option.id === "agreement" && option.enabled && (
-                      <Link
-                        to="/configuracoes/unidades"
-                        className="flex items-center gap-1 text-xs text-destructive hover:underline mt-1"
-                      >
-                        Configure os convênios em suas unidades
-                        <ArrowRight className="w-3 h-3" />
-                      </Link>
                     )}
                   </div>
                 </div>
