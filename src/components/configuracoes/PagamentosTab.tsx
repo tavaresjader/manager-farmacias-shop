@@ -7,7 +7,6 @@ import {
   Truck, 
   Banknote, 
   Building2,
-  Globe,
   ArrowRight
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -28,14 +27,6 @@ const initialPaymentOptions: PaymentOption[] = [
     description: "Aceitar pagamentos no momento da entrega ou retirada",
     icon: Truck,
     enabled: true,
-  },
-  {
-    id: "online",
-    name: "Pagamento Online",
-    description: "Aceitar pagamentos online (cartão, pix, boleto)",
-    icon: Globe,
-    enabled: false,
-    hasConfig: true,
   },
   {
     id: "agreement",
