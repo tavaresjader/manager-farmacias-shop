@@ -29,7 +29,7 @@ import {
 import { MapPin, Clock, Pencil, Trash2, Save, X, Building2, Truck, Plus, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ConveniosSection, Convenio } from "@/components/unidades/ConveniosSection";
+import { Convenio } from "@/components/unidades/ConveniosSection";
 
 interface HorarioFuncionamento {
   dia: string;
@@ -662,14 +662,6 @@ export default function UnidadeDetalhe() {
             </div>
           </div>
 
-          {/* Convênios */}
-          <ConveniosSection
-            convenios={editedUnidade.convenios}
-            isEditing={isEditing}
-            onConveniosChange={(convenios) =>
-              setEditedUnidade({ ...editedUnidade, convenios })
-            }
-          />
         </div>
 
         {/* Footer Actions */}
