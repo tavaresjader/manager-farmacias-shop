@@ -7,7 +7,6 @@ import {
   Truck, 
   Banknote, 
   Building2,
-  Globe,
   ArrowRight
 } from "lucide-react";
 import { Link } from "react-router-dom";
