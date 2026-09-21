@@ -30,14 +30,6 @@ const initialPaymentOptions: PaymentOption[] = [
     enabled: true,
   },
   {
-    id: "online",
-    name: "Pagamento Online",
-    description: "Aceitar pagamentos online (cartão, pix, boleto)",
-    icon: Globe,
-    enabled: false,
-    hasConfig: true,
-  },
-  {
     id: "agreement",
     name: "Convênio",
     description: "Aceitar pagamentos via convênio empresarial",
