@@ -260,6 +260,16 @@ const Cadastro = () => {
               <Button type="submit" className="w-full h-12 text-base font-semibold">
                 Começar Agora
               </Button>
+
+              {isConfigured && (
+                <p className="text-xs text-muted-foreground text-center">
+                  Este site é protegido pelo reCAPTCHA e aplicam-se a{" "}
+                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Política de Privacidade</a>
+                  {" "}e os{" "}
+                  <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Termos de Serviço</a>
+                  {" "}do Google.
+                </p>
+              )}
             </form>
           </Form>
         </div>
