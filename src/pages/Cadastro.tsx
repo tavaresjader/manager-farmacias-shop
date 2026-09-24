@@ -1,8 +1,6 @@
-import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,17 +24,14 @@ import { Store, CheckCircle, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { registrationSchema, type RegistrationFormData } from "@/lib/validations";
+import { useRecaptchaEnterprise } from "@/hooks/useRecaptchaEnterprise";
 import { useState } from "react";
-
-// Chave pública do reCAPTCHA vinda de variável de ambiente
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
 const Cadastro = () => {
   usePageTitle("Cadastro");
   const navigate = useNavigate();
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  
-  const [captchaValue, setCaptchaValue] = useState<string | null>(null);
+  const { isConfigured, executeRecaptcha } = useRecaptchaEnterprise();
+
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [storeUrl, setStoreUrl] = useState("");
 
@@ -63,10 +58,13 @@ const Cadastro = () => {
       .replace(/\s+/g, "-");
   };
 
-  const onSubmit = (data: RegistrationFormData) => {
-    if (!captchaValue) {
-      toast.error("Por favor, confirme que você não é um robô.");
-      return;
+  const onSubmit = async (data: RegistrationFormData) => {
+    if (isConfigured) {
+      const token = await executeRecaptcha("cadastro");
+      if (!token) {
+        toast.error("Não foi possível validar a verificação de segurança. Tente novamente.");
+        return;
+      }
     }
 
     const slug = generateSlug(data.nomeFarmacia);
@@ -78,10 +76,6 @@ const Cadastro = () => {
         storeUrl,
       },
     });
-  };
-
-  const handleCaptchaChange = (value: string | null) => {
-    setCaptchaValue(value);
   };
 
   const handleCopyUrl = () => {
@@ -262,25 +256,20 @@ const Cadastro = () => {
                 )}
               />
 
-              {/* reCAPTCHA */}
-              <div className="flex justify-center">
-                {RECAPTCHA_SITE_KEY ? (
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    sitekey={RECAPTCHA_SITE_KEY}
-                    onChange={handleCaptchaChange}
-                  />
-                ) : (
-                  <p className="text-sm text-muted-foreground text-center">
-                    Verificação de segurança indisponível no momento. Tente novamente mais tarde.
-                  </p>
-                )}
-              </div>
-
               {/* Submit Button */}
               <Button type="submit" className="w-full h-12 text-base font-semibold">
                 Começar Agora
               </Button>
+
+              {isConfigured && (
+                <p className="text-xs text-muted-foreground text-center">
+                  Este site é protegido pelo reCAPTCHA e aplicam-se a{" "}
+                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Política de Privacidade</a>
+                  {" "}e os{" "}
+                  <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Termos de Serviço</a>
+                  {" "}do Google.
+                </p>
+              )}
             </form>
           </Form>
         </div>
