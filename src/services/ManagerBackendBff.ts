@@ -67,6 +67,58 @@ interface SignInResponse {
   };
 }
 
+interface SignUpRequest {
+  name: string;
+  document: string;
+  ownerName: string;
+  ownerEmail: string;
+  ownerPhone: string;
+  password: string;
+  passwordConfirm: string;
+}
+
+interface ValidateSignUpCodeRequest {
+  email: string;
+  token: string;
+}
+
+interface ValidateSignUpCodeResponse {
+  accessToken?: string;
+  expiresIn?: number;
+  domain?: string;
+  employee?: {
+    id: string;
+    name?: string;
+    email?: string;
+  };
+  merchants?: Array<{
+    id: string;
+    name?: string;
+  }>;
+}
+
+interface ApiErrorDetail {
+  description?: string;
+  message?: string;
+}
+
+function extractApiErrorMessage(data: unknown, fallback: string): string {
+  if (Array.isArray(data)) {
+    const firstMessage = data
+      .map((item: ApiErrorDetail) => item.description || item.message)
+      .find(Boolean);
+
+    return firstMessage || fallback;
+  }
+
+  if (data && typeof data === "object") {
+    const error = data as ApiErrorDetail;
+    return error.message || error.description || fallback;
+  }
+
+  return fallback;
+}
+
 export class ManagerBackendBff {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
@@ -148,8 +200,8 @@ export class ManagerBackendBff {
       }
 
       // Automatically set the token after successful login
-      if (data.token) {
-        this.setAuthToken(data.token);
+      if (data.accessToken || data.token) {
+        this.setAuthToken(data.accessToken || data.token);
       }
 
       return {
@@ -161,6 +213,76 @@ export class ManagerBackendBff {
       return {
         data: null,
         error: "Erro de conexão. Tente novamente.",
+        status: 0,
+      };
+    }
+  }
+
+  async signUp(request: SignUpRequest): Promise<ApiResponse<null>> {
+    try {
+      const url = this.buildUrl("/v1/SignUp");
+      const response = await fetchWithTimeout(url, {
+        method: "POST",
+        headers: this.defaultHeaders,
+        body: JSON.stringify(request),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        return {
+          data: null,
+          error: extractApiErrorMessage(data, "Não foi possível criar o cadastro"),
+          status: response.status,
+        };
+      }
+
+      return {
+        data: null,
+        error: null,
+        status: response.status,
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: mapRequestError(error),
+        status: 0,
+      };
+    }
+  }
+
+  async validateSignUpCode(request: ValidateSignUpCodeRequest): Promise<ApiResponse<ValidateSignUpCodeResponse>> {
+    try {
+      const url = this.buildUrl("/v1/SignUp/validate");
+      const response = await fetchWithTimeout(url, {
+        method: "POST",
+        headers: this.defaultHeaders,
+        body: JSON.stringify(request),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        return {
+          data: null,
+          error: extractApiErrorMessage(data, "Código inválido ou expirado."),
+          status: response.status,
+        };
+      }
+
+      if (data.accessToken) {
+        this.setAuthToken(data.accessToken);
+      }
+
+      return {
+        data,
+        error: null,
+        status: response.status,
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: mapRequestError(error),
         status: 0,
       };
     }

@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { registrationSchema, type RegistrationFormData } from "@/lib/validations";
 import { useRecaptchaEnterprise } from "@/hooks/useRecaptchaEnterprise";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
 import { useState } from "react";
 
 const Cadastro = () => {
@@ -34,6 +35,7 @@ const Cadastro = () => {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [storeUrl, setStoreUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
@@ -59,23 +61,46 @@ const Cadastro = () => {
   };
 
   const onSubmit = async (data: RegistrationFormData) => {
-    if (isConfigured) {
-      const token = await executeRecaptcha("cadastro");
-      if (!token) {
-        toast.error("Não foi possível validar a verificação de segurança. Tente novamente.");
+    setIsLoading(true);
+
+    try {
+      if (isConfigured) {
+        const token = await executeRecaptcha("cadastro");
+        if (!token) {
+          toast.error("Não foi possível validar a verificação de segurança. Tente novamente.");
+          return;
+        }
+      }
+
+      const response = await managerBackendBff.signUp({
+        name: data.nomeFarmacia.trim(),
+        document: data.cnpj.replace(/\D/g, ""),
+        ownerName: data.nomeResponsavel.trim(),
+        ownerEmail: data.emailResponsavel.trim().toLowerCase(),
+        ownerPhone: data.telefoneResponsavel.replace(/\D/g, ""),
+        password: data.senha,
+        passwordConfirm: data.confirmarSenha,
+      });
+
+      if (response.error) {
+        toast.error(response.error);
         return;
       }
-    }
 
-    const slug = generateSlug(data.nomeFarmacia);
-    const storeUrl = `https://${slug}.farmacias.shop`;
-    navigate("/validar-token", {
-      state: {
-        email: data.emailResponsavel,
-        nomeFarmacia: data.nomeFarmacia,
-        storeUrl,
-      },
-    });
+      const slug = generateSlug(data.nomeFarmacia);
+      const generatedStoreUrl = `https://${slug}.farmacias.shop`;
+
+      toast.success("Cadastro iniciado! Enviamos um código para o seu e-mail.");
+      navigate("/validar-token", {
+        state: {
+          email: data.emailResponsavel,
+          nomeFarmacia: data.nomeFarmacia,
+          storeUrl: generatedStoreUrl,
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCopyUrl = () => {
@@ -257,8 +282,8 @@ const Cadastro = () => {
               />
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full h-12 text-base font-semibold">
-                Começar Agora
+              <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={isLoading}>
+                {isLoading ? "Criando cadastro..." : "Começar Agora"}
               </Button>
 
               {isConfigured && (

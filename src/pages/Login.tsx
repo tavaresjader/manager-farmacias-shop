@@ -26,7 +26,7 @@ const Login = () => {
   usePageTitle("Login");
   const navigate = useNavigate();
   const location = useLocation();
-  const { setAuthToken } = useAuth();
+  const { setAuthSession, setAuthToken } = useAuth();
 
   const from = (location.state as LocationState)?.from?.pathname || "/";
 
@@ -73,7 +73,7 @@ const Login = () => {
 
       const accessToken = response.data.accessToken;
       if (accessToken) {
-        setAuthToken(accessToken);
+        setAuthSession(response.data);
         toast.success("Login realizado com sucesso!");
         navigate(from, { replace: true });
       } else {

@@ -10,11 +10,14 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { Mail, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
+import { useAuth } from "@/contexts/AuthContext";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
 
 const ValidarToken = () => {
   usePageTitle("Validar Token");
   const navigate = useNavigate();
   const location = useLocation();
+  const { setAuthSession } = useAuth();
   const state = location.state as { email?: string; nomeFarmacia?: string; storeUrl?: string } || {};
   const email = state.email || "";
 
@@ -27,15 +30,35 @@ const ValidarToken = () => {
       return;
     }
 
-    setIsLoading(true);
-    // Simula validação do token
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsLoading(false);
+    if (!email) {
+      toast.error("E-mail do cadastro não encontrado. Volte ao cadastro e tente novamente.");
+      navigate("/cadastro");
+      return;
+    }
 
-    toast.success("E-mail verificado com sucesso!");
-    navigate("/cadastro-sucesso", {
-      state: { nomeFarmacia: state.nomeFarmacia, storeUrl: state.storeUrl },
-    });
+    setIsLoading(true);
+
+    try {
+      const response = await managerBackendBff.validateSignUpCode({
+        email: email.trim().toLowerCase(),
+        token,
+      });
+
+      if (response.error || !response.data) {
+        toast.error(response.error || "Código inválido ou expirado.");
+        return;
+      }
+
+      if (response.data.accessToken) {
+        setAuthSession(response.data);
+        toast.success("E-mail verificado com sucesso!");
+        navigate("/", { replace: true });
+      } else {
+        toast.error("Token não encontrado na resposta.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleResend = async () => {
@@ -90,17 +113,7 @@ const ValidarToken = () => {
           >
             {isLoading ? "Validando..." : "Validar Código"}
           </Button>
-
-          <p className="text-center text-sm text-muted-foreground">
-            Não recebeu o código?{" "}
-            <button
-              type="button"
-              onClick={handleResend}
-              className="text-primary font-medium hover:underline"
-            >
-              Reenviar
-            </button>
-          </p>
+         
         </div>
 
         {/* Back */}

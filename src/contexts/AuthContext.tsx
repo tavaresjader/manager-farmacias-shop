@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
-import { authTokenStorage, isMockToken, isTokenExpired } from "@/lib/authToken";
+import { authTokenStorage, AuthSessionData, isMockToken, isTokenExpired } from "@/lib/authToken";
 
 interface AuthContextType {
   token: string | null;
+  session: AuthSessionData | null;
   isAuthenticated: boolean;
   setAuthToken: (token: string) => void;
+  setAuthSession: (session: AuthSessionData) => void;
   clearAuth: () => void;
 }
 
@@ -23,9 +25,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     return storedToken;
   });
+  const [session, setSession] = useState<AuthSessionData | null>(() => authTokenStorage.getSession());
 
   const clearAuth = useCallback(() => {
     setToken(null);
+    setSession(null);
     authTokenStorage.clear();
     managerBackendBff.removeAuthToken();
   }, []);
@@ -41,22 +45,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => window.clearInterval(interval);
   }, [token, clearAuth]);
 
-  const setAuthToken = (newToken: string) => {
+  const setAuthSession = (newSession: AuthSessionData) => {
+    const newToken = newSession.accessToken || newSession.token;
+    if (!newToken) {
+      clearAuth();
+      return;
+    }
+
     if (isTokenExpired(newToken) || isMockToken(newToken)) {
       clearAuth();
       return;
     }
+
     setToken(newToken);
+    setSession(newSession);
     authTokenStorage.set(newToken);
+    authTokenStorage.setSession(newSession);
     managerBackendBff.setAuthToken(newToken);
+  };
+
+  const setAuthToken = (newToken: string) => {
+    setAuthSession({ accessToken: newToken });
   };
 
   return (
     <AuthContext.Provider
       value={{
         token,
+        session,
         isAuthenticated: !!token,
         setAuthToken,
+        setAuthSession,
         clearAuth,
       }}
     >

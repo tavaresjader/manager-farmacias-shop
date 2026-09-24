@@ -1,8 +1,30 @@
 const AUTH_TOKEN_KEY = "FarmaciasShopManagerAccessToken";
+const AUTH_SESSION_KEY = "FarmaciasShopManagerSession";
 
 interface TokenPayload {
   exp?: number;
   mock?: boolean;
+}
+
+export interface AuthSessionData {
+  accessToken?: string;
+  token?: string;
+  expiresIn?: number;
+  domain?: string;
+  user?: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+  employee?: {
+    id: string;
+    name?: string;
+    email?: string;
+  };
+  merchants?: Array<{
+    id: string;
+    name?: string;
+  }>;
 }
 
 /** Lê o campo `exp` do JWT (em ms) sem confiar no conteúdo do token. */
@@ -52,5 +74,18 @@ export const authTokenStorage = {
   },
   clear(): void {
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    sessionStorage.removeItem(AUTH_SESSION_KEY);
+  },
+  getSession(): AuthSessionData | null {
+    try {
+      const session = sessionStorage.getItem(AUTH_SESSION_KEY);
+      return session ? JSON.parse(session) as AuthSessionData : null;
+    } catch {
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
+      return null;
+    }
+  },
+  setSession(session: AuthSessionData): void {
+    sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
   },
 };
