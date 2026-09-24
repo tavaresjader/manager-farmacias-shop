@@ -1,8 +1,6 @@
-import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,17 +24,14 @@ import { Store, CheckCircle, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { registrationSchema, type RegistrationFormData } from "@/lib/validations";
+import { useRecaptchaEnterprise } from "@/hooks/useRecaptchaEnterprise";
 import { useState } from "react";
-
-// Chave pública do reCAPTCHA vinda de variável de ambiente
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
 const Cadastro = () => {
   usePageTitle("Cadastro");
   const navigate = useNavigate();
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  
-  const [captchaValue, setCaptchaValue] = useState<string | null>(null);
+  const { isConfigured, executeRecaptcha } = useRecaptchaEnterprise();
+
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [storeUrl, setStoreUrl] = useState("");
 
