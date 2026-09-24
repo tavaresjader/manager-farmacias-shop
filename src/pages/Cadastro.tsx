@@ -58,10 +58,13 @@ const Cadastro = () => {
       .replace(/\s+/g, "-");
   };
 
-  const onSubmit = (data: RegistrationFormData) => {
-    if (!captchaValue) {
-      toast.error("Por favor, confirme que você não é um robô.");
-      return;
+  const onSubmit = async (data: RegistrationFormData) => {
+    if (isConfigured) {
+      const token = await executeRecaptcha("cadastro");
+      if (!token) {
+        toast.error("Não foi possível validar a verificação de segurança. Tente novamente.");
+        return;
+      }
     }
 
     const slug = generateSlug(data.nomeFarmacia);
@@ -73,10 +76,6 @@ const Cadastro = () => {
         storeUrl,
       },
     });
-  };
-
-  const handleCaptchaChange = (value: string | null) => {
-    setCaptchaValue(value);
   };
 
   const handleCopyUrl = () => {
@@ -256,21 +255,6 @@ const Cadastro = () => {
                   </FormItem>
                 )}
               />
-
-              {/* reCAPTCHA */}
-              <div className="flex justify-center">
-                {RECAPTCHA_SITE_KEY ? (
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    sitekey={RECAPTCHA_SITE_KEY}
-                    onChange={handleCaptchaChange}
-                  />
-                ) : (
-                  <p className="text-sm text-muted-foreground text-center">
-                    Verificação de segurança indisponível no momento. Tente novamente mais tarde.
-                  </p>
-                )}
-              </div>
 
               {/* Submit Button */}
               <Button type="submit" className="w-full h-12 text-base font-semibold">
