@@ -12,7 +12,6 @@ import {
   ShoppingCart,
   Package,
   Ticket,
-  Bike,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -25,13 +24,33 @@ import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
+const Motorcycle = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <circle cx="5" cy="17" r="3" />
+    <circle cx="19" cy="17" r="3" />
+    <path d="M5 17h4l3-6h3l4 6" />
+    <path d="M9 17 7 9h5" />
+    <path d="M14 8h4l1 2" />
+    <path d="M12 11h4" />
+  </svg>
+);
+
 const mainNavItems = [
   { icon: LayoutDashboard, label: "Início", path: "/" },
   { icon: ShoppingCart, label: "Pedidos", path: "/pedidos" },
   { icon: Package, label: "Produtos", path: "/produtos" },
   { icon: Users, label: "Clientes", path: "/clientes" },
   { icon: Ticket, label: "Cupons", path: "/cupons" },
-  { icon: Bike, label: "Entregas", path: "/entregas" },
+  { icon: Motorcycle, label: "Entregas", path: "/entregas" },
   { icon: AppWindow, label: "Aplicativos", path: "/aplicativos" },
   { icon: BarChart3, label: "Insights", path: "/relatorios" },
 ];
