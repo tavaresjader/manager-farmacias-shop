@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageLoading } from "@/components/layout/PageLoading";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -18,6 +18,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { toast } from "sonner";
 
 import ifoodLogo from "@/assets/channels/ifood.webp";
 import keetaLogo from "@/assets/channels/keeta.png";
@@ -25,7 +27,7 @@ import farmaciaShopLogo from "@/assets/logo-farmacia-shop.png";
 import pedeProntoLogo from "@/assets/channels/pede-pronto.png";
 import aiqfomeLogo from "@/assets/channels/aiqfome.jfif";
 
-type Origem = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
+type Origem = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome" | "unknown";
 
 const origemLogos: Record<Origem, string> = {
   ifood: ifoodLogo,
@@ -33,6 +35,7 @@ const origemLogos: Record<Origem, string> = {
   "farmacia-shop": farmaciaShopLogo,
   "pede-pronto": pedeProntoLogo,
   aiqfome: aiqfomeLogo,
+  unknown: farmaciaShopLogo,
 };
 
 const origemNames: Record<Origem, string> = {
@@ -41,14 +44,17 @@ const origemNames: Record<Origem, string> = {
   "farmacia-shop": "Farmácia Shop",
   "pede-pronto": "Pede Pronto",
   aiqfome: "aiqfome",
+  unknown: "Canal não informado",
 };
 
-// Mock data for recent orders
+type OrderStatus = "pending" | "processing" | "completed" | "cancelled";
+
 interface Order {
   id: string;
   orderNumber: string;
   customer: string;
-  status: "pending" | "processing" | "completed" | "cancelled";
+  status: OrderStatus;
+  statusLabel?: string;
   total: number;
   items: number;
   date: string;
@@ -56,72 +62,141 @@ interface Order {
   unidade: string;
 }
 
-const mockOrders: Order[] = [
-  {
-    id: "1",
-    orderNumber: "#001234",
-    customer: "Maria Silva",
-    status: "completed",
-    total: 245.90,
-    items: 5,
-    date: "2024-01-05",
-    origem: "ifood",
-    unidade: "Unidade Centro",
-  },
-  {
-    id: "2",
-    orderNumber: "#001233",
-    customer: "João Santos",
-    status: "processing",
-    total: 189.50,
-    items: 3,
-    date: "2024-01-05",
-    origem: "keeta",
-    unidade: "Unidade Norte",
-  },
-  {
-    id: "3",
-    orderNumber: "#001232",
-    customer: "Ana Oliveira",
-    status: "pending",
-    total: 78.00,
-    items: 2,
-    date: "2024-01-04",
-    origem: "farmacia-shop",
-    unidade: "Unidade Sul",
-  },
-  {
-    id: "4",
-    orderNumber: "#001231",
-    customer: "Carlos Pereira",
-    status: "completed",
-    total: 456.30,
-    items: 8,
-    date: "2024-01-04",
-    origem: "pede-pronto",
-    unidade: "Unidade Centro",
-  },
-  {
-    id: "5",
-    orderNumber: "#001230",
-    customer: "Fernanda Costa",
-    status: "cancelled",
-    total: 125.00,
-    items: 2,
-    date: "2024-01-03",
-    origem: "aiqfome",
-    unidade: "Unidade Norte",
-  },
-];
+interface OverviewSummaryItemApi {
+  value?: number;
+  percentual?: number;
+  percentualType?: string | null;
+  Value?: number;
+  Percentual?: number;
+  PercentualType?: string | null;
+}
 
-const tabs = [
-  { id: "all", label: "Todos", count: 156 },
-  { id: "pending", label: "Pendentes", count: 12 },
-  { id: "processing", label: "Processando", count: 8 },
-  { id: "completed", label: "Concluídos", count: 130 },
-];
+interface OverviewSummaryApi {
+  orders?: OverviewSummaryItemApi;
+  customers?: OverviewSummaryItemApi;
+  averageTicket?: OverviewSummaryItemApi;
+  revenue?: OverviewSummaryItemApi;
+  Orders?: OverviewSummaryItemApi;
+  Customers?: OverviewSummaryItemApi;
+  AverageTicket?: OverviewSummaryItemApi;
+  Revenue?: OverviewSummaryItemApi;
+}
+
+interface OverviewOrderApi {
+  id?: string;
+  displayId?: string | null;
+  salesChannel?: string | null;
+  merchantName?: string | null;
+  customerName?: string | null;
+  status?: string | null;
+  itens?: number;
+  amount?: number;
+  createdAt?: string;
+  Id?: string;
+  DisplayId?: string | null;
+  SalesChannel?: string | null;
+  MerchantName?: string | null;
+  CustomerName?: string | null;
+  Status?: string | null;
+  Itens?: number;
+  Amount?: number;
+  CreatedAt?: string;
+}
+
+interface OverviewResponse {
+  summary?: OverviewSummaryApi;
+  orders?: OverviewOrderApi[];
+  Summary?: OverviewSummaryApi;
+  Orders?: OverviewOrderApi[];
+}
+
+const emptySummaryItem: Required<Pick<OverviewSummaryItemApi, "value" | "percentual">> & { percentualType: string } = {
+  value: 0,
+  percentual: 0,
+  percentualType: "neutral",
+};
 
 const ITEMS_PER_PAGE = 5;
+
+const normalizeText = (value?: string | null) =>
+  value
+    ?.normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "") ?? "";
+
+const resolveSummaryItem = (item?: OverviewSummaryItemApi) => ({
+  value: item?.value ?? item?.Value ?? emptySummaryItem.value,
+  percentual: item?.percentual ?? item?.Percentual ?? emptySummaryItem.percentual,
+  percentualType: item?.percentualType ?? item?.PercentualType ?? emptySummaryItem.percentualType,
+});
+
+const resolveChangeType = (type?: string | null, percentual = 0): "positive" | "negative" | "neutral" => {
+  const normalizedType = normalizeText(type);
+  if (["positive", "positivo", "increase", "up"].includes(normalizedType)) return "positive";
+  if (["negative", "negativo", "decrease", "down"].includes(normalizedType)) return "negative";
+  if (percentual > 0) return "positive";
+  if (percentual < 0) return "negative";
+  return "neutral";
+};
+
+const resolveOrigem = (salesChannel?: string | null): Origem => {
+  const normalized = normalizeText(salesChannel);
+  if (normalized.includes("ifood")) return "ifood";
+  if (normalized.includes("keeta")) return "keeta";
+  if (normalized.includes("farmacia-shop")) return "farmacia-shop";
+  if (normalized.includes("pede-pronto")) return "pede-pronto";
+  if (normalized.includes("aiqfome")) return "aiqfome";
+  return "unknown";
+};
+
+const resolveStatus = (status?: string | null): OrderStatus => {
+  const normalized = normalizeText(status);
+  if (["completed", "complete", "concluido", "delivered", "entregue", "finished", "finalizado"].includes(normalized)) {
+    return "completed";
+  }
+  if (["cancelled", "canceled", "cancelado"].includes(normalized)) return "cancelled";
+  if (["processing", "processando", "in-progress", "em-andamento", "confirmed", "confirmado", "accepted", "aceito"].includes(normalized)) {
+    return "processing";
+  }
+  return "pending";
+};
+
+const formatNumber = (value: number) => value.toLocaleString("pt-BR");
+
+const formatCurrency = (value: number) =>
+  value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+const formatDate = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Não informado";
+  return date.toLocaleDateString("pt-BR");
+};
+
+const toOrder = (order: OverviewOrderApi, index: number): Order => {
+  const status = order.status ?? order.Status ?? null;
+  const displayId = order.displayId ?? order.DisplayId;
+  const customerName = order.customerName ?? order.CustomerName;
+  const merchantName = order.merchantName ?? order.MerchantName;
+  const salesChannel = order.salesChannel ?? order.SalesChannel;
+
+  return {
+    id: order.id ?? order.Id ?? `${displayId ?? "order"}-${index}`,
+    orderNumber: displayId?.trim() || "Pedido sem código",
+    customer: customerName?.trim() || "Cliente não informado",
+    status: resolveStatus(status),
+    statusLabel: status?.trim() || undefined,
+    total: order.amount ?? order.Amount ?? 0,
+    items: order.itens ?? order.Itens ?? 0,
+    date: order.createdAt ?? order.CreatedAt ?? "",
+    origem: resolveOrigem(salesChannel),
+    unidade: merchantName?.trim() || "Unidade não informada",
+  };
+};
 
 const columns: Column<Order>[] = [
   {
@@ -159,7 +234,7 @@ const columns: Column<Order>[] = [
   {
     key: "status",
     label: "Status",
-    render: (item) => <StatusBadge status={item.status} />,
+    render: (item) => <StatusBadge status={item.status} label={item.statusLabel} />,
   },
   {
     key: "items",
@@ -175,10 +250,7 @@ const columns: Column<Order>[] = [
     sortable: true,
     render: (item) => (
       <span className="text-primary font-medium">
-        {item.total.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        })}
+        {formatCurrency(item.total)}
       </span>
     ),
   },
@@ -188,7 +260,7 @@ const columns: Column<Order>[] = [
     sortable: true,
     render: (item) => (
       <span className="text-muted-foreground">
-        {new Date(item.date).toLocaleDateString("pt-BR")}
+        {formatDate(item.date)}
       </span>
     ),
   },
@@ -199,9 +271,37 @@ const Dashboard = () => {
   const isLoading = usePageLoading();
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [overview, setOverview] = useState<OverviewResponse | null>(null);
+  const [loadingOverview, setLoadingOverview] = useState(false);
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(() => {
     return !localStorage.getItem("whatsapp-modal-dismissed");
   });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchOverview = async () => {
+      setLoadingOverview(true);
+      const response = await managerBackendBff.get<OverviewResponse>("/v1/overview");
+
+      if (cancelled) return;
+
+      if (response.data) {
+        setOverview(response.data);
+      } else {
+        setOverview(null);
+        toast.error(`Erro ao carregar início: ${response.error ?? "Tente novamente."}`);
+      }
+
+      setLoadingOverview(false);
+    };
+
+    fetchOverview();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleCloseWhatsAppModal = (open: boolean) => {
     if (!open) {
@@ -210,7 +310,37 @@ const Dashboard = () => {
     setShowWhatsAppModal(open);
   };
 
-  const filteredOrders = mockOrders.filter((order) => {
+  const summary = overview?.summary ?? overview?.Summary;
+  const orders = useMemo(
+    () => (overview?.orders ?? overview?.Orders ?? []).map(toOrder),
+    [overview],
+  );
+
+  const tabs = useMemo(() => {
+    const countByStatus = orders.reduce<Record<OrderStatus, number>>(
+      (acc, order) => {
+        acc[order.status] += 1;
+        return acc;
+      },
+      { pending: 0, processing: 0, completed: 0, cancelled: 0 },
+    );
+
+    return [
+      { id: "all", label: "Todos", count: orders.length },
+      { id: "pending", label: "Pendentes", count: countByStatus.pending },
+      { id: "processing", label: "Processando", count: countByStatus.processing },
+      { id: "completed", label: "Concluídos", count: countByStatus.completed },
+    ];
+  }, [orders]);
+
+  const metrics = {
+    orders: resolveSummaryItem(summary?.orders ?? summary?.Orders),
+    customers: resolveSummaryItem(summary?.customers ?? summary?.Customers),
+    averageTicket: resolveSummaryItem(summary?.averageTicket ?? summary?.AverageTicket),
+    revenue: resolveSummaryItem(summary?.revenue ?? summary?.Revenue),
+  };
+
+  const filteredOrders = orders.filter((order) => {
     const matchesTab =
       activeTab === "all" || order.status === activeTab;
     return matchesTab;
@@ -250,26 +380,38 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <MetricCard
           title="Pedidos"
-          value="24"
-          change={{ value: 12, type: "positive" }}
+          value={formatNumber(metrics.orders.value)}
+          change={{
+            value: metrics.orders.percentual,
+            type: resolveChangeType(metrics.orders.percentualType, metrics.orders.percentual),
+          }}
           icon={ShoppingCart}
         />
         <MetricCard
           title="Clientes"
-          value="1.248"
-          change={{ value: 8, type: "positive" }}
+          value={formatNumber(metrics.customers.value)}
+          change={{
+            value: metrics.customers.percentual,
+            type: resolveChangeType(metrics.customers.percentualType, metrics.customers.percentual),
+          }}
           icon={Users}
         />
         <MetricCard
           title="Ticket Médio"
-          value="R$ 89,50"
-          change={{ value: 5, type: "positive" }}
+          value={formatCurrency(metrics.averageTicket.value)}
+          change={{
+            value: metrics.averageTicket.percentual,
+            type: resolveChangeType(metrics.averageTicket.percentualType, metrics.averageTicket.percentual),
+          }}
           icon={DollarSign}
         />
         <MetricCard
           title="Faturamento"
-          value="R$ 45.8k"
-          change={{ value: 18, type: "positive" }}
+          value={formatCurrency(metrics.revenue.value)}
+          change={{
+            value: metrics.revenue.percentual,
+            type: resolveChangeType(metrics.revenue.percentualType, metrics.revenue.percentual),
+          }}
           icon={TrendingUp}
         />
       </div>
@@ -293,7 +435,7 @@ const Dashboard = () => {
           columns={columns}
           data={paginatedOrders}
           emptyMessage="Nenhum pedido encontrado"
-          loading={isLoading}
+          loading={loadingOverview}
         />
 
         {/* Pagination */}
