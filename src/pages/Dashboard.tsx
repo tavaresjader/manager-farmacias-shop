@@ -47,7 +47,7 @@ const origemNames: Record<Origem, string> = {
   unknown: "Canal não informado",
 };
 
-type OrderStatus = "pending" | "processing" | "completed" | "cancelled";
+type OrderStatus = "pending" | "processing" | "concluded" | "cancelled";
 
 interface Order {
   id: string;
@@ -153,8 +153,8 @@ const resolveOrigem = (salesChannel?: string | null): Origem => {
 
 const resolveStatus = (status?: string | null): OrderStatus => {
   const normalized = normalizeText(status);
-  if (["completed", "complete", "concluido", "delivered", "entregue", "finished", "finalizado"].includes(normalized)) {
-    return "completed";
+  if (["concluded", "complete", "concluido", "delivered", "entregue", "finished", "finalizado"].includes(normalized)) {
+    return "concluded";
   }
   if (["cancelled", "canceled", "cancelado"].includes(normalized)) return "cancelled";
   if (["processing", "processando", "in-progress", "em-andamento", "confirmed", "confirmado", "accepted", "aceito"].includes(normalized)) {
@@ -322,14 +322,14 @@ const Dashboard = () => {
         acc[order.status] += 1;
         return acc;
       },
-      { pending: 0, processing: 0, completed: 0, cancelled: 0 },
+      { pending: 0, processing: 0, concluded: 0, cancelled: 0 },
     );
 
     return [
       { id: "all", label: "Todos", count: orders.length },
       { id: "pending", label: "Pendentes", count: countByStatus.pending },
       { id: "processing", label: "Processando", count: countByStatus.processing },
-      { id: "completed", label: "Concluídos", count: countByStatus.completed },
+      { id: "concluded", label: "Concluídos", count: countByStatus.concluded },
     ];
   }, [orders]);
 
