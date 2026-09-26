@@ -47,13 +47,23 @@ const origemNames: Record<Origem, string> = {
   unknown: "Canal não informado",
 };
 
-type OrderStatus = "pending" | "processing" | "concluded" | "cancelled";
+type OrderStatus = "pending" | "processing" | "completed" | "cancelled";
+type OrderStatusKey =
+  | "created"
+  | "ready-for-handling"
+  | "ready-for-pickup"
+  | "ready-for-delivery"
+  | "dispatched"
+  | "in-delivery"
+  | "completed"
+  | "cancelled";
 
 interface Order {
   id: string;
   orderNumber: string;
   customer: string;
   status: OrderStatus;
+  statusKey: OrderStatusKey;
   statusLabel?: string;
   total: number;
   items: number;
@@ -120,6 +130,7 @@ const ITEMS_PER_PAGE = 5;
 
 const normalizeText = (value?: string | null) =>
   value
+    ?.replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     ?.normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
@@ -151,16 +162,57 @@ const resolveOrigem = (salesChannel?: string | null): Origem => {
   return "unknown";
 };
 
-const resolveStatus = (status?: string | null): OrderStatus => {
+const statusLabels: Record<OrderStatusKey, string> = {
+  created: "Criado",
+  "ready-for-handling": "Pronto para manuseio",
+  "ready-for-pickup": "Pronto para retirada",
+  "ready-for-delivery": "Pronto para entrega",
+  dispatched: "Despachado",
+  "in-delivery": "Em entrega",
+  completed: "Concluído",
+  cancelled: "Cancelado",
+};
+
+const resolveStatusInfo = (status?: string | null): {
+  status: OrderStatus;
+  statusKey: OrderStatusKey;
+  statusLabel: string;
+} => {
   const normalized = normalizeText(status);
-  if (["concluded", "complete", "concluido", "delivered", "entregue", "finished", "finalizado"].includes(normalized)) {
-    return "concluded";
+
+  if (["cancelled", "canceled", "cancelado"].includes(normalized)) {
+    return { status: "cancelled", statusKey: "cancelled", statusLabel: statusLabels.cancelled };
   }
-  if (["cancelled", "canceled", "cancelado"].includes(normalized)) return "cancelled";
-  if (["processing", "processando", "in-progress", "em-andamento", "confirmed", "confirmado", "accepted", "aceito"].includes(normalized)) {
-    return "processing";
+
+  if (["delivered", "entregue", "completed", "complete", "concluded", "concluido", "finished", "finalizado"].includes(normalized)) {
+    return { status: "completed", statusKey: "completed", statusLabel: statusLabels.completed };
   }
-  return "pending";
+
+  if (["in-delivery", "em-entrega", "delivering", "out-for-delivery", "saiu-para-entrega"].includes(normalized)) {
+    return { status: "processing", statusKey: "in-delivery", statusLabel: statusLabels["in-delivery"] };
+  }
+
+  if (["dispatched", "despachado", "dispatch", "despachada"].includes(normalized)) {
+    return { status: "processing", statusKey: "dispatched", statusLabel: statusLabels.dispatched };
+  }
+
+  if (["ready-for-delivery", "pronto-para-entrega", "ready-to-deliver"].includes(normalized)) {
+    return { status: "processing", statusKey: "ready-for-delivery", statusLabel: statusLabels["ready-for-delivery"] };
+  }
+
+  if (["ready-for-pickup", "pronto-para-retirada", "ready-to-pickup", "ready-for-collect"].includes(normalized)) {
+    return { status: "processing", statusKey: "ready-for-pickup", statusLabel: statusLabels["ready-for-pickup"] };
+  }
+
+  if (["ready-for-handling", "pronto-para-manuseio", "ready-to-handle", "ready-for-preparation"].includes(normalized)) {
+    return { status: "processing", statusKey: "ready-for-handling", statusLabel: statusLabels["ready-for-handling"] };
+  }
+
+  if (["handling", "preparing", "processing", "processando", "in-progress", "em-andamento", "confirmed", "confirmado", "accepted", "aceito"].includes(normalized)) {
+    return { status: "processing", statusKey: "ready-for-handling", statusLabel: statusLabels["ready-for-handling"] };
+  }
+
+  return { status: "pending", statusKey: "created", statusLabel: statusLabels.created };
 };
 
 const formatNumber = (value: number) => value.toLocaleString("pt-BR");
@@ -183,13 +235,15 @@ const toOrder = (order: OverviewOrderApi, index: number): Order => {
   const customerName = order.customerName ?? order.CustomerName;
   const merchantName = order.merchantName ?? order.MerchantName;
   const salesChannel = order.salesChannel ?? order.SalesChannel;
+  const statusInfo = resolveStatusInfo(status);
 
   return {
     id: order.id ?? order.Id ?? `${displayId ?? "order"}-${index}`,
     orderNumber: displayId?.trim() || "Pedido sem código",
     customer: customerName?.trim() || "Cliente não informado",
-    status: resolveStatus(status),
-    statusLabel: status?.trim() || undefined,
+    status: statusInfo.status,
+    statusKey: statusInfo.statusKey,
+    statusLabel: statusInfo.statusLabel,
     total: order.amount ?? order.Amount ?? 0,
     items: order.itens ?? order.Itens ?? 0,
     date: order.createdAt ?? order.CreatedAt ?? "",
@@ -322,14 +376,15 @@ const Dashboard = () => {
         acc[order.status] += 1;
         return acc;
       },
-      { pending: 0, processing: 0, concluded: 0, cancelled: 0 },
+      { pending: 0, processing: 0, completed: 0, cancelled: 0 },
     );
 
     return [
       { id: "all", label: "Todos", count: orders.length },
-      { id: "pending", label: "Pendentes", count: countByStatus.pending },
-      { id: "processing", label: "Processando", count: countByStatus.processing },
-      { id: "concluded", label: "Concluídos", count: countByStatus.concluded },
+      { id: "pending", label: "Novos", count: countByStatus.pending },
+      { id: "processing", label: "Em andamento", count: countByStatus.processing },
+      { id: "completed", label: "Concluídos", count: countByStatus.completed },
+      { id: "cancelled", label: "Cancelados", count: countByStatus.cancelled },
     ];
   }, [orders]);
 
