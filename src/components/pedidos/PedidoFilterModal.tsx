@@ -43,10 +43,13 @@ interface PedidoFilterModalProps {
 
 const statusOptions = [
   { value: "all", label: "Todos" },
-  { value: "pending", label: "Pendente" },
-  { value: "processing", label: "Em preparo" },
-  { value: "active", label: "Entregue" },
-  { value: "inactive", label: "Devolvido" },
+  { value: "created", label: "Criado" },
+  { value: "ready-for-handling", label: "Pronto para manuseio" },
+  { value: "ready-for-pickup", label: "Pronto para retirada" },
+  { value: "ready-for-delivery", label: "Pronto para entrega" },
+  { value: "dispatched", label: "Despachado" },
+  { value: "in-delivery", label: "Em entrega" },
+  { value: "completed", label: "Concluído" },
   { value: "cancelled", label: "Cancelado" },
 ];
 

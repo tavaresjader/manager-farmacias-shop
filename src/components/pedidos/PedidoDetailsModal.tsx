@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   CheckCircle, 
   XCircle, 
@@ -19,7 +20,6 @@ import {
   Calendar,
   ShoppingBag,
   DollarSign,
-  Store,
   FileDown
 } from "lucide-react";
 import { toast } from "sonner";
@@ -31,7 +31,7 @@ import farmaciaShopLogo from "@/assets/channels/farmacia-shop.png";
 import pedeProntoLogo from "@/assets/channels/pede-pronto.png";
 import aiqfomeLogo from "@/assets/channels/aiqfome.jfif";
 
-type Origem = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome";
+type Origem = "ifood" | "keeta" | "farmacia-shop" | "pede-pronto" | "aiqfome" | "unknown";
 
 const origemLogos: Record<Origem, string> = {
   ifood: ifoodLogo,
@@ -39,6 +39,7 @@ const origemLogos: Record<Origem, string> = {
   "farmacia-shop": farmaciaShopLogo,
   "pede-pronto": pedeProntoLogo,
   aiqfome: aiqfomeLogo,
+  unknown: farmaciaShopLogo,
 };
 
 const origemNames: Record<Origem, string> = {
@@ -47,52 +48,68 @@ const origemNames: Record<Origem, string> = {
   "farmacia-shop": "Farmácia Shop",
   "pede-pronto": "Pede Pronto",
   aiqfome: "aiqfome",
+  unknown: "Canal não informado",
 };
 
 interface PedidoItem {
   nome: string;
   quantidade: number;
   preco: number;
-  controlado?: boolean;
 }
 
 interface Pedido {
   id: string;
   numero: string;
   cliente: string;
+  telefone?: string;
+  endereco?: string;
   data: string;
   status: "active" | "inactive" | "pending" | "processing" | "cancelled";
+  statusLabel?: string;
   tipo?: "delivery" | "retirada";
   total: number;
+  taxaEntrega?: number;
   itens: number;
+  items?: PedidoItem[];
+  hasPrescription?: boolean;
   origem?: Origem;
+  origemLogoUrl?: string;
+  origemLabel?: string;
   unidade?: string;
 }
 
 interface PedidoDetailsModalProps {
   pedido: Pedido | null;
+  loading?: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Mock items for the order
-const mockItems: PedidoItem[] = [
-  { nome: "Dipirona 500mg - 20 comprimidos", quantidade: 2, preco: 12.90, controlado: false },
-  { nome: "Clonazepam 2mg - 30 comprimidos", quantidade: 1, preco: 35.50, controlado: true },
-  { nome: "Protetor Solar FPS 50", quantidade: 1, preco: 89.90, controlado: false },
-];
-
-const hasControlledProduct = mockItems.some(item => item.controlado);
+const formatCurrency = (value: number) =>
+  value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
 export function PedidoDetailsModal({ 
   pedido, 
+  loading = false,
   open, 
   onOpenChange 
 }: PedidoDetailsModalProps) {
   const [isTracking, setIsTracking] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
 
+  useEffect(() => {
+    setIsTracking(false);
+    setCancelModalOpen(false);
+  }, [pedido?.id]);
+
   if (!pedido) return null;
+
+  const items = pedido.items ?? [];
+  const taxaEntrega = pedido.taxaEntrega ?? 0;
+  const subtotal = Math.max(pedido.total - taxaEntrega, 0);
 
   const handleConfirmar = () => {
     toast.success(`Pedido ${pedido.numero} confirmado com sucesso!`);
@@ -128,7 +145,7 @@ export function PedidoDetailsModal({
     // In a real app, this would trigger a file download
   };
 
-  const ReceitaButton = () => hasControlledProduct ? (
+  const ReceitaButton = () => pedido.hasPrescription ? (
     <Button
       variant="outline"
       onClick={handleDownloadReceita}
@@ -140,6 +157,8 @@ export function PedidoDetailsModal({
   ) : null;
 
   const getActionButtons = () => {
+    if (loading) return null;
+
     switch (pedido.status) {
       case "pending":
         return (
@@ -231,8 +250,8 @@ export function PedidoDetailsModal({
             {pedido.origem && (
               <div className="flex items-center gap-2">
                 <img 
-                  src={origemLogos[pedido.origem]} 
-                  alt={origemNames[pedido.origem]} 
+                  src={pedido.origemLogoUrl || origemLogos[pedido.origem]} 
+                  alt={pedido.origemLabel || origemNames[pedido.origem]} 
                   className="w-6 h-6 rounded object-cover"
                 />
                 <span className="text-sm font-normal text-muted-foreground">
@@ -241,7 +260,7 @@ export function PedidoDetailsModal({
               </div>
             )}
             <span className="text-muted-foreground">|</span>
-            <StatusBadge status={pedido.status} />
+            <StatusBadge status={pedido.status} label={pedido.statusLabel} />
             {pedido.tipo && (
               <span className="text-sm font-normal text-muted-foreground">
                 | {pedido.tipo === "delivery" ? "Delivery" : "Retirada"}
@@ -251,6 +270,36 @@ export function PedidoDetailsModal({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto space-y-6 pr-2">
+          {loading ? (
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <Skeleton className="h-5 w-44" />
+                <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                  <Skeleton className="h-4 w-3/5" />
+                  <Skeleton className="h-4 w-2/5" />
+                  <Skeleton className="h-4 w-4/5" />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <Skeleton className="h-5 w-36" />
+                <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-11/12" />
+                  <Skeleton className="h-4 w-10/12" />
+                </div>
+              </div>
+              <Separator />
+              <div className="space-y-3">
+                <Skeleton className="h-5 w-40" />
+                <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-6 w-full" />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
           {/* Informações do Cliente */}
           <div className="space-y-3">
             <h3 className="font-medium text-foreground flex items-center gap-2">
@@ -264,11 +313,11 @@ export function PedidoDetailsModal({
               </p>
               <p className="text-sm">
                 <span className="text-muted-foreground">Telefone:</span>{" "}
-                <span className="font-medium">(11) 99999-9999</span>
+                <span className="font-medium">{pedido.telefone || "Não informado"}</span>
               </p>
               <p className="text-sm">
                 <span className="text-muted-foreground">Endereço:</span>{" "}
-                <span className="font-medium">Rua das Flores, 123 - Centro, São Paulo - SP</span>
+                <span className="font-medium">{pedido.endereco || "Não informado"}</span>
               </p>
             </div>
           </div>
@@ -289,15 +338,18 @@ export function PedidoDetailsModal({
                   </tr>
                 </thead>
                 <tbody>
-                  {mockItems.map((item, index) => (
+                  {items.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="p-6 text-center text-sm text-muted-foreground">
+                        Nenhum item informado
+                      </td>
+                    </tr>
+                  ) : items.map((item, index) => (
                     <tr key={index} className="border-b border-border last:border-0">
                       <td className="p-3 text-sm">{item.nome}</td>
                       <td className="p-3 text-sm text-center">{item.quantidade}</td>
                       <td className="p-3 text-sm text-right font-medium">
-                        {(item.preco * item.quantidade).toLocaleString("pt-BR", { 
-                          style: "currency", 
-                          currency: "BRL" 
-                        })}
+                        {formatCurrency(item.preco)}
                       </td>
                     </tr>
                   ))}
@@ -317,17 +369,17 @@ export function PedidoDetailsModal({
             <div className="bg-muted/50 rounded-lg p-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal:</span>
-                <span>{(pedido.total - 8.90).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
+                <span>{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Taxa de entrega:</span>
-                <span>R$ 8,90</span>
+                <span>{formatCurrency(taxaEntrega)}</span>
               </div>
               <Separator className="my-2" />
               <div className="flex justify-between font-medium">
                 <span>Total:</span>
                 <span className="text-primary text-lg">
-                  {pedido.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  {formatCurrency(pedido.total)}
                 </span>
               </div>
             </div>
@@ -362,11 +414,15 @@ export function PedidoDetailsModal({
               </div>
             </>
           )}
+            </>
+          )}
         </div>
 
-        <DialogFooter className="mt-4 pt-4 border-t gap-2 sm:gap-0 flex-shrink-0">
-          {getActionButtons()}
-        </DialogFooter>
+        {!loading && (
+          <DialogFooter className="mt-4 pt-4 border-t gap-2 sm:gap-0 flex-shrink-0">
+            {getActionButtons()}
+          </DialogFooter>
+        )}
       </DialogContent>
 
       <CancelOrderModal
