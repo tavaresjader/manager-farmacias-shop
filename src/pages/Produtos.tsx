@@ -12,6 +12,7 @@ import { ProdutoFilterModal, ProdutoFilters, CategoriaOption } from "@/component
 import { ProdutoDetailsModal } from "@/components/produtos/ProdutoDetailsModal";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Produto {
   id: string;
@@ -72,6 +73,7 @@ const columns: Column<Produto>[] = [
 const Produtos = () => {
   usePageTitle("Produtos");
   const isLoading = usePageLoading();
+  const { session } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -210,6 +212,7 @@ const Produtos = () => {
         produto={selectedProduto}
         open={detailsModalOpen}
         onOpenChange={setDetailsModalOpen}
+        merchants={session?.merchants ?? []}
       />
     </MainLayout>
   );

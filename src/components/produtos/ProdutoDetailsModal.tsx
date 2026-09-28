@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,24 +6,17 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Pencil, Save, Package } from "lucide-react";
+import { Pencil, Save, Package, Loader2 } from "lucide-react";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
 
 interface Produto {
   id: string;
@@ -37,112 +30,240 @@ interface Produto {
   controlado: boolean;
 }
 
+interface Merchant {
+  id: string;
+  name?: string;
+}
+
+interface ProdutoApiAvailability {
+  merchantId?: string;
+  MerchantId?: string;
+  merchantName?: string | null;
+  MerchantName?: string | null;
+  originalPrice?: number;
+  OriginalPrice?: number;
+  price?: number;
+  Price?: number;
+  inventory?: number;
+  Inventory?: number;
+  active?: boolean;
+  Active?: boolean;
+  featured?: boolean;
+  Featured?: boolean;
+}
+
+interface ProdutoDetailsApi {
+  id?: string;
+  Id?: string;
+  externalCode?: string | null;
+  ExternalCode?: string | null;
+  categoryName?: string | null;
+  CategoryName?: string | null;
+  restricted?: boolean | null;
+  Restricted?: boolean | null;
+  availabilities?: ProdutoApiAvailability[];
+  Availabilities?: ProdutoApiAvailability[];
+}
+
 interface UnidadeDisponibilidade {
   id: string;
   nome: string;
+  precoOriginal: number;
   preco: number;
   estoque: number;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive";
+  destaque: boolean;
 }
 
 interface ProdutoDetailsModalProps {
   produto: Produto | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  merchants: Merchant[];
 }
 
-const getUnidadesFromProduto = (produto: Produto): UnidadeDisponibilidade[] => [
-  {
-    id: "matriz",
-    nome: "Matriz",
-    preco: produto.preco,
-    estoque: produto.estoque,
-    status: produto.status,
-  },
-  {
-    id: "filial-centro",
-    nome: "Filial Centro",
-    preco: produto.preco * 1.05,
-    estoque: Math.floor(produto.estoque * 0.7),
-    status: "active",
-  },
-  {
-    id: "filial-norte",
-    nome: "Filial Norte",
-    preco: produto.preco,
-    estoque: 0,
-    status: "inactive",
-  },
-  {
-    id: "filial-sul",
-    nome: "Filial Sul",
-    preco: produto.preco * 0.95,
-    estoque: Math.floor(produto.estoque * 1.2),
-    status: "active",
-  },
-];
+const formatCurrency = (value: number) =>
+  value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+const toNumber = (value: number | undefined) =>
+  typeof value === "number" && Number.isFinite(value) ? value : 0;
+
+const getAvailabilityMerchantId = (availability: ProdutoApiAvailability) =>
+  availability.merchantId ?? availability.MerchantId ?? "";
+
+const mapAvailability = (
+  availability: ProdutoApiAvailability,
+  merchantName?: string
+): UnidadeDisponibilidade => ({
+  id: getAvailabilityMerchantId(availability),
+  nome:
+    availability.merchantName ??
+    availability.MerchantName ??
+    merchantName ??
+    "Unidade não informada",
+  precoOriginal: toNumber(availability.originalPrice ?? availability.OriginalPrice),
+  preco: toNumber(availability.price ?? availability.Price),
+  estoque: toNumber(availability.inventory ?? availability.Inventory),
+  status: (availability.active ?? availability.Active) ? "active" : "inactive",
+  destaque: availability.featured ?? availability.Featured ?? false,
+});
+
+const mergeAvailabilitiesWithMerchants = (
+  availabilities: ProdutoApiAvailability[],
+  merchants: Merchant[]
+) => {
+  const byMerchantId = new Map(
+    availabilities
+      .map((availability) => [getAvailabilityMerchantId(availability), availability] as const)
+      .filter(([merchantId]) => merchantId)
+  );
+
+  if (merchants.length === 0) {
+    return availabilities.map((availability) => mapAvailability(availability));
+  }
+
+  return merchants.map((merchant) => {
+    const availability = byMerchantId.get(merchant.id);
+    return availability
+      ? mapAvailability(availability, merchant.name)
+      : {
+          id: merchant.id,
+          nome: merchant.name ?? "Unidade não informada",
+          precoOriginal: 0,
+          preco: 0,
+          estoque: 0,
+          status: "inactive" as const,
+          destaque: false,
+        };
+  });
+};
 
 export function ProdutoDetailsModal({
   produto,
   open,
   onOpenChange,
+  merchants,
 }: ProdutoDetailsModalProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [produtoDetails, setProdutoDetails] = useState<ProdutoDetailsApi | null>(null);
   const [unidades, setUnidades] = useState<UnidadeDisponibilidade[]>([]);
   const [editedUnidades, setEditedUnidades] = useState<UnidadeDisponibilidade[]>([]);
 
+  const currentUnidades = isEditing ? editedUnidades : unidades;
+  const detailsExternalCode = produtoDetails?.externalCode ?? produtoDetails?.ExternalCode;
+  const detailsCategoryName = produtoDetails?.categoryName ?? produtoDetails?.CategoryName;
+  const detailsRestricted = produtoDetails?.restricted ?? produtoDetails?.Restricted;
+  const merchantNameById = useMemo(
+    () => new Map(merchants.map((merchant) => [merchant.id, merchant.name])),
+    [merchants]
+  );
+
   useEffect(() => {
-    if (produto) {
-      const initialUnidades = getUnidadesFromProduto(produto);
-      setUnidades(initialUnidades);
-      setEditedUnidades(initialUnidades);
-    }
-  }, [produto]);
+    if (!open || !produto) return;
+
+    let ignore = false;
+
+    const fetchProduto = async () => {
+      setLoading(true);
+      setIsEditing(false);
+
+      const response = await managerBackendBff.get<ProdutoDetailsApi>(
+        `/v1/Products/${produto.id}`
+      );
+
+      if (ignore) return;
+
+      if (response.data) {
+        const availabilities =
+          response.data.availabilities ?? response.data.Availabilities ?? [];
+        const nextUnidades = mergeAvailabilitiesWithMerchants(availabilities, merchants);
+
+        setProdutoDetails(response.data);
+        setUnidades(nextUnidades);
+        setEditedUnidades(nextUnidades);
+      } else if (response.error) {
+        toast.error("Erro ao carregar produto: " + response.error);
+        setProdutoDetails(null);
+        setUnidades([]);
+        setEditedUnidades([]);
+      }
+
+      setLoading(false);
+    };
+
+    fetchProduto();
+
+    return () => {
+      ignore = true;
+    };
+  }, [open, produto, merchants]);
 
   if (!produto) return null;
 
-  const currentUnidades = isEditing ? editedUnidades : unidades;
-
   const handleEdit = () => {
-    setEditedUnidades([...unidades]);
+    setEditedUnidades(unidades.map((unidade) => ({ ...unidade })));
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setUnidades([...editedUnidades]);
+  const handleSave = async () => {
+    setSaving(true);
+
+    const response = await managerBackendBff.patch<null>(`/v1/Products/${produto.id}`, {
+      availabilities: editedUnidades.map((unidade) => ({
+        merchantId: unidade.id,
+        originalPrice: unidade.precoOriginal,
+        price: unidade.preco,
+        inventory: unidade.estoque,
+        active: unidade.status === "active",
+        featured: unidade.destaque,
+      })),
+    });
+
+    setSaving(false);
+
+    if (response.error) {
+      toast.error("Erro ao salvar produto: " + response.error);
+      return;
+    }
+
+    const nextUnidades = editedUnidades.map((unidade) => ({ ...unidade }));
+    setUnidades(nextUnidades);
+    setEditedUnidades(nextUnidades);
     toast.success(`Produto "${produto.nome}" salvo com sucesso!`);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditedUnidades([...unidades]);
+    setEditedUnidades(unidades.map((unidade) => ({ ...unidade })));
     setIsEditing(false);
   };
 
   const handleUnidadeChange = (
     unidadeId: string,
     field: keyof UnidadeDisponibilidade,
-    value: number | string
+    value: number | string | boolean
   ) => {
     setEditedUnidades((prev) =>
-      prev.map((u) =>
-        u.id === unidadeId ? { ...u, [field]: value } : u
-      )
+      prev.map((u) => (u.id === unidadeId ? { ...u, [field]: value } : u))
     );
   };
 
-
-  const handleClose = (open: boolean) => {
-    if (!open) {
+  const handleClose = (nextOpen: boolean) => {
+    if (!nextOpen) {
       setIsEditing(false);
-      setEditedUnidades([...unidades]);
+      setEditedUnidades(unidades.map((unidade) => ({ ...unidade })));
     }
-    onOpenChange(open);
+    onOpenChange(nextOpen);
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[780px] max-h-[90vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -151,14 +272,14 @@ export function ProdutoDetailsModal({
             <div>
               <span className="block">Detalhes do Produto</span>
               <span className="text-sm font-normal text-muted-foreground">
-                {produto.sku}
+                {detailsExternalCode ?? produto.sku}
               </span>
             </div>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="flex-1 overflow-y-auto space-y-4 py-4 pr-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="nome">Nome do Produto</Label>
               <p className="text-sm text-foreground font-medium">
@@ -168,148 +289,220 @@ export function ProdutoDetailsModal({
 
             <div className="space-y-2">
               <Label htmlFor="categoria">Categoria</Label>
-              <p className="text-sm text-foreground">{produto.categoria}</p>
+              <p className="text-sm text-foreground">
+                {detailsCategoryName ?? produto.categoria}
+              </p>
             </div>
           </div>
 
           <Separator />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="sku">SKU</Label>
-              <p className="text-sm text-muted-foreground">{produto.sku}</p>
+              <p className="text-sm text-muted-foreground">
+                {(detailsExternalCode ?? produto.sku) || "Não informado"}
+              </p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="ean">EAN</Label>
-              <p className="text-sm text-muted-foreground">{produto.ean}</p>
+              <p className="text-sm text-muted-foreground">
+                {produto.ean || "Não informado"}
+              </p>
             </div>
-          </div>
 
-          <Separator />
-
-          <div className="space-y-2">
-            <Label>Produto Controlado</Label>
-            <p className={`text-sm font-medium ${produto.controlado ? "text-amber-600" : "text-foreground"}`}>
-              {produto.controlado ? "Sim" : "Não"}
-            </p>
+            <div className="space-y-2">
+              <Label>Produto Controlado</Label>
+              <p
+                className={`text-sm font-medium ${
+                  detailsRestricted ?? produto.controlado
+                    ? "text-amber-600"
+                    : "text-foreground"
+                }`}
+              >
+                {detailsRestricted ?? produto.controlado ? "Sim" : "Não"}
+              </p>
+            </div>
           </div>
 
           <Separator />
 
           <div className="space-y-3">
             <Label>Disponibilidade por Unidade</Label>
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
+            <div className="border rounded-lg overflow-x-auto">
+              <table className="w-full min-w-[680px] text-sm">
                 <thead className="bg-muted/50">
                   <tr>
                     <th className="px-3 py-2 text-left font-medium text-muted-foreground">Unidade</th>
+                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Preço original</th>
                     <th className="px-3 py-2 text-left font-medium text-muted-foreground">Preço</th>
                     <th className="px-3 py-2 text-left font-medium text-muted-foreground">Estoque</th>
+                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Destaque</th>
                     <th className="px-3 py-2 text-left font-medium text-muted-foreground">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {currentUnidades.map((unidade) => (
-                    <tr key={unidade.id}>
-                      <td className="px-3 py-2 font-medium text-foreground">
-                        {unidade.nome}
-                      </td>
-                      <td className="px-3 py-2">
-                        {isEditing ? (
-                          <Input
-                            type="number"
-                            step="0.01"
-                            className="h-8 w-24"
-                            value={unidade.preco}
-                            onChange={(e) =>
-                              handleUnidadeChange(
-                                unidade.id,
-                                "preco",
-                                parseFloat(e.target.value) || 0
-                              )
-                            }
-                          />
-                        ) : (
-                          <span className="text-primary font-medium">
-                            {unidade.preco.toLocaleString("pt-BR", {
-                              style: "currency",
-                              currency: "BRL",
-                            })}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2">
-                        {isEditing ? (
-                          <Input
-                            type="number"
-                            className="h-8 w-20"
-                            value={unidade.estoque}
-                            onChange={(e) =>
-                              handleUnidadeChange(
-                                unidade.id,
-                                "estoque",
-                                parseInt(e.target.value) || 0
-                              )
-                            }
-                          />
-                        ) : (
-                          <span
-                            className={`font-medium ${
-                              unidade.estoque === 0
-                                ? "text-destructive"
-                                : "text-foreground"
-                            }`}
-                          >
-                            {unidade.estoque}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2">
-                        {isEditing ? (
-                          <Switch
-                            checked={unidade.status === "active"}
-                            onCheckedChange={(checked) =>
-                              handleUnidadeChange(
-                                unidade.id,
-                                "status",
-                                checked ? "active" : "inactive"
-                              )
-                            }
-                          />
-                        ) : (
-                          <StatusBadge status={unidade.status} />
-                        )}
+                  {loading ? (
+                    Array.from({ length: Math.max(merchants.length, 3) }).map((_, index) => (
+                      <tr key={`produto-loading-${index}`}>
+                        <td className="px-3 py-3"><Skeleton className="h-5 w-36" /></td>
+                        <td className="px-3 py-3"><Skeleton className="h-8 w-24" /></td>
+                        <td className="px-3 py-3"><Skeleton className="h-8 w-24" /></td>
+                        <td className="px-3 py-3"><Skeleton className="h-8 w-20" /></td>
+                        <td className="px-3 py-3"><Skeleton className="h-4 w-4" /></td>
+                        <td className="px-3 py-3"><Skeleton className="h-6 w-16" /></td>
+                      </tr>
+                    ))
+                  ) : currentUnidades.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground">
+                        Nenhuma unidade disponível para edição
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    currentUnidades.map((unidade) => (
+                      <tr key={unidade.id}>
+                        <td className="px-3 py-2 font-medium text-foreground">
+                          {unidade.nome || merchantNameById.get(unidade.id) || "Unidade não informada"}
+                        </td>
+                        <td className="px-3 py-2">
+                          {isEditing ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              className="h-8 w-24"
+                              value={unidade.precoOriginal}
+                              onChange={(e) =>
+                                handleUnidadeChange(
+                                  unidade.id,
+                                  "precoOriginal",
+                                  parseFloat(e.target.value) || 0
+                                )
+                              }
+                            />
+                          ) : (
+                            <span className="text-muted-foreground">
+                              {formatCurrency(unidade.precoOriginal)}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2">
+                          {isEditing ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              className="h-8 w-24"
+                              value={unidade.preco}
+                              onChange={(e) =>
+                                handleUnidadeChange(
+                                  unidade.id,
+                                  "preco",
+                                  parseFloat(e.target.value) || 0
+                                )
+                              }
+                            />
+                          ) : (
+                            <span className="text-primary font-medium">
+                              {formatCurrency(unidade.preco)}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2">
+                          {isEditing ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              className="h-8 w-20"
+                              value={unidade.estoque}
+                              onChange={(e) =>
+                                handleUnidadeChange(
+                                  unidade.id,
+                                  "estoque",
+                                  parseInt(e.target.value, 10) || 0
+                                )
+                              }
+                            />
+                          ) : (
+                            <span
+                              className={`font-medium ${
+                                unidade.estoque === 0
+                                  ? "text-destructive"
+                                  : "text-foreground"
+                              }`}
+                            >
+                              {unidade.estoque}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2">
+                          {isEditing ? (
+                            <Checkbox
+                              checked={unidade.destaque}
+                              onCheckedChange={(checked) =>
+                                handleUnidadeChange(
+                                  unidade.id,
+                                  "destaque",
+                                  checked === true
+                                )
+                              }
+                            />
+                          ) : (
+                            <span className="text-muted-foreground">
+                              {unidade.destaque ? "Sim" : "Não"}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2">
+                          {isEditing ? (
+                            <Switch
+                              checked={unidade.status === "active"}
+                              onCheckedChange={(checked) =>
+                                handleUnidadeChange(
+                                  unidade.id,
+                                  "status",
+                                  checked ? "active" : "inactive"
+                                )
+                              }
+                            />
+                          ) : (
+                            <StatusBadge status={unidade.status} />
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
-
         </div>
 
-        <DialogFooter className="flex-col sm:flex-row gap-2">
+        <DialogFooter className="flex-col sm:flex-row gap-2 pt-4 border-t">
           {isEditing ? (
             <>
-              <Button variant="outline" onClick={handleCancel}>
+              <Button variant="outline" onClick={handleCancel} disabled={saving}>
                 Cancelar
               </Button>
-              <Button onClick={handleSave}>
-                <Save className="w-4 h-4 mr-2" />
+              <Button onClick={handleSave} disabled={saving || loading}>
+                {saving ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4 mr-2" />
+                )}
                 Salvar
               </Button>
             </>
           ) : (
-            <Button onClick={handleEdit}>
+            <Button onClick={handleEdit} disabled={loading}>
               <Pencil className="w-4 h-4 mr-2" />
               Editar
             </Button>
           )}
         </DialogFooter>
       </DialogContent>
-
     </Dialog>
   );
 }

@@ -47,7 +47,7 @@ const origemNames: Record<Origem, string> = {
   unknown: "Canal não informado",
 };
 
-type OrderStatus = "pending" | "processing" | "completed" | "cancelled";
+type OrderStatus = "active" | "pending" | "processing" | "cancelled";
 type OrderStatusKey =
   | "created"
   | "ready-for-handling"
@@ -68,7 +68,10 @@ interface Order {
   total: number;
   items: number;
   date: string;
+  tipo: "delivery" | "retirada";
   origem: Origem;
+  origemLogoUrl?: string;
+  origemLabel: string;
   unidade: string;
 }
 
@@ -96,18 +99,22 @@ interface OverviewOrderApi {
   id?: string;
   displayId?: string | null;
   salesChannel?: string | null;
+  salesChannelIconUrl?: string | null;
   merchantName?: string | null;
   customerName?: string | null;
   status?: string | null;
+  type?: string | null;
   itens?: number;
   amount?: number;
   createdAt?: string;
   Id?: string;
   DisplayId?: string | null;
   SalesChannel?: string | null;
+  SalesChannelIconUrl?: string | null;
   MerchantName?: string | null;
   CustomerName?: string | null;
   Status?: string | null;
+  Type?: string | null;
   Itens?: number;
   Amount?: number;
   CreatedAt?: string;
@@ -185,7 +192,7 @@ const resolveStatusInfo = (status?: string | null): {
   }
 
   if (["delivered", "entregue", "completed", "complete", "concluded", "concluido", "finished", "finalizado"].includes(normalized)) {
-    return { status: "completed", statusKey: "completed", statusLabel: statusLabels.completed };
+    return { status: "active", statusKey: "completed", statusLabel: statusLabels.completed };
   }
 
   if (["in-delivery", "em-entrega", "delivering", "out-for-delivery", "saiu-para-entrega"].includes(normalized)) {
@@ -208,11 +215,17 @@ const resolveStatusInfo = (status?: string | null): {
     return { status: "processing", statusKey: "ready-for-handling", statusLabel: statusLabels["ready-for-handling"] };
   }
 
-  if (["handling", "preparing", "processing", "processando", "in-progress", "em-andamento", "confirmed", "confirmado", "accepted", "aceito"].includes(normalized)) {
+  if (["handling", "preparing", "processing", "processando", "in-progress", "em-andamento", "confirmed", "confirmado", "accepted", "aceito", "ready-for-pickup", "dispatched"].includes(normalized)) {
     return { status: "processing", statusKey: "ready-for-handling", statusLabel: statusLabels["ready-for-handling"] };
   }
 
   return { status: "pending", statusKey: "created", statusLabel: statusLabels.created };
+};
+
+const resolveTipo = (type?: string | null): Order["tipo"] => {
+  const normalized = normalizeText(type);
+  if (["pickup", "retirada", "takeout", "balcao"].includes(normalized)) return "retirada";
+  return "delivery";
 };
 
 const formatNumber = (value: number) => value.toLocaleString("pt-BR");
@@ -235,7 +248,10 @@ const toOrder = (order: OverviewOrderApi, index: number): Order => {
   const customerName = order.customerName ?? order.CustomerName;
   const merchantName = order.merchantName ?? order.MerchantName;
   const salesChannel = order.salesChannel ?? order.SalesChannel;
+  const iconUrl = order.salesChannelIconUrl ?? order.SalesChannelIconUrl;
+  const origem = resolveOrigem(iconUrl ?? salesChannel);
   const statusInfo = resolveStatusInfo(status);
+  const type = order.type ?? order.Type;
 
   return {
     id: order.id ?? order.Id ?? `${displayId ?? "order"}-${index}`,
@@ -247,7 +263,10 @@ const toOrder = (order: OverviewOrderApi, index: number): Order => {
     total: order.amount ?? order.Amount ?? 0,
     items: order.itens ?? order.Itens ?? 0,
     date: order.createdAt ?? order.CreatedAt ?? "",
-    origem: resolveOrigem(salesChannel),
+    tipo: resolveTipo(type),
+    origem,
+    origemLogoUrl: iconUrl || undefined,
+    origemLabel: origemNames[origem],
     unidade: merchantName?.trim() || "Unidade não informada",
   };
 };
@@ -259,8 +278,8 @@ const columns: Column<Order>[] = [
     render: (item) => (
       <div className="flex items-center gap-2">
         <img 
-          src={origemLogos[item.origem]} 
-          alt={origemNames[item.origem]} 
+          src={item.origemLogoUrl || origemLogos[item.origem]} 
+          alt={item.origemLabel} 
           className="w-6 h-6 rounded object-cover"
         />
       </div>
@@ -279,16 +298,38 @@ const columns: Column<Order>[] = [
     label: "Pedido",
     sortable: true,
     render: (item) => (
-      <div>
-        <span className="font-medium text-foreground">{item.orderNumber}</span>
-        <p className="text-xs text-muted-foreground mt-0.5">{item.customer}</p>
-      </div>
+      <span className="font-medium text-foreground">{item.orderNumber}</span>
+    ),
+  },
+  {
+    key: "customer",
+    label: "Cliente",
+    sortable: true,
+    render: (item) => (
+      <span className="text-foreground">{item.customer}</span>
+    ),
+  },
+  {
+    key: "date",
+    label: "Data",
+    sortable: true,
+    render: (item) => (
+      <span className="text-muted-foreground">
+        {formatDate(item.date)}
+      </span>
     ),
   },
   {
     key: "status",
     label: "Status",
     render: (item) => <StatusBadge status={item.status} label={item.statusLabel} />,
+  },
+  {
+    key: "tipo",
+    label: "Tipo",
+    render: (item) => (
+      <span className="text-foreground capitalize">{item.tipo === "delivery" ? "Delivery" : "Retirada"}</span>
+    ),
   },
   {
     key: "items",
@@ -305,16 +346,6 @@ const columns: Column<Order>[] = [
     render: (item) => (
       <span className="text-primary font-medium">
         {formatCurrency(item.total)}
-      </span>
-    ),
-  },
-  {
-    key: "date",
-    label: "Data",
-    sortable: true,
-    render: (item) => (
-      <span className="text-muted-foreground">
-        {formatDate(item.date)}
       </span>
     ),
   },
@@ -376,14 +407,14 @@ const Dashboard = () => {
         acc[order.status] += 1;
         return acc;
       },
-      { pending: 0, processing: 0, completed: 0, cancelled: 0 },
+      { active: 0, pending: 0, processing: 0, cancelled: 0 },
     );
 
     return [
       { id: "all", label: "Todos", count: orders.length },
       { id: "pending", label: "Novos", count: countByStatus.pending },
       { id: "processing", label: "Em andamento", count: countByStatus.processing },
-      { id: "completed", label: "Concluídos", count: countByStatus.completed },
+      { id: "active", label: "Concluídos", count: countByStatus.active },
       { id: "cancelled", label: "Cancelados", count: countByStatus.cancelled },
     ];
   }, [orders]);
