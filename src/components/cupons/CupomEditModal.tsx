@@ -16,37 +16,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Save, X } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-
-interface Cupom {
-  id: string;
-  codigo: string;
-  desconto: string;
-  tipo: "percentual" | "fixo" | "frete_gratis";
-  minimo: number;
-  usos: number;
-  limite: number;
-  validade: string;
-  status: "active" | "inactive" | "cancelled";
-}
+import { Loader2, Save, X } from "lucide-react";
+import type { Coupon, CouponDiscountType, CouponFormData, CouponStatus } from "@/types/coupon";
 
 interface CupomEditModalProps {
-  cupom: Cupom | null;
+  cupom: Coupon | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave?: (cupom: Cupom) => void;
+  onSave?: (formData: CouponFormData, cupom?: Coupon | null) => Promise<boolean> | boolean;
 }
 
-const emptyForm = {
+const emptyForm: CouponFormData = {
+  name: "",
   codigo: "",
   desconto: "",
-  tipo: "percentual" as "percentual" | "fixo" | "frete_gratis",
+  tipo: "percentual",
   minimo: "",
   limite: "",
   validade: "",
-  status: "active" as "active" | "inactive" | "cancelled",
+  status: "active",
 };
+
+function toDateInputValue(value?: string | null): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (!Number.isNaN(date.getTime())) return date.toISOString().slice(0, 10);
+
+  const brazilianDateMatch = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!brazilianDateMatch) return "";
+  const [, day, month, year] = brazilianDateMatch;
+  return `${year}-${month}-${day}`;
+}
 
 export function CupomEditModal({
   cupom,
@@ -56,56 +56,35 @@ export function CupomEditModal({
 }: CupomEditModalProps) {
   const isCreating = !cupom;
   const [formData, setFormData] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!open) return;
 
     if (cupom) {
-      // Parse desconto to get just the number
-      const descontoValue = cupom.desconto.replace("%", "").replace("R$ ", "").replace(",", ".");
-
       setFormData({
+        name: cupom.name,
         codigo: cupom.codigo,
-        desconto: descontoValue,
+        desconto: cupom.tipo === "frete_gratis" ? "" : String(cupom.amount).replace(".", ","),
         tipo: cupom.tipo,
         minimo: cupom.minimo.toString(),
         limite: cupom.limite.toString(),
-        validade: cupom.validade,
+        validade: toDateInputValue(cupom.expiresAt ?? cupom.validade),
         status: cupom.status,
       });
     } else {
       setFormData(emptyForm);
     }
+    setSaving(false);
   }, [cupom, open]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const updatedCupom: Cupom = {
-      id: cupom?.id ?? `cupom-${Date.now()}`,
-      usos: cupom?.usos ?? 0,
-      codigo: formData.codigo,
-      tipo: formData.tipo,
-      desconto:
-        formData.tipo === "percentual"
-          ? `${formData.desconto}%`
-          : formData.tipo === "fixo"
-          ? `R$ ${formData.desconto}`
-          : "Frete Grátis",
-      minimo: parseFloat(formData.minimo) || 0,
-      limite: parseInt(formData.limite) || 0,
-      validade: formData.validade,
-      status: formData.status,
-    };
-
-    onSave?.(updatedCupom);
-
-    toast({
-      title: isCreating ? "Cupom cadastrado" : "Cupom atualizado",
-      description: `O cupom ${formData.codigo} foi ${isCreating ? "cadastrado" : "atualizado"} com sucesso.`,
-    });
-
-    onOpenChange(false);
+    setSaving(true);
+    const saved = await onSave?.(formData, cupom);
+    setSaving(false);
+    if (saved !== false) onOpenChange(false);
   };
 
   return (
@@ -117,6 +96,18 @@ export function CupomEditModal({
 
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Nome</Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              placeholder="Ex: Primeira compra"
+            />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="codigo">Código do Cupom</Label>
             <Input
@@ -133,7 +124,7 @@ export function CupomEditModal({
             <Label htmlFor="tipo">Tipo de Desconto</Label>
             <Select
               value={formData.tipo}
-              onValueChange={(value: "percentual" | "fixo" | "frete_gratis") =>
+              onValueChange={(value: CouponDiscountType) =>
                 setFormData({ ...formData, tipo: value })
               }
             >
@@ -199,11 +190,11 @@ export function CupomEditModal({
             <Label htmlFor="validade">Validade</Label>
             <Input
               id="validade"
+              type="date"
               value={formData.validade}
               onChange={(e) =>
                 setFormData({ ...formData, validade: e.target.value })
               }
-              placeholder="Ex: 31/01/2026"
             />
           </div>
 
@@ -211,7 +202,7 @@ export function CupomEditModal({
             <Label htmlFor="status">Status</Label>
             <Select
               value={formData.status}
-              onValueChange={(value: "active" | "inactive" | "cancelled") =>
+              onValueChange={(value: CouponStatus) =>
                 setFormData({ ...formData, status: value })
               }
             >
@@ -232,12 +223,13 @@ export function CupomEditModal({
               variant="outline"
               onClick={() => onOpenChange(false)}
               className="gap-2"
+              disabled={saving}
             >
               <X className="w-4 h-4" />
               Cancelar
             </Button>
-            <Button type="submit" className="gap-2">
-              <Save className="w-4 h-4" />
+            <Button type="submit" className="gap-2" disabled={saving}>
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               Salvar
             </Button>
           </DialogFooter>

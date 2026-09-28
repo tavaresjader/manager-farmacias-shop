@@ -11,32 +11,27 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Percent, ShoppingCart, Hash, Target, Pencil, DollarSign, Tag, Truck } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Calendar, Percent, ShoppingCart, Hash, Target, Pencil, DollarSign, Tag, Truck, Trash2, Loader2 } from "lucide-react";
 import { CupomEditModal } from "./CupomEditModal";
-
-interface Utilizacao {
-  pedidoId: string;
-  data: string;
-  valor: string;
-}
-
-interface Cupom {
-  id: string;
-  codigo: string;
-  desconto: string;
-  tipo: "percentual" | "fixo" | "frete_gratis";
-  minimo: number;
-  usos: number;
-  limite: number;
-  validade: string;
-  status: "active" | "inactive" | "cancelled";
-}
+import type { Coupon, CouponFormData } from "@/types/coupon";
 
 interface CupomDetailsModalProps {
-  cupom: Cupom | null;
+  cupom: Coupon | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCupomUpdate?: (cupom: Cupom) => void;
+  onCupomUpdate?: (formData: CouponFormData, cupom?: Coupon | null) => Promise<boolean> | boolean;
+  onCupomDelete?: (cupom: Coupon) => Promise<boolean> | boolean;
+  loading?: boolean;
 }
 
 const statusLabels: Record<string, string> = {
@@ -45,50 +40,50 @@ const statusLabels: Record<string, string> = {
   cancelled: "Expirado",
 };
 
-// Mock de utilizações
-const mockUtilizacoes: Record<string, Utilizacao[]> = {
-  "1": [
-    { pedidoId: "#12458", data: "12/01/2026 14:32", valor: "R$ 8,50" },
-    { pedidoId: "#12445", data: "11/01/2026 09:15", valor: "R$ 12,00" },
-    { pedidoId: "#12432", data: "10/01/2026 18:45", valor: "R$ 7,20" },
-    { pedidoId: "#12420", data: "09/01/2026 11:22", valor: "R$ 15,00" },
-    { pedidoId: "#12398", data: "08/01/2026 16:08", valor: "R$ 9,80" },
-  ],
-  "2": [
-    { pedidoId: "#12455", data: "12/01/2026 10:20", valor: "R$ 15,00" },
-    { pedidoId: "#12440", data: "11/01/2026 14:55", valor: "R$ 15,00" },
-    { pedidoId: "#12425", data: "10/01/2026 08:30", valor: "R$ 15,00" },
-  ],
-  "3": [
-    { pedidoId: "#11890", data: "30/11/2025 23:45", valor: "R$ 45,00" },
-    { pedidoId: "#11885", data: "30/11/2025 22:10", valor: "R$ 38,50" },
-    { pedidoId: "#11870", data: "30/11/2025 20:30", valor: "R$ 52,00" },
-    { pedidoId: "#11865", data: "30/11/2025 19:15", valor: "R$ 41,25" },
-    { pedidoId: "#11850", data: "30/11/2025 18:00", valor: "R$ 33,75" },
-    { pedidoId: "#11840", data: "30/11/2025 16:45", valor: "R$ 47,50" },
-  ],
-  "4": [],
-};
+function formatCurrency(value: number): string {
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function formatDateTime(value: string | null): string {
+  if (!value) return "Data não informada";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Data não informada";
+  return date.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export function CupomDetailsModal({
   cupom,
   open,
   onOpenChange,
   onCupomUpdate,
+  onCupomDelete,
+  loading = false,
 }: CupomDetailsModalProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   if (!cupom) return null;
 
-  const utilizacoes = mockUtilizacoes[cupom.id] || [];
+  const utilizacoes = cupom.utilizacoes;
 
   const handleEditClick = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleCupomSave = (updatedCupom: Cupom) => {
-    onCupomUpdate?.(updatedCupom);
+  const handleDelete = async () => {
+    setDeleting(true);
+    const deleted = await onCupomDelete?.(cupom);
+    setDeleting(false);
+    if (deleted !== false) setDeleteConfirmOpen(false);
   };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
@@ -99,7 +94,12 @@ export function CupomDetailsModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        {loading ? (
+          <div className="flex items-center justify-center py-16 text-muted-foreground">
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            Carregando cupom...
+          </div>
+        ) : <div className="space-y-6">
           {/* Informações do Cupom */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
@@ -171,21 +171,21 @@ export function CupomDetailsModal({
             ) : (
               <ScrollArea className="h-[200px]">
                 <div className="space-y-2">
-                  {utilizacoes.map((uso, index) => (
+                  {utilizacoes.map((uso) => (
                     <div
-                      key={index}
+                      key={uso.orderId}
                       className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <Badge variant="outline" className="font-mono">
-                          {uso.pedidoId}
+                          {uso.orderCode}
                         </Badge>
                         <span className="text-sm text-muted-foreground">
-                          {uso.data}
+                          {formatDateTime(uso.createdAt)}
                         </span>
                       </div>
                       <span className="text-sm font-medium text-primary">
-                        -{uso.valor}
+                        -{formatCurrency(uso.amount)}
                       </span>
                     </div>
                   ))}
@@ -193,10 +193,19 @@ export function CupomDetailsModal({
               </ScrollArea>
             )}
           </div>
-        </div>
+        </div>}
 
-        <DialogFooter>
-          <Button className="gap-2" onClick={handleEditClick}>
+        <DialogFooter className="gap-2">
+          <Button
+            variant="destructive"
+            className="gap-2"
+            onClick={() => setDeleteConfirmOpen(true)}
+            disabled={loading}
+          >
+            <Trash2 className="w-4 h-4" />
+            Excluir
+          </Button>
+          <Button className="gap-2" onClick={handleEditClick} disabled={loading}>
             <Pencil className="w-4 h-4" />
             Editar Cupom
           </Button>
@@ -207,8 +216,32 @@ export function CupomDetailsModal({
         cupom={cupom}
         open={isEditModalOpen}
         onOpenChange={setIsEditModalOpen}
-        onSave={handleCupomSave}
+        onSave={onCupomUpdate}
       />
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir cupom</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o cupom "{cupom.codigo}"? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(event) => {
+                event.preventDefault();
+                handleDelete();
+              }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageLoading } from "@/components/layout/PageLoading";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
 import { Button } from "@/components/ui/button";
@@ -10,65 +11,47 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { CupomDetailsModal } from "@/components/cupons/CupomDetailsModal";
 import { CupomEditModal } from "@/components/cupons/CupomEditModal";
 import { Plus, Percent, DollarSign, Tag, Truck } from "lucide-react";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { toast } from "sonner";
+import type { Coupon, CouponDiscountType, CouponFormData, CouponStatus, CouponUsage } from "@/types/coupon";
 
-interface Cupom {
+type CouponApiType = 1 | 2 | 3;
+
+interface CouponListApiResponse {
   id: string;
-  codigo: string;
-  desconto: string;
-  tipo: "percentual" | "fixo" | "frete_gratis";
-  minimo: number;
-  usos: number;
-  limite: number;
-  validade: string;
-  status: "active" | "inactive" | "cancelled";
+  name?: string | null;
+  code?: string | null;
+  type: number;
+  amount: number;
+  purchaseMin: number;
+  expiresAt?: string | null;
+  limit: number;
+  usages: number;
+  active: boolean;
 }
 
-const mockCupons: Cupom[] = [
-  {
-    id: "1",
-    codigo: "PRIMEIRACOMPRA",
-    desconto: "10%",
-    tipo: "percentual",
-    minimo: 50,
-    usos: 234,
-    limite: 500,
-    validade: "31/12/2026",
-    status: "active",
-  },
-  {
-    id: "2",
-    codigo: "FRETEGRATIS",
-    desconto: "R$ 15,00",
-    tipo: "fixo",
-    minimo: 100,
-    usos: 89,
-    limite: 100,
-    validade: "15/02/2026",
-    status: "active",
-  },
-  {
-    id: "3",
-    codigo: "BLACKFRIDAY",
-    desconto: "25%",
-    tipo: "percentual",
-    minimo: 150,
-    usos: 500,
-    limite: 500,
-    validade: "30/11/2025",
-    status: "cancelled",
-  },
-  {
-    id: "4",
-    codigo: "VERAO2026",
-    desconto: "15%",
-    tipo: "percentual",
-    minimo: 80,
-    usos: 0,
-    limite: 200,
-    validade: "28/02/2026",
-    status: "inactive",
-  },
-];
+interface CouponUsageApiResponse {
+  orderId: string;
+  orderCode?: string | null;
+  amount: number;
+  createdAt?: string | null;
+}
+
+interface CouponDetailsApiResponse extends Omit<CouponListApiResponse, "usages"> {
+  usages?: CouponUsageApiResponse[] | null;
+}
+
+interface CouponPayload {
+  id?: string;
+  name: string;
+  code: string;
+  type: CouponApiType;
+  amount: number;
+  purchaseMin: number;
+  expiresAt: string | null;
+  limit: number;
+  active: boolean;
+}
 
 const statusLabels: Record<string, string> = {
   active: "Ativo",
@@ -76,7 +59,112 @@ const statusLabels: Record<string, string> = {
   cancelled: "Expirado",
 };
 
-const columns: Column<Cupom>[] = [
+const couponTypes: Record<CouponDiscountType, CouponApiType> = {
+  percentual: 1,
+  fixo: 2,
+  frete_gratis: 3,
+};
+
+const couponTypesByApi: Record<number, CouponDiscountType> = {
+  1: "percentual",
+  2: "fixo",
+  3: "frete_gratis",
+};
+
+function formatCurrency(value: number): string {
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function formatDate(value?: string | null): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("pt-BR");
+}
+
+function toDateInputValue(value: string): string | null {
+  if (!value) return null;
+
+  const isoDateMatch = value.match(/^\d{4}-\d{2}-\d{2}/);
+  if (isoDateMatch) return `${isoDateMatch[0]}T00:00:00`;
+
+  const brazilianDateMatch = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (brazilianDateMatch) {
+    const [, day, month, year] = brazilianDateMatch;
+    return `${year}-${month}-${day}T00:00:00`;
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function getCouponStatus(active: boolean, expiresAt?: string | null): CouponStatus {
+  if (!active) return "inactive";
+  if (expiresAt) {
+    const expiresDate = new Date(expiresAt);
+    if (!Number.isNaN(expiresDate.getTime()) && expiresDate < new Date()) return "cancelled";
+  }
+  return "active";
+}
+
+function getDiscountLabel(type: CouponDiscountType, amount: number): string {
+  if (type === "frete_gratis") return "Frete Grátis";
+  if (type === "percentual") return `${amount.toLocaleString("pt-BR")}%`;
+  return formatCurrency(amount);
+}
+
+function toCouponUsage(usage: CouponUsageApiResponse): CouponUsage {
+  return {
+    orderId: usage.orderId,
+    orderCode: usage.orderCode?.trim() || usage.orderId,
+    amount: usage.amount,
+    createdAt: usage.createdAt ?? null,
+  };
+}
+
+function toCoupon(coupon: CouponListApiResponse | CouponDetailsApiResponse): Coupon {
+  const type = couponTypesByApi[coupon.type] ?? "percentual";
+  const usages = Array.isArray(coupon.usages)
+    ? coupon.usages.map(toCouponUsage)
+    : [];
+  const usagesCount = Array.isArray(coupon.usages) ? coupon.usages.length : coupon.usages ?? 0;
+
+  return {
+    id: coupon.id,
+    name: coupon.name?.trim() || "",
+    codigo: coupon.code?.trim() || "",
+    desconto: getDiscountLabel(type, coupon.amount),
+    tipo: type,
+    minimo: coupon.purchaseMin,
+    usos: usagesCount,
+    limite: coupon.limit,
+    validade: formatDate(coupon.expiresAt),
+    expiresAt: coupon.expiresAt ?? null,
+    amount: coupon.amount,
+    active: coupon.active,
+    status: getCouponStatus(coupon.active, coupon.expiresAt),
+    utilizacoes: usages,
+  };
+}
+
+function toCouponPayload(formData: CouponFormData, id?: string): CouponPayload {
+  const type = couponTypes[formData.tipo];
+  const amount = formData.tipo === "frete_gratis" ? 0 : Number(formData.desconto.replace(",", ".")) || 0;
+
+  return {
+    ...(id ? { id } : {}),
+    name: formData.name.trim(),
+    code: formData.codigo.trim().toUpperCase(),
+    type,
+    amount,
+    purchaseMin: Number(formData.minimo.replace(",", ".")) || 0,
+    expiresAt: toDateInputValue(formData.validade),
+    limit: Number.parseInt(formData.limite, 10) || 0,
+    active: formData.status === "active",
+  };
+}
+
+const columns: Column<Coupon>[] = [
   {
     key: "codigo",
     label: "Código",
@@ -151,31 +239,124 @@ const columns: Column<Cupom>[] = [
 
 const Cupons = () => {
   usePageTitle("Cupons");
-  const isLoading = usePageLoading();
+  const isPageLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
-  const [cupons, setCupons] = useState<Cupom[]>(mockCupons);
-  const [selectedCupom, setSelectedCupom] = useState<Cupom | null>(null);
+  const [cupons, setCupons] = useState<Coupon[]>([]);
+  const [selectedCupom, setSelectedCupom] = useState<Coupon | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [loadingCupons, setLoadingCupons] = useState(false);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const detailsRequestId = useRef(0);
 
-  const filteredCupons = cupons.filter((cupom) =>
-    cupom.codigo.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    let cancelled = false;
 
-  const handleRowClick = (cupom: Cupom) => {
+    const fetchCoupons = async () => {
+      setLoadingCupons(true);
+      const params: Record<string, string | number | boolean> = {};
+      if (searchQuery.trim()) params.term = searchQuery.trim();
+
+      const response = await managerBackendBff.get<CouponListApiResponse[]>("/v1/Coupons", { params });
+
+      if (cancelled) return;
+
+      if (response.data) {
+        setCupons(response.data.map(toCoupon));
+      } else {
+        setCupons([]);
+        toast.error(`Erro ao carregar cupons: ${response.error ?? "Tente novamente."}`);
+      }
+
+      setLoadingCupons(false);
+    };
+
+    fetchCoupons();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [searchQuery]);
+
+  const handleRowClick = async (cupom: Coupon) => {
+    const requestId = ++detailsRequestId.current;
     setSelectedCupom(cupom);
     setIsModalOpen(true);
+    setLoadingDetails(true);
+
+    const response = await managerBackendBff.get<CouponDetailsApiResponse>(
+      `/v1/Coupons/${encodeURIComponent(cupom.id)}`,
+    );
+
+    if (requestId !== detailsRequestId.current) return;
+
+    if (response.data) {
+      setSelectedCupom(toCoupon(response.data));
+    } else {
+      setIsModalOpen(false);
+      toast.error(`Erro ao carregar cupom: ${response.error ?? "Tente novamente."}`);
+    }
+
+    setLoadingDetails(false);
   };
 
-  const handleCupomSave = (cupom: Cupom) => {
-    setCupons((prev) => {
-      const exists = prev.some((c) => c.id === cupom.id);
-      return exists ? prev.map((c) => (c.id === cupom.id ? cupom : c)) : [cupom, ...prev];
-    });
-    setSelectedCupom((prev) => (prev && prev.id === cupom.id ? cupom : prev));
+  const handleDetailsModalOpenChange = (open: boolean) => {
+    setIsModalOpen(open);
+    if (!open) {
+      detailsRequestId.current += 1;
+      setLoadingDetails(false);
+      setSelectedCupom(null);
+    }
   };
 
-  if (isLoading) {
+  const reloadCoupons = async () => {
+    const params: Record<string, string | number | boolean> = {};
+    if (searchQuery.trim()) params.term = searchQuery.trim();
+    const response = await managerBackendBff.get<CouponListApiResponse[]>("/v1/Coupons", { params });
+    if (response.data) setCupons(response.data.map(toCoupon));
+  };
+
+  const handleCupomSave = async (formData: CouponFormData, cupom?: Coupon | null) => {
+    const payload = toCouponPayload(formData, cupom?.id);
+    const response = cupom
+      ? await managerBackendBff.put<unknown>(`/v1/Coupons/${encodeURIComponent(cupom.id)}`, payload)
+      : await managerBackendBff.post<unknown>("/v1/Coupons", payload);
+
+    if (response.error) {
+      toast.error(`Erro ao ${cupom ? "atualizar" : "cadastrar"} cupom: ${response.error}`);
+      return false;
+    }
+
+    toast.success(`Cupom ${cupom ? "atualizado" : "cadastrado"} com sucesso.`);
+    await reloadCoupons();
+
+    if (cupom) {
+      const detailsResponse = await managerBackendBff.get<CouponDetailsApiResponse>(
+        `/v1/Coupons/${encodeURIComponent(cupom.id)}`,
+      );
+      if (detailsResponse.data) setSelectedCupom(toCoupon(detailsResponse.data));
+    }
+
+    return true;
+  };
+
+  const handleCupomDelete = async (cupom: Coupon) => {
+    const response = await managerBackendBff.delete<unknown>(
+      `/v1/Coupons/${encodeURIComponent(cupom.id)}`,
+    );
+
+    if (response.error) {
+      toast.error(`Erro ao excluir cupom: ${response.error}`);
+      return false;
+    }
+
+    toast.success("Cupom excluído com sucesso.");
+    setCupons((currentCoupons) => currentCoupons.filter((currentCoupon) => currentCoupon.id !== cupom.id));
+    handleDetailsModalOpenChange(false);
+    return true;
+  };
+
+  if (isPageLoading) {
     return (
       <MainLayout>
         <PageLoading />
@@ -185,16 +366,12 @@ const Cupons = () => {
 
   return (
     <MainLayout>
+      <PageHeader title="Cupons" breadcrumbs={[]} />
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-foreground">Cupons</h1>
-        </div>
-
-        {/* Search and Filters */}
         <div className="flex items-center gap-3">
           <SearchBar
             placeholder="Buscar por código..."
+            value={searchQuery}
             onSearch={setSearchQuery}
             className="flex-1"
           />
@@ -207,9 +384,9 @@ const Cupons = () => {
         {/* Table */}
         <DataTable
           columns={columns}
-          data={filteredCupons}
+          data={cupons}
           emptyMessage="Nenhum cupom encontrado"
-          loading={isLoading}
+          loading={loadingCupons}
           onRowClick={handleRowClick}
         />
       </div>
@@ -218,8 +395,10 @@ const Cupons = () => {
       <CupomDetailsModal
         cupom={selectedCupom}
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onOpenChange={handleDetailsModalOpenChange}
         onCupomUpdate={handleCupomSave}
+        onCupomDelete={handleCupomDelete}
+        loading={loadingDetails}
       />
 
       {/* Modal de Cadastro */}
