@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Copy, Check, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
 
 const defaultMessage = `Olá! 👋
 
@@ -23,10 +24,96 @@ interface WhatsAppConfigModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const stringPayloadKeys = ["data", "message", "content", "value", "result", "payload", "text"];
+
+const parseApiPayload = (value: string): unknown => {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+};
+
+const collectStringPayloads = (payload: unknown): string[] => {
+  if (typeof payload === "string") {
+    return [payload];
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return [];
+  }
+
+  const payloadRecord = payload as Record<string, unknown>;
+  const prioritizedValues = stringPayloadKeys.flatMap((key) => collectStringPayloads(payloadRecord[key]));
+  const remainingValues = Object.entries(payloadRecord)
+    .filter(([key]) => !stringPayloadKeys.includes(key))
+    .flatMap(([, value]) => collectStringPayloads(value));
+
+  return [...prioritizedValues, ...remainingValues];
+};
+
+const normalizeBase64 = (value: string) => {
+  const payload = value.trim().replace(/^data:[^,]+,/, "").replace(/\s/g, "").replace(/-/g, "+").replace(/_/g, "/");
+  const paddingLength = (4 - (payload.length % 4)) % 4;
+
+  return payload + "=".repeat(paddingLength);
+};
+
+const decodeBase64Payload = (value: string) => {
+  const binary = atob(normalizeBase64(value));
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+
+  return new TextDecoder("utf-8").decode(bytes);
+};
+
+const decodeBase64Utf8 = (value: string) => {
+  const payload = parseApiPayload(value.trim());
+  const candidates = collectStringPayloads(payload);
+
+  for (const candidate of candidates) {
+    try {
+      const decodedValue = decodeBase64Payload(candidate);
+      if (decodedValue.trim()) return decodedValue;
+    } catch {
+      // Continue tentando outros campos do payload.
+    }
+  }
+
+  throw new Error("Invalid base64 payload");
+};
+
 export const WhatsAppConfigModal = ({ open, onOpenChange }: WhatsAppConfigModalProps) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState(defaultMessage);
+
+  useEffect(() => {
+    if (!open) return;
+
+    let cancelled = false;
+
+    const fetchWhatsAppMessage = async () => {
+      const response = await managerBackendBff.getText("/v1/apps/whatsapp");
+
+      if (cancelled || !response.data) return;
+
+      try {
+        setMessage(decodeBase64Utf8(response.data).trim());
+      } catch {
+        toast({
+          title: "Erro ao carregar mensagem",
+          description: "Não foi possível carregar a mensagem automática do WhatsApp.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchWhatsAppMessage();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, toast]);
 
   const handleCopy = async () => {
     try {

@@ -340,6 +340,49 @@ export class ManagerBackendBff {
     }
   }
 
+  async getText(endpoint: string, options?: RequestOptions): Promise<ApiResponse<string>> {
+    try {
+      this.requireAuth();
+
+      const url = this.buildUrl(endpoint, options?.params, options?.baseUrl);
+      const response = await fetchWithTimeout(url, {
+        method: "GET",
+        headers: this.mergeHeaders(options?.headers),
+      });
+
+      const data = await response.text().catch(() => "");
+
+      if (response.status === 401) {
+        this.removeAuthToken();
+        return {
+          data: null,
+          error: "Sessão expirada. Faça login novamente.",
+          status: response.status,
+        };
+      }
+
+      if (!response.ok) {
+        return {
+          data: null,
+          error: data || "Erro ao buscar dados",
+          status: response.status,
+        };
+      }
+
+      return {
+        data,
+        error: null,
+        status: response.status,
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: mapRequestError(error),
+        status: 0,
+      };
+    }
+  }
+
   async post<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<ApiResponse<T>> {
     try {
       // Require authentication for all API calls
