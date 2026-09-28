@@ -98,6 +98,15 @@ function toDateInputValue(value: string): string | null {
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
+function parseFormNumber(value: string): number {
+  const stripped = value.replace(/[^\d,.-]/g, "");
+  const normalized = stripped.includes(",")
+    ? stripped.replace(/\./g, "").replace(",", ".")
+    : stripped;
+
+  return Number(normalized) || 0;
+}
+
 function getCouponStatus(active: boolean, expiresAt?: string | null): CouponStatus {
   if (!active) return "inactive";
   if (expiresAt) {
@@ -149,7 +158,7 @@ function toCoupon(coupon: CouponListApiResponse | CouponDetailsApiResponse): Cou
 
 function toCouponPayload(formData: CouponFormData, id?: string): CouponPayload {
   const type = couponTypes[formData.tipo];
-  const amount = formData.tipo === "frete_gratis" ? 0 : Number(formData.desconto.replace(",", ".")) || 0;
+  const amount = formData.tipo === "frete_gratis" ? 0 : parseFormNumber(formData.desconto);
 
   return {
     ...(id ? { id } : {}),
@@ -157,7 +166,7 @@ function toCouponPayload(formData: CouponFormData, id?: string): CouponPayload {
     code: formData.codigo.trim().toUpperCase(),
     type,
     amount,
-    purchaseMin: Number(formData.minimo.replace(",", ".")) || 0,
+    purchaseMin: parseFormNumber(formData.minimo),
     expiresAt: toDateInputValue(formData.validade),
     limit: Number.parseInt(formData.limite, 10) || 0,
     active: formData.status === "active",

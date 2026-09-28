@@ -37,6 +37,32 @@ const emptyForm: CouponFormData = {
   status: "active",
 };
 
+function formatCurrencyInput(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "";
+
+  const amount = Number(digits) / 100;
+  return amount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function formatCurrencyValue(value: number): string {
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function parseDecimalInput(value: string): number {
+  const stripped = value.replace(/[^\d,.-]/g, "");
+  const normalized = stripped.includes(",")
+    ? stripped.replace(/\./g, "").replace(",", ".")
+    : stripped;
+
+  return Number(normalized) || 0;
+}
+
+function formatDecimalAsCurrency(value: string): string {
+  if (!value.trim()) return "";
+  return formatCurrencyValue(parseDecimalInput(value));
+}
+
 function toDateInputValue(value?: string | null): string {
   if (!value) return "";
   const date = new Date(value);
@@ -65,9 +91,13 @@ export function CupomEditModal({
       setFormData({
         name: cupom.name,
         codigo: cupom.codigo,
-        desconto: cupom.tipo === "frete_gratis" ? "" : String(cupom.amount).replace(".", ","),
+        desconto: cupom.tipo === "frete_gratis"
+          ? ""
+          : cupom.tipo === "fixo"
+          ? formatCurrencyValue(cupom.amount)
+          : String(cupom.amount).replace(".", ","),
         tipo: cupom.tipo,
-        minimo: cupom.minimo.toString(),
+        minimo: formatCurrencyValue(cupom.minimo),
         limite: cupom.limite.toString(),
         validade: toDateInputValue(cupom.expiresAt ?? cupom.validade),
         status: cupom.status,
@@ -125,7 +155,15 @@ export function CupomEditModal({
             <Select
               value={formData.tipo}
               onValueChange={(value: CouponDiscountType) =>
-                setFormData({ ...formData, tipo: value })
+                setFormData({
+                  ...formData,
+                  tipo: value,
+                  desconto: value === "frete_gratis"
+                    ? ""
+                    : value === "fixo"
+                    ? formatDecimalAsCurrency(formData.desconto)
+                    : formData.desconto.replace(/[^\d,.]/g, ""),
+                })
               }
             >
               <SelectTrigger>
@@ -147,14 +185,19 @@ export function CupomEditModal({
             </Label>
             <Input
               id="desconto"
-              type={formData.tipo === "frete_gratis" ? "text" : "number"}
-              step={formData.tipo === "frete_gratis" ? undefined : "0.01"}
+              type="text"
+              inputMode={formData.tipo === "percentual" ? "decimal" : "numeric"}
               value={formData.tipo === "frete_gratis" ? "Frete Grátis" : formData.desconto}
               disabled={formData.tipo === "frete_gratis"}
               onChange={(e) =>
-                setFormData({ ...formData, desconto: e.target.value })
+                setFormData({
+                  ...formData,
+                  desconto: formData.tipo === "fixo"
+                    ? formatCurrencyInput(e.target.value)
+                    : e.target.value.replace(/[^\d,.]/g, ""),
+                })
               }
-              placeholder={formData.tipo === "percentual" ? "Ex: 10" : "Ex: 15.00"}
+              placeholder={formData.tipo === "percentual" ? "Ex: 10" : "R$ 0,00"}
             />
           </div>
 
@@ -162,13 +205,13 @@ export function CupomEditModal({
             <Label htmlFor="minimo">Valor Mínimo de Compra (R$)</Label>
             <Input
               id="minimo"
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="numeric"
               value={formData.minimo}
               onChange={(e) =>
-                setFormData({ ...formData, minimo: e.target.value })
+                setFormData({ ...formData, minimo: formatCurrencyInput(e.target.value) })
               }
-              placeholder="Ex: 50.00"
+              placeholder="R$ 0,00"
             />
           </div>
 
