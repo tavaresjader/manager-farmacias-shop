@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
 import { cn } from "@/lib/utils";
@@ -38,71 +39,327 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, LineChart, Line, CartesianGrid } from "recharts";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
+interface ReportMetricApi {
+  value?: number;
+  percentual?: number;
+  percentualType?: string | null;
+  Value?: number;
+  Percentual?: number;
+  PercentualType?: string | null;
+}
 
-// Mock data for daily sales chart
-const dailySalesData = [
-  { day: "Seg", vendas: 4200 },
-  { day: "Ter", vendas: 3800 },
-  { day: "Qua", vendas: 5100 },
-  { day: "Qui", vendas: 4600 },
-  { day: "Sex", vendas: 6200 },
-  { day: "Sáb", vendas: 7800 },
-  { day: "Dom", vendas: 3200 },
-];
+interface ReportSummaryApi {
+  revenue?: ReportMetricApi | number;
+  orders?: ReportMetricApi | number;
+  cancellations?: ReportMetricApi | number;
+  averageTicket?: ReportMetricApi | number;
+  conversionRate?: ReportMetricApi | number;
+  customers?: ReportMetricApi | number;
+  Revenue?: ReportMetricApi | number;
+  Orders?: ReportMetricApi | number;
+  Cancellations?: ReportMetricApi | number;
+  AverageTicket?: ReportMetricApi | number;
+  ConversionRate?: ReportMetricApi | number;
+  Customers?: ReportMetricApi | number;
+}
 
-// Mock data for hourly sales chart
-const hourlySalesData = [
-  { hora: "08h", vendas: 450 },
-  { hora: "09h", vendas: 780 },
-  { hora: "10h", vendas: 1200 },
-  { hora: "11h", vendas: 1450 },
-  { hora: "12h", vendas: 980 },
-  { hora: "13h", vendas: 650 },
-  { hora: "14h", vendas: 890 },
-  { hora: "15h", vendas: 1100 },
-  { hora: "16h", vendas: 1350 },
-  { hora: "17h", vendas: 1680 },
-  { hora: "18h", vendas: 1950 },
-  { hora: "19h", vendas: 1420 },
-  { hora: "20h", vendas: 980 },
-  { hora: "21h", vendas: 520 },
-];
+interface ReportChartPointApi {
+  label?: string | null;
+  day?: string | null;
+  date?: string | null;
+  hour?: string | null;
+  value?: number;
+  sales?: number;
+  amount?: number;
+  revenue?: number;
+  vendas?: number;
+  Label?: string | null;
+  Day?: string | null;
+  Date?: string | null;
+  Hour?: string | null;
+  Value?: number;
+  Sales?: number;
+  Amount?: number;
+  Revenue?: number;
+  Vendas?: number;
+}
 
-const dailyChartConfig = {
+interface ReportProductApi {
+  name?: string | null;
+  productName?: string | null;
+  quantity?: number;
+  qty?: number;
+  searches?: number;
+  count?: number;
+  value?: number;
+  Name?: string | null;
+  ProductName?: string | null;
+  Quantity?: number;
+  Qty?: number;
+  Searches?: number;
+  Count?: number;
+  Value?: number;
+}
+
+interface ReportsResponse {
+  summary?: ReportSummaryApi;
+  dailySales?: ReportChartPointApi[];
+  salesByDay?: ReportChartPointApi[];
+  hourlySales?: ReportChartPointApi[];
+  salesByHour?: ReportChartPointApi[];
+  topPurchasedProducts?: ReportProductApi[];
+  topProducts?: ReportProductApi[];
+  topUnavailableProducts?: ReportProductApi[];
+  topVisitedOutOfStockProducts?: ReportProductApi[];
+  Summary?: ReportSummaryApi;
+  DailySales?: ReportChartPointApi[];
+  SalesByDay?: ReportChartPointApi[];
+  HourlySales?: ReportChartPointApi[];
+  SalesByHour?: ReportChartPointApi[];
+  TopPurchasedProducts?: ReportProductApi[];
+  TopProducts?: ReportProductApi[];
+  TopUnavailableProducts?: ReportProductApi[];
+  TopVisitedOutOfStockProducts?: ReportProductApi[];
+}
+
+interface ReportsEnvelope {
+  data?: ReportsResponse;
+  report?: ReportsResponse;
+  result?: ReportsResponse;
+  items?: ReportsResponse[];
+  results?: ReportsResponse[];
+  Data?: ReportsResponse;
+  Report?: ReportsResponse;
+  Result?: ReportsResponse;
+  Items?: ReportsResponse[];
+  Results?: ReportsResponse[];
+}
+
+interface ChartPoint {
+  label: string;
+  vendas: number;
+}
+
+interface ProductRanking {
+  name: string;
+  value: number;
+}
+
+const chartConfig = {
   vendas: {
     label: "Vendas",
     color: "hsl(var(--primary))",
   },
 };
 
-const hourlyChartConfig = {
-  vendas: {
-    label: "Vendas",
-    color: "hsl(var(--primary))",
-  },
+const emptyMetric = {
+  value: 0,
+  percentual: 0,
+  percentualType: "neutral",
 };
 
-const unidadeOptions = [
-  { value: "todas", label: "Todas as unidades" },
-  { value: "matriz", label: "Matriz" },
-  { value: "filial-1", label: "Filial 1" },
-  { value: "filial-2", label: "Filial 2" },
-  { value: "filial-3", label: "Filial 3" },
-];
+const resolveReport = (payload: ReportsResponse | ReportsResponse[] | ReportsEnvelope | null): ReportsResponse | null => {
+  if (!payload) return null;
+  if (Array.isArray(payload)) return payload[0] ?? null;
+
+  const envelope = payload as ReportsEnvelope;
+  return (
+    envelope.data ??
+    envelope.Data ??
+    envelope.report ??
+    envelope.Report ??
+    envelope.result ??
+    envelope.Result ??
+    envelope.items?.[0] ??
+    envelope.Items?.[0] ??
+    envelope.results?.[0] ??
+    envelope.Results?.[0] ??
+    (payload as ReportsResponse)
+  );
+};
+
+const toDateTimeParam = (date: Date, endOfDay = false) => {
+  const value = new Date(date);
+  if (endOfDay) {
+    value.setHours(23, 59, 59, 999);
+  } else {
+    value.setHours(0, 0, 0, 0);
+  }
+  return value.toISOString();
+};
+
+const formatCurrency = (value: number) =>
+  value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+const formatNumber = (value: number) => value.toLocaleString("pt-BR");
+
+const formatPercent = (value: number) =>
+  `${value.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
+
+const normalizeText = (value?: string | null) =>
+  value
+    ?.replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    ?.normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "") ?? "";
+
+const resolveChangeType = (type?: string | null, percentual = 0): "positive" | "negative" | "neutral" => {
+  const normalizedType = normalizeText(type);
+  if (["positive", "positivo", "increase", "up"].includes(normalizedType)) return "positive";
+  if (["negative", "negativo", "decrease", "down"].includes(normalizedType)) return "negative";
+  if (percentual > 0) return "positive";
+  if (percentual < 0) return "negative";
+  return "neutral";
+};
+
+const resolveMetric = (metric?: ReportMetricApi | number) => {
+  if (typeof metric === "number") {
+    return { ...emptyMetric, value: metric };
+  }
+
+  return {
+    value: metric?.value ?? metric?.Value ?? emptyMetric.value,
+    percentual: metric?.percentual ?? metric?.Percentual ?? emptyMetric.percentual,
+    percentualType: metric?.percentualType ?? metric?.PercentualType ?? emptyMetric.percentualType,
+  };
+};
+
+const formatChartLabel = (point: ReportChartPointApi, fallback: string) => {
+  const label = point.label ?? point.Label ?? point.day ?? point.Day ?? point.hour ?? point.Hour;
+  if (label) return label;
+
+  const dateValue = point.date ?? point.Date;
+  if (dateValue) {
+    const date = new Date(dateValue);
+    if (!Number.isNaN(date.getTime())) {
+      return format(date, "dd/MM", { locale: ptBR });
+    }
+  }
+
+  return fallback;
+};
+
+const toChartPoint = (point: ReportChartPointApi, index: number): ChartPoint => ({
+  label: formatChartLabel(point, String(index + 1)),
+  vendas: point.vendas ?? point.Vendas ?? point.value ?? point.Value ?? point.sales ?? point.Sales ?? point.amount ?? point.Amount ?? point.revenue ?? point.Revenue ?? 0,
+});
+
+const toProductRanking = (product: ReportProductApi): ProductRanking => ({
+  name: (product.name ?? product.Name ?? product.productName ?? product.ProductName)?.trim() || "Produto não informado",
+  value: product.quantity ?? product.Quantity ?? product.qty ?? product.Qty ?? product.searches ?? product.Searches ?? product.count ?? product.Count ?? product.value ?? product.Value ?? 0,
+});
+
+const getDailySales = (report: ReportsResponse | null) =>
+  (report?.dailySales ?? report?.DailySales ?? report?.salesByDay ?? report?.SalesByDay ?? []).map(toChartPoint);
+
+const getHourlySales = (report: ReportsResponse | null) =>
+  (report?.hourlySales ?? report?.HourlySales ?? report?.salesByHour ?? report?.SalesByHour ?? []).map(toChartPoint);
+
+const getTopPurchasedProducts = (report: ReportsResponse | null) =>
+  (report?.topPurchasedProducts ?? report?.TopPurchasedProducts ?? report?.topProducts ?? report?.TopProducts ?? [])
+    .map(toProductRanking)
+    .slice(0, 10);
+
+const getTopUnavailableProducts = (report: ReportsResponse | null) =>
+  (report?.topUnavailableProducts ??
+    report?.TopUnavailableProducts ??
+    report?.topVisitedOutOfStockProducts ??
+    report?.TopVisitedOutOfStockProducts ??
+    [])
+    .map(toProductRanking)
+    .slice(0, 10);
+
+const RankingEmptyState = ({ label }: { label: string }) => (
+  <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+    {label}
+  </div>
+);
 
 const Relatorios = () => {
   usePageTitle("Relatórios");
   const isLoading = usePageLoading();
+  const { session } = useAuth();
 
   const [unidade, setUnidade] = useState<string>("todas");
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
     new Date(new Date().setDate(new Date().getDate() - 30))
   );
   const [dateTo, setDateTo] = useState<Date | undefined>(new Date());
+  const [report, setReport] = useState<ReportsResponse | null>(null);
+  const [loadingReport, setLoadingReport] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const unidadeOptions = useMemo(
+    () => [
+      { value: "todas", label: "Todas as unidades" },
+      ...(session?.merchants?.map((merchant) => ({
+        value: merchant.id,
+        label: merchant.name ?? "Unidade sem nome",
+      })) ?? []),
+    ],
+    [session?.merchants],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchReport = async () => {
+      setLoadingReport(true);
+      setReportError(null);
+
+      const params: Record<string, string | number | boolean> = {};
+      if (unidade !== "todas") params.merchantId = unidade;
+      if (dateFrom) params.startAt = toDateTimeParam(dateFrom);
+      if (dateTo) params.endAt = toDateTimeParam(dateTo, true);
+
+      const response = await managerBackendBff.get<ReportsResponse | ReportsResponse[] | ReportsEnvelope>("/v1/reports", { params });
+
+      if (cancelled) return;
+
+      if (response.data) {
+        setReport(resolveReport(response.data));
+      } else {
+        setReport(null);
+        const message = response.error ?? "Tente novamente.";
+        setReportError(message);
+        toast.error(`Erro ao carregar relatórios: ${message}`);
+      }
+
+      setLoadingReport(false);
+    };
+
+    fetchReport();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dateFrom, dateTo, unidade, reloadKey]);
 
   const unidadeLabel = unidadeOptions.find((o) => o.value === unidade)?.label || unidade;
+  const summary = report?.summary ?? report?.Summary;
+  const metrics = {
+    revenue: resolveMetric(summary?.revenue ?? summary?.Revenue),
+    orders: resolveMetric(summary?.orders ?? summary?.Orders),
+    cancellations: resolveMetric(summary?.cancellations ?? summary?.Cancellations),
+    averageTicket: resolveMetric(summary?.averageTicket ?? summary?.AverageTicket),
+    conversionRate: resolveMetric(summary?.conversionRate ?? summary?.ConversionRate),
+    customers: resolveMetric(summary?.customers ?? summary?.Customers),
+  };
+  const dailySalesData = getDailySales(report);
+  const hourlySalesData = getHourlySales(report);
+  const topPurchasedProducts = getTopPurchasedProducts(report);
+  const topUnavailableProducts = getTopUnavailableProducts(report);
 
   const handlePrint = () => {
     const params = new URLSearchParams({ unidade: unidadeLabel });
@@ -115,7 +372,6 @@ const Relatorios = () => {
     );
   };
 
-
   if (isLoading) {
     return (
       <MainLayout>
@@ -124,15 +380,14 @@ const Relatorios = () => {
     );
   }
 
-  const pageContent = (
-    <>
+  return (
+    <MainLayout>
       <PageHeader
         title="Relatórios"
         breadcrumbs={[]}
       />
 
       <div className="space-y-6">
-        {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm font-medium text-muted-foreground">Unidade:</span>
           <Select value={unidade} onValueChange={setUnidade}>
@@ -195,9 +450,9 @@ const Relatorios = () => {
               />
             </PopoverContent>
           </Popover>
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={() => setReloadKey((current) => current + 1)} disabled={loadingReport}>
             <Filter className="h-4 w-4" />
-            Filtrar
+            {loadingReport ? "Filtrando..." : "Filtrar"}
           </Button>
           <Button variant="outline" className="gap-2" onClick={handlePrint}>
             <Printer className="h-4 w-4" />
@@ -205,206 +460,209 @@ const Relatorios = () => {
           </Button>
         </div>
 
+        {reportError && (
+          <Alert variant="destructive">
+            <AlertDescription>
+              Não foi possível carregar os relatórios. {reportError}
+            </AlertDescription>
+          </Alert>
+        )}
 
-
-
-        {/* Overview Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4", loadingReport && "opacity-60")}>
           <MetricCard
             title="Faturamento"
-            value="R$ 175.000"
-            change={{ value: 15, type: "positive" }}
+            value={formatCurrency(metrics.revenue.value)}
+            change={{
+              value: metrics.revenue.percentual,
+              type: resolveChangeType(metrics.revenue.percentualType, metrics.revenue.percentual),
+            }}
             icon={DollarSign}
           />
           <MetricCard
             title="Pedidos"
-            value="1.432"
-            change={{ value: 18, type: "positive" }}
+            value={formatNumber(metrics.orders.value)}
+            change={{
+              value: metrics.orders.percentual,
+              type: resolveChangeType(metrics.orders.percentualType, metrics.orders.percentual),
+            }}
             icon={BarChart3}
           />
           <MetricCard
             title="Cancelamentos"
-            value="24"
-            change={{ value: 8, type: "negative" }}
+            value={formatNumber(metrics.cancellations.value)}
+            change={{
+              value: metrics.cancellations.percentual,
+              type: resolveChangeType(metrics.cancellations.percentualType, metrics.cancellations.percentual),
+            }}
             icon={Megaphone}
           />
           <MetricCard
             title="Ticket Médio"
-            value="R$ 89,50"
-            change={{ value: 12, type: "positive" }}
+            value={formatCurrency(metrics.averageTicket.value)}
+            change={{
+              value: metrics.averageTicket.percentual,
+              type: resolveChangeType(metrics.averageTicket.percentualType, metrics.averageTicket.percentual),
+            }}
             icon={Target}
           />
           <MetricCard
             title="Taxa de Conversão"
-            value="4.2%"
-            change={{ value: 0.5, type: "positive" }}
+            value={formatPercent(metrics.conversionRate.value)}
+            change={{
+              value: metrics.conversionRate.percentual,
+              type: resolveChangeType(metrics.conversionRate.percentualType, metrics.conversionRate.percentual),
+            }}
             icon={TrendingUp}
           />
           <MetricCard
             title="Clientes"
-            value="2.847"
-            change={{ value: 23, type: "positive" }}
+            value={formatNumber(metrics.customers.value)}
+            change={{
+              value: metrics.customers.percentual,
+              type: resolveChangeType(metrics.customers.percentualType, metrics.customers.percentual),
+            }}
             icon={Users}
           />
         </div>
 
-        {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
               Vendas (Diária)
             </h3>
-            <ChartContainer config={dailyChartConfig} className="h-64 w-full">
-              <BarChart data={dailySalesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis 
-                  dataKey="day" 
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                  axisLine={false}
-                  className="fill-muted-foreground"
-                />
-                <YAxis 
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `R$${(value / 1000).toFixed(0)}k`}
-                  className="fill-muted-foreground"
-                />
-                <ChartTooltip 
-                  content={<ChartTooltipContent />}
-                  formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR')}`, 'Vendas']}
-                />
-                <Bar 
-                  dataKey="vendas" 
-                  fill="hsl(var(--primary))" 
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ChartContainer>
+            {dailySalesData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="h-64 w-full">
+                <BarChart data={dailySalesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    className="fill-muted-foreground"
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `R$${(value / 1000).toFixed(0)}k`}
+                    className="fill-muted-foreground"
+                  />
+                  <ChartTooltip
+                    content={<ChartTooltipContent />}
+                    formatter={(value: number) => [formatCurrency(value), "Vendas"]}
+                  />
+                  <Bar
+                    dataKey="vendas"
+                    fill="hsl(var(--primary))"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <RankingEmptyState label={loadingReport ? "Carregando vendas diarias..." : "Nenhuma venda diaria encontrada."} />
+            )}
           </div>
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
               Vendas (Horário)
             </h3>
-            <ChartContainer config={hourlyChartConfig} className="h-64 w-full">
-              <LineChart data={hourlySalesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis 
-                  dataKey="hora" 
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                  axisLine={false}
-                  className="fill-muted-foreground"
-                />
-                <YAxis 
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `R$${value}`}
-                  className="fill-muted-foreground"
-                />
-                <ChartTooltip 
-                  content={<ChartTooltipContent />}
-                  formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR')}`, 'Vendas']}
-                />
-                <Line 
-                  type="monotone"
-                  dataKey="vendas" 
-                  stroke="hsl(var(--primary))" 
-                  strokeWidth={2}
-                  dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ChartContainer>
+            {hourlySalesData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="h-64 w-full">
+                <LineChart data={hourlySalesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    className="fill-muted-foreground"
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `R$${value}`}
+                    className="fill-muted-foreground"
+                  />
+                  <ChartTooltip
+                    content={<ChartTooltipContent />}
+                    formatter={(value: number) => [formatCurrency(value), "Vendas"]}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="vendas"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2}
+                    dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ChartContainer>
+            ) : (
+              <RankingEmptyState label={loadingReport ? "Carregando vendas por horario..." : "Nenhuma venda por horario encontrada."} />
+            )}
           </div>
         </div>
 
-        {/* Top Products */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Top 10 Produtos Mais Comprados */}
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
               Top 10 Produtos Mais Comprados
             </h3>
-            <div className="space-y-2">
-              {[
-                { name: "Dipirona 500mg", qty: 1250 },
-                { name: "Paracetamol 750mg", qty: 1180 },
-                { name: "Ibuprofeno 400mg", qty: 985 },
-                { name: "Vitamina C 1g", qty: 870 },
-                { name: "Omeprazol 20mg", qty: 756 },
-                { name: "Loratadina 10mg", qty: 680 },
-                { name: "Dorflex", qty: 645 },
-                { name: "Buscopan Composto", qty: 590 },
-                { name: "Neosaldina", qty: 520 },
-                { name: "Rivotril 2mg", qty: 485 },
-              ].map((product, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2 bg-muted/30 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
-                      {index + 1}
-                    </span>
-                    <span className="font-medium text-foreground text-sm">
-                      {product.name}
-                    </span>
+            {topPurchasedProducts.length > 0 ? (
+              <div className="space-y-2">
+                {topPurchasedProducts.map((product, index) => (
+                  <div
+                    key={`${product.name}-${index}`}
+                    className="flex items-center justify-between p-2 bg-muted/30 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary shrink-0">
+                        {index + 1}
+                      </span>
+                      <span className="font-medium text-foreground text-sm truncate">
+                        {product.name}
+                      </span>
+                    </div>
+                    <span className="text-success font-semibold text-sm shrink-0">{product.value} un</span>
                   </div>
-                  <span className="text-success font-semibold text-sm">{product.qty} un</span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <RankingEmptyState label={loadingReport ? "Carregando produtos..." : "Nenhum produto comprado encontrado."} />
+            )}
           </div>
 
-          {/* Top 10 Produtos Mais Pesquisados Sem Disponibilidade */}
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
               Top 10 Produtos Visitados Sem Estoque
             </h3>
-            <div className="space-y-2">
-              {[
-                { name: "Ozempic 1mg", searches: 890 },
-                { name: "Wegovy 2.4mg", searches: 756 },
-                { name: "Mounjaro 5mg", searches: 680 },
-                { name: "Saxenda 6mg/ml", searches: 540 },
-                { name: "Rybelsus 14mg", searches: 485 },
-                { name: "Victoza 6mg/ml", searches: 420 },
-                { name: "Trulicity 1.5mg", searches: 380 },
-                { name: "Jardiance 25mg", searches: 320 },
-                { name: "Forxiga 10mg", searches: 290 },
-                { name: "Glifage XR 500mg", searches: 265 },
-              ].map((product, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2 bg-muted/30 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-full bg-destructive/10 flex items-center justify-center text-xs font-medium text-destructive">
-                      {index + 1}
-                    </span>
-                    <span className="font-medium text-foreground text-sm">
-                      {product.name}
-                    </span>
+            {topUnavailableProducts.length > 0 ? (
+              <div className="space-y-2">
+                {topUnavailableProducts.map((product, index) => (
+                  <div
+                    key={`${product.name}-${index}`}
+                    className="flex items-center justify-between p-2 bg-muted/30 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="w-6 h-6 rounded-full bg-destructive/10 flex items-center justify-center text-xs font-medium text-destructive shrink-0">
+                        {index + 1}
+                      </span>
+                      <span className="font-medium text-foreground text-sm truncate">
+                        {product.name}
+                      </span>
+                    </div>
+                    <span className="text-muted-foreground font-semibold text-sm shrink-0">{product.value} buscas</span>
                   </div>
-                  <span className="text-muted-foreground font-semibold text-sm">{product.searches} buscas</span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <RankingEmptyState label={loadingReport ? "Carregando buscas..." : "Nenhum produto sem estoque encontrado."} />
+            )}
           </div>
         </div>
       </div>
-    </>
-  );
-
-
-
-
-  return (
-    <MainLayout>
-      {pageContent}
     </MainLayout>
   );
 };
