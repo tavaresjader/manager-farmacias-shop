@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Save, Trash2, Upload } from "lucide-react";
+import { Loader2, Save, Trash2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Banner {
@@ -35,15 +35,32 @@ interface Banner {
   status: "ativo" | "inativo";
   imagem: string;
   posicao: number;
+  url: string;
+  fileName: string;
+  fileBase64?: string;
+  uploadFileName?: string;
 }
 
 interface BannerDetailsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   banner: Banner | null;
-  onSave?: (banner: Banner) => void;
-  onDelete?: (bannerId: string) => void;
+  onSave?: (banner: Banner) => Promise<boolean> | boolean;
+  onDelete?: (bannerId: string) => Promise<boolean> | boolean;
+  loading?: boolean;
+  saving?: boolean;
+  deleting?: boolean;
 }
+
+const emptyBanner: Banner = {
+  id: "",
+  nome: "",
+  status: "ativo",
+  imagem: "",
+  posicao: 0,
+  url: "",
+  fileName: "",
+};
 
 export function BannerDetailsModal({
   open,
@@ -51,45 +68,67 @@ export function BannerDetailsModal({
   banner,
   onSave,
   onDelete,
+  loading = false,
+  saving = false,
+  deleting = false,
 }: BannerDetailsModalProps) {
   const { toast } = useToast();
   const [editedBanner, setEditedBanner] = useState<Banner | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isCreate = !banner;
 
   useEffect(() => {
-    if (banner) {
-      setEditedBanner({ ...banner });
+    if (open) {
+      setEditedBanner(banner ? { ...banner } : { ...emptyBanner });
       setPreviewImage(null);
     }
-  }, [banner]);
+  }, [banner, open]);
 
-  if (!banner || !editedBanner) return null;
+  if (!editedBanner) return null;
 
-  const handleSave = () => {
+  const validateBanner = (): boolean => {
+    if (!editedBanner.nome.trim()) {
+      toast({
+        description: "Informe o nome do banner.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (isCreate && !editedBanner.fileBase64) {
+      toast({
+        description: "Selecione a imagem do banner.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSave = async () => {
+    if (!validateBanner()) return;
+
     if (onSave) {
-      onSave({
+      const saved = await onSave({
         ...editedBanner,
         imagem: previewImage || editedBanner.imagem,
       });
+      if (!saved) return;
     }
-    toast({
-      description: "Banner atualizado com sucesso",
-    });
+
     onOpenChange(false);
   };
 
-  const handleDelete = () => {
-    if (onDelete) {
-      onDelete(banner.id);
+  const handleDelete = async () => {
+    if (onDelete && banner) {
+      const deleted = await onDelete(banner.id);
+      if (!deleted) return;
     }
-    toast({
-      description: "Banner excluído com sucesso",
-      variant: "destructive",
-    });
+
     setDeleteConfirmOpen(false);
-    onOpenChange(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +136,19 @@ export function BannerDetailsModal({
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
+        const fileBase64 = reader.result as string;
+        setPreviewImage(fileBase64);
+        setEditedBanner((currentBanner) =>
+          currentBanner
+            ? {
+                ...currentBanner,
+                imagem: fileBase64,
+                fileBase64,
+                uploadFileName: file.name,
+                fileName: currentBanner.fileName || file.name,
+              }
+            : currentBanner,
+        );
       };
       reader.readAsDataURL(file);
     }
@@ -112,9 +163,17 @@ export function BannerDetailsModal({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Detalhes do Banner</DialogTitle>
+            <DialogTitle>{isCreate ? "Adicionar banner" : "Detalhes do Banner"}</DialogTitle>
           </DialogHeader>
 
+          {loading ? (
+            <div className="flex h-64 items-center justify-center text-muted-foreground">
+              <div className="inline-flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Carregando banner...
+              </div>
+            </div>
+          ) : (
           <div className="space-y-4 py-4">
             {/* Nome */}
             <div className="space-y-2">
@@ -126,6 +185,19 @@ export function BannerDetailsModal({
                   setEditedBanner({ ...editedBanner, nome: e.target.value })
                 }
                 placeholder="Nome do banner"
+              />
+            </div>
+
+            {/* URL */}
+            <div className="space-y-2">
+              <Label htmlFor="banner-url">URL de destino</Label>
+              <Input
+                id="banner-url"
+                value={editedBanner.url}
+                onChange={(e) =>
+                  setEditedBanner({ ...editedBanner, url: e.target.value })
+                }
+                placeholder="https://exemplo.com/promocao"
               />
             </div>
 
@@ -170,29 +242,20 @@ export function BannerDetailsModal({
               </Select>
             </div>
 
-            {/* Link da imagem */}
-            <div className="space-y-2">
-              <Label htmlFor="banner-imagem">Link da imagem</Label>
-              <Input
-                id="banner-imagem"
-                value={editedBanner.imagem}
-                onChange={(e) =>
-                  setEditedBanner({ ...editedBanner, imagem: e.target.value })
-                }
-                placeholder="https://exemplo.com/banner.jpg"
-              />
-            </div>
-
             {/* Preview e Upload */}
             <div className="space-y-2">
-              <Label>Banner atual</Label>
+              <Label>Imagem do banner</Label>
               <div className="flex items-start gap-4">
-                <div className="border border-border rounded-lg overflow-hidden">
-                  <img
-                    src={previewImage || editedBanner.imagem}
-                    alt={editedBanner.nome}
-                    className="w-32 h-20 object-cover"
-                  />
+                <div className="flex h-20 w-32 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted text-xs text-muted-foreground">
+                  {previewImage || editedBanner.imagem ? (
+                    <img
+                      src={previewImage || editedBanner.imagem}
+                      alt={editedBanner.nome || "Banner"}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    "Sem imagem"
+                  )}
                 </div>
                 <div className="flex-1">
                   <input
@@ -209,27 +272,46 @@ export function BannerDetailsModal({
                     className="w-full"
                   >
                     <Upload className="w-4 h-4 mr-2" />
-                    Substituir imagem
+                    {isCreate ? "Selecionar imagem" : "Substituir imagem"}
                   </Button>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Formatos aceitos: JPG, PNG, WebP
+                    {isCreate
+                      ? "Obrigatório no cadastro. Formatos aceitos: JPG, PNG, WebP"
+                      : "Opcional na edição. Formatos aceitos: JPG, PNG, WebP"}
                   </p>
+                  {editedBanner.uploadFileName && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Arquivo: {editedBanner.uploadFileName}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
           </div>
+          )}
 
-          <DialogFooter className="flex justify-between sm:justify-between">
-            <Button
-              variant="destructive"
-              onClick={() => setDeleteConfirmOpen(true)}
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Excluir
-            </Button>
-            <Button onClick={handleSave}>
-              <Save className="w-4 h-4 mr-2" />
-              Gravar
+          <DialogFooter className={isCreate ? "justify-end" : "flex justify-between sm:justify-between"}>
+            {!isCreate && (
+              <Button
+                variant="destructive"
+                onClick={() => setDeleteConfirmOpen(true)}
+                disabled={loading || saving || deleting}
+              >
+                {deleting ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4 mr-2" />
+                )}
+                Excluir
+              </Button>
+            )}
+            <Button onClick={handleSave} disabled={loading || saving || deleting}>
+              {saving ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4 mr-2" />
+              )}
+              {saving ? "Gravando..." : "Gravar"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -240,7 +322,7 @@ export function BannerDetailsModal({
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir banner</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir o banner "{banner.nome}"? Esta ação não pode
+              Tem certeza que deseja excluir o banner "{banner?.nome}"? Esta ação não pode
               ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
