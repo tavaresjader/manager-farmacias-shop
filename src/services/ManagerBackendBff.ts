@@ -51,6 +51,12 @@ interface ApiResponse<T> {
   status: number;
 }
 
+interface DownloadFileResponse {
+  blob: Blob;
+  fileName: string | null;
+  contentType: string | null;
+}
+
 interface SignInRequest {
   email: string;
   password: string;
@@ -117,6 +123,18 @@ function extractApiErrorMessage(data: unknown, fallback: string): string {
   }
 
   return fallback;
+}
+
+function extractFileNameFromContentDisposition(contentDisposition: string | null): string | null {
+  if (!contentDisposition) return null;
+
+  const utf8FileNameMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8FileNameMatch?.[1]) {
+    return decodeURIComponent(utf8FileNameMatch[1].trim().replace(/^"|"$/g, ""));
+  }
+
+  const fileNameMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
+  return fileNameMatch?.[1]?.trim() ?? null;
 }
 
 export class ManagerBackendBff {
@@ -371,6 +389,54 @@ export class ManagerBackendBff {
 
       return {
         data,
+        error: null,
+        status: response.status,
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: mapRequestError(error),
+        status: 0,
+      };
+    }
+  }
+
+  async download(endpoint: string, options?: RequestOptions): Promise<ApiResponse<DownloadFileResponse>> {
+    try {
+      this.requireAuth();
+
+      const url = this.buildUrl(endpoint, options?.params, options?.baseUrl);
+      const response = await fetchWithTimeout(url, {
+        method: "GET",
+        headers: this.mergeHeaders(options?.headers),
+      });
+
+      if (response.status === 401) {
+        this.removeAuthToken();
+        return {
+          data: null,
+          error: "Sessão expirada. Faça login novamente.",
+          status: response.status,
+        };
+      }
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        const text = data ? null : await response.text().catch(() => "");
+        return {
+          data: null,
+          error: data ? extractApiErrorMessage(data, "Erro ao baixar arquivo") : text || "Erro ao baixar arquivo",
+          status: response.status,
+        };
+      }
+
+      const blob = await response.blob();
+      return {
+        data: {
+          blob,
+          fileName: extractFileNameFromContentDisposition(response.headers.get("content-disposition")),
+          contentType: response.headers.get("content-type"),
+        },
         error: null,
         status: response.status,
       };
