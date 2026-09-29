@@ -1,32 +1,173 @@
-import { useState } from "react";
-import { Upload, ExternalLink, Instagram, Facebook, Youtube, Globe, HelpCircle, Copy, Check } from "lucide-react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Upload, ExternalLink, Instagram, Facebook, Youtube, Globe, HelpCircle, Copy, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
+
+interface Aparencia {
+  logo: string;
+  corPrincipal: string;
+  corSecundaria: string;
+  politicaEnvio: string;
+  politicaPrivacidade: string;
+  instagram: string;
+  facebook: string;
+  youtube: string;
+  dominioPersonalizado: string;
+  urlAtual: string;
+  fileName: string;
+  fileBase64?: string;
+}
+
+interface AppearanceApiResponse {
+  storeUrl?: string | null;
+  url?: string | null;
+  currentUrl?: string | null;
+  domain?: string | null;
+  domainCustom?: string | null;
+  customDomain?: string | null;
+  customizedDomain?: string | null;
+  LogoUrl?: string | null;
+  logoUrl?: string | null;
+  fileUrl?: string | null;
+  fileName?: string | null;
+  primaryColor?: string | null;
+  mainColor?: string | null;
+  headerColor?: string | null;
+  secondaryColor?: string | null;
+  buttonColor?: string | null;
+  iconColor?: string | null;
+  deliveryPolicy?: string | null;
+  shippingPolicy?: string | null;
+  privacyPolicy?: string | null;
+  instagram?: string | null;
+  instagramUrl?: string | null;
+  facebook?: string | null;
+  facebookUrl?: string | null;
+  youtube?: string | null;
+  youtubeUrl?: string | null;
+}
+
+interface AppearancePayload {
+  domainCustom: string | null;
+  fileName?: string;
+  fileBase64?: string;
+  primaryColor: string;
+  secondaryColor: string;
+  instagramUrl: string | null;
+  facebookUrl: string | null;
+  youtubeUrl: string | null;
+  deliveryPolicy: string;
+  privacyPolicy: string;
+}
+
+const DEFAULT_APARENCIA: Aparencia = {
+  logo: "/placeholder.svg",
+  corPrincipal: "#000000",
+  corSecundaria: "#666666",
+  politicaEnvio: "",
+  politicaPrivacidade: "",
+  instagram: "",
+  facebook: "",
+  youtube: "",
+  dominioPersonalizado: "",
+  urlAtual: "https://sua-loja.lovable.app",
+  fileName: "",
+};
+
+function firstString(...values: Array<string | null | undefined>): string {
+  return values.find((value) => typeof value === "string" && value.trim())?.trim() ?? "";
+}
+
+function toAparencia(appearance: AppearanceApiResponse): Aparencia {
+  return {
+    logo: firstString(appearance.LogoUrl, appearance.logoUrl) || DEFAULT_APARENCIA.logo,
+    corPrincipal: firstString(appearance.primaryColor, appearance.mainColor, appearance.headerColor) || DEFAULT_APARENCIA.corPrincipal,
+    corSecundaria:
+      firstString(appearance.secondaryColor, appearance.buttonColor, appearance.iconColor) ||
+      DEFAULT_APARENCIA.corSecundaria,
+    politicaEnvio: firstString(appearance.deliveryPolicy, appearance.shippingPolicy),
+    politicaPrivacidade: firstString(appearance.privacyPolicy),
+    instagram: firstString(appearance.instagramUrl, appearance.instagram),
+    facebook: firstString(appearance.facebookUrl, appearance.facebook),
+    youtube: firstString(appearance.youtubeUrl, appearance.youtube),
+    dominioPersonalizado: firstString(appearance.domainCustom),
+    urlAtual: firstString(appearance.domain) || DEFAULT_APARENCIA.urlAtual,
+    fileName: firstString(appearance.fileName),
+  };
+}
+
+function toAppearancePayload(aparencia: Aparencia): AppearancePayload {
+  const payload: AppearancePayload = {
+    domainCustom: aparencia.dominioPersonalizado.trim() || null,
+    primaryColor: aparencia.corPrincipal,
+    secondaryColor: aparencia.corSecundaria,
+    instagramUrl: aparencia.instagram.trim() || null,
+    facebookUrl: aparencia.facebook.trim() || null,
+    youtubeUrl: aparencia.youtube.trim() || null,
+    deliveryPolicy: aparencia.politicaEnvio,
+    privacyPolicy: aparencia.politicaPrivacidade,
+  };
+
+  if (aparencia.fileBase64) {
+    payload.fileName = aparencia.fileName;
+    payload.fileBase64 = aparencia.fileBase64;
+  }
+
+  return payload;
+}
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
 
 export function AparenciaTab() {
   const { toast } = useToast();
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [copiedDomain, setCopiedDomain] = useState(false);
-  const [aparencia, setAparencia] = useState({
-    logo: "/placeholder.svg",
-    corPrincipal: "#000000",
-    corSecundaria: "#666666",
-    politicaEnvio: "",
-    politicaPrivacidade: "",
-    instagram: "",
-    facebook: "",
-    youtube: "",
-    dominioPersonalizado: "",
-  });
+  const [aparencia, setAparencia] = useState<Aparencia>(DEFAULT_APARENCIA);
+  const [loadingAppearance, setLoadingAppearance] = useState(false);
+  const [savingAppearance, setSavingAppearance] = useState(false);
 
-  const urlAtual = "https://sua-loja.lovable.app";
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadAppearance = async () => {
+      setLoadingAppearance(true);
+      const response = await managerBackendBff.get<AppearanceApiResponse>("/v1/appearance");
+
+      if (cancelled) return;
+
+      if (response.data) {
+        setAparencia(toAparencia(response.data));
+      } else {
+        toast({
+          variant: "destructive",
+          description: `Erro ao carregar aparência: ${response.error ?? "Tente novamente."}`,
+        });
+      }
+
+      setLoadingAppearance(false);
+    };
+
+    loadAppearance();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [toast]);
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(urlAtual);
+    navigator.clipboard.writeText(aparencia.urlAtual);
     setCopiedUrl(true);
     toast({ description: "URL copiada para a área de transferência!" });
     setTimeout(() => setCopiedUrl(false), 2000);
@@ -40,9 +181,61 @@ export function AparenciaTab() {
     setTimeout(() => setCopiedDomain(false), 2000);
   };
 
+  const handleLogoChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const fileBase64 = await readFileAsDataUrl(file);
+      setAparencia((current) => ({
+        ...current,
+        logo: fileBase64,
+        fileName: file.name,
+        fileBase64,
+      }));
+    } catch {
+      toast({
+        variant: "destructive",
+        description: "Não foi possível carregar a imagem selecionada.",
+      });
+    }
+  };
+
+  const handleSaveAppearance = async () => {
+    setSavingAppearance(true);
+    const response = await managerBackendBff.put<AppearanceApiResponse>(
+      "/v1/appearance",
+      toAppearancePayload(aparencia),
+    );
+
+    setSavingAppearance(false);
+
+    if (response.error) {
+      toast({
+        variant: "destructive",
+        description: `Erro ao salvar aparência: ${response.error}`,
+      });
+      return;
+    }
+
+    setAparencia((current) => ({ ...current, fileBase64: undefined }));
+
+    toast({
+      description: "Configurações de aparência salvas com sucesso!",
+    });
+  };
+
   return (
     <div className="bg-card border border-border rounded-lg p-6 h-full flex flex-col overflow-auto">
-      <h2 className="text-lg font-semibold text-foreground mb-6">Aparência</h2>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold text-foreground">Aparência</h2>
+        {loadingAppearance && (
+          <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Carregando aparência...
+          </span>
+        )}
+      </div>
       <form className="flex-1 flex flex-col gap-6">
         {/* Domain Section */}
         <div className="space-y-4">
@@ -57,8 +250,15 @@ export function AparenciaTab() {
               </Label>
 
               <div className="flex gap-2">
-                <Input id="url-atual" type="url" value={urlAtual} readOnly className="flex-1 bg-muted" />
-                <Button type="button" variant="outline" size="icon" onClick={handleCopyUrl}>
+                <Input
+                  id="url-atual"
+                  type="url"
+                  value={aparencia.urlAtual}
+                  readOnly
+                  disabled
+                  className="flex-1 bg-muted"
+                />
+                <Button type="button" variant="outline" size="icon" onClick={handleCopyUrl} disabled={!aparencia.urlAtual}>
                   {copiedUrl ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
@@ -75,6 +275,7 @@ export function AparenciaTab() {
                   onChange={(e) => setAparencia({ ...aparencia, dominioPersonalizado: e.target.value })}
                   placeholder="www.sua-loja.com.br"
                   className="flex-1"
+                  disabled={loadingAppearance || savingAppearance}
                 />
                 <Button
                   type="button"
@@ -100,13 +301,8 @@ export function AparenciaTab() {
                   type="file"
                   accept="image/*"
                   className="flex-1"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const url = URL.createObjectURL(file);
-                      setAparencia({ ...aparencia, logo: url });
-                    }
-                  }}
+                  onChange={handleLogoChange}
+                  disabled={loadingAppearance || savingAppearance}
                 />
                 <Button type="button" variant="outline" size="icon">
                   <Upload className="w-4 h-4" />
@@ -139,6 +335,7 @@ export function AparenciaTab() {
                 value={aparencia.corPrincipal}
                 onChange={(e) => setAparencia({ ...aparencia, corPrincipal: e.target.value })}
                 className="w-12 h-10 p-1 cursor-pointer"
+                disabled={loadingAppearance || savingAppearance}
               />
               <Input
                 type="text"
@@ -146,6 +343,7 @@ export function AparenciaTab() {
                 onChange={(e) => setAparencia({ ...aparencia, corPrincipal: e.target.value })}
                 placeholder="#000000"
                 className="flex-1"
+                disabled={loadingAppearance || savingAppearance}
               />
             </div>
           </div>
@@ -158,6 +356,7 @@ export function AparenciaTab() {
                 value={aparencia.corSecundaria}
                 onChange={(e) => setAparencia({ ...aparencia, corSecundaria: e.target.value })}
                 className="w-12 h-10 p-1 cursor-pointer"
+                disabled={loadingAppearance || savingAppearance}
               />
               <Input
                 type="text"
@@ -165,6 +364,7 @@ export function AparenciaTab() {
                 onChange={(e) => setAparencia({ ...aparencia, corSecundaria: e.target.value })}
                 placeholder="#666666"
                 className="flex-1"
+                disabled={loadingAppearance || savingAppearance}
               />
             </div>
           </div>
@@ -185,6 +385,7 @@ export function AparenciaTab() {
                 value={aparencia.instagram}
                 onChange={(e) => setAparencia({ ...aparencia, instagram: e.target.value })}
                 placeholder="https://instagram.com/sua-loja"
+                disabled={loadingAppearance || savingAppearance}
               />
             </div>
             <div className="space-y-2">
@@ -198,6 +399,7 @@ export function AparenciaTab() {
                 value={aparencia.facebook}
                 onChange={(e) => setAparencia({ ...aparencia, facebook: e.target.value })}
                 placeholder="https://facebook.com/sua-loja"
+                disabled={loadingAppearance || savingAppearance}
               />
             </div>
             <div className="space-y-2">
@@ -211,6 +413,7 @@ export function AparenciaTab() {
                 value={aparencia.youtube}
                 onChange={(e) => setAparencia({ ...aparencia, youtube: e.target.value })}
                 placeholder="https://youtube.com/@sua-loja"
+                disabled={loadingAppearance || savingAppearance}
               />
             </div>
           </div>
@@ -225,6 +428,7 @@ export function AparenciaTab() {
               onChange={(e) => setAparencia({ ...aparencia, politicaEnvio: e.target.value })}
               placeholder="Descreva a política de entrega da sua loja..."
               className="flex-1 min-h-[150px] resize-none"
+              disabled={loadingAppearance || savingAppearance}
             />
           </div>
 
@@ -236,6 +440,7 @@ export function AparenciaTab() {
               onChange={(e) => setAparencia({ ...aparencia, politicaPrivacidade: e.target.value })}
               placeholder="Descreva a política de privacidade da sua loja..."
               className="flex-1 min-h-[150px] resize-none"
+              disabled={loadingAppearance || savingAppearance}
             />
           </div>
         </div>
@@ -243,12 +448,10 @@ export function AparenciaTab() {
         <div className="flex justify-end">
           <Button
             type="button"
-            onClick={() => {
-              toast({
-                description: "Configurações de aparência salvas com sucesso!",
-              });
-            }}
+            onClick={handleSaveAppearance}
+            disabled={loadingAppearance || savingAppearance}
           >
+            {savingAppearance && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Salvar
           </Button>
         </div>
