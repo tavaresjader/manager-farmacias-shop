@@ -5,16 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { EmployeeListApiResponse } from "@/types/employee";
 import { toast } from "sonner";
-
-interface Employee {
-  id: string;
-  name: string;
-  email: string;
-  active: boolean;
-  master: boolean;
-  merchants?: string[];
-}
 
 const colaboradorStatusConfig: Record<string, { label: string; variant: "default" | "secondary" }> = {
   ativo: { label: "Ativo", variant: "default" },
@@ -23,7 +15,7 @@ const colaboradorStatusConfig: Record<string, { label: string; variant: "default
 
 export function ColaboradoresTab() {
   const navigate = useNavigate();
-  const [colaboradores, setColaboradores] = useState<Employee[]>([]);
+  const [colaboradores, setColaboradores] = useState<EmployeeListApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -33,10 +25,10 @@ export function ColaboradoresTab() {
   const fetchColaboradores = async () => {
     setIsLoading(true);
     try {
-      const response = await managerBackendBff.get<Employee[]>("/v1/employees");
+      const response = await managerBackendBff.get<EmployeeListApiResponse[]>("/v1/Employees");
 
       if (response.error) {
-        toast.error("Erro ao carregar colaboradores.");
+        toast.error(`Erro ao carregar colaboradores: ${response.error}`);
         console.error(response.error);
       } else if (response.data) {
         setColaboradores(response.data);

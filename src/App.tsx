@@ -61,18 +61,18 @@ const App = () => (
               <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
               <Route path="/relatorios/impressao" element={<ProtectedRoute><RelatorioImpressao /></ProtectedRoute>} />
 
-              <Route path="/configuracoes" element={<Navigate to="/configuracoes/unidades" replace />} />
-              <Route path="/configuracoes/unidades" element={<ProtectedRoute><ConfiguracoesUnidades /></ProtectedRoute>} />
-              <Route path="/configuracoes/banners" element={<ProtectedRoute><ConfiguracoesBanners /></ProtectedRoute>} />
-              <Route path="/configuracoes/aparencia" element={<ProtectedRoute><ConfiguracoesAparencia /></ProtectedRoute>} />
-              <Route path="/configuracoes/pagamentos" element={<ProtectedRoute><ConfiguracoesPagamentos /></ProtectedRoute>} />
-              <Route path="/configuracoes/conta" element={<ProtectedRoute><ConfiguracoesConta /></ProtectedRoute>} />
-              <Route path="/configuracoes/faturas" element={<ProtectedRoute><ConfiguracoesFaturas /></ProtectedRoute>} />
-              <Route path="/configuracoes/integracoes" element={<ProtectedRoute><ConfiguracoesIntegracoes /></ProtectedRoute>} />
-              <Route path="/configuracoes/colaboradores" element={<ProtectedRoute><ConfiguracoesColaboradores /></ProtectedRoute>} />
-              <Route path="/configuracoes/unidades/:id" element={<ProtectedRoute><UnidadeDetalhe /></ProtectedRoute>} />
-              <Route path="/configuracoes/pagamento-online" element={<ProtectedRoute><PagamentoOnlineConfig /></ProtectedRoute>} />
-               <Route path="/configuracoes/colaboradores/:id" element={<ProtectedRoute><ColaboradorDetalhe /></ProtectedRoute>} />
+              <Route path="/configuracoes" element={<ProtectedRoute requireMaster><Navigate to="/configuracoes/unidades" replace /></ProtectedRoute>} />
+              <Route path="/configuracoes/unidades" element={<ProtectedRoute requireMaster><ConfiguracoesUnidades /></ProtectedRoute>} />
+              <Route path="/configuracoes/banners" element={<ProtectedRoute requireMaster><ConfiguracoesBanners /></ProtectedRoute>} />
+              <Route path="/configuracoes/aparencia" element={<ProtectedRoute requireMaster><ConfiguracoesAparencia /></ProtectedRoute>} />
+              <Route path="/configuracoes/pagamentos" element={<ProtectedRoute requireMaster><ConfiguracoesPagamentos /></ProtectedRoute>} />
+              <Route path="/configuracoes/conta" element={<ProtectedRoute requireMaster><ConfiguracoesConta /></ProtectedRoute>} />
+              <Route path="/configuracoes/faturas" element={<ProtectedRoute requireMaster><ConfiguracoesFaturas /></ProtectedRoute>} />
+              <Route path="/configuracoes/integracoes" element={<ProtectedRoute requireMaster><ConfiguracoesIntegracoes /></ProtectedRoute>} />
+              <Route path="/configuracoes/colaboradores" element={<ProtectedRoute requireMaster><ConfiguracoesColaboradores /></ProtectedRoute>} />
+              <Route path="/configuracoes/unidades/:id" element={<ProtectedRoute requireMaster><UnidadeDetalhe /></ProtectedRoute>} />
+              <Route path="/configuracoes/pagamento-online" element={<ProtectedRoute requireMaster><PagamentoOnlineConfig /></ProtectedRoute>} />
+               <Route path="/configuracoes/colaboradores/:id" element={<ProtectedRoute requireMaster><ColaboradorDetalhe /></ProtectedRoute>} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

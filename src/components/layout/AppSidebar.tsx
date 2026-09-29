@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import { useAuth } from "@/contexts/AuthContext";
+import { isMasterSession } from "@/lib/authToken";
 import { toast } from "sonner";
 
 const Motorcycle = ({ className }: { className?: string }) => (
@@ -56,7 +57,7 @@ const mainNavItems = [
 ];
 
 const bottomNavItems = [
-  { icon: Settings, label: "Configurações", path: "/configuracoes" },
+  { icon: Settings, label: "Configurações", path: "/configuracoes", masterOnly: true },
   { icon: HelpCircle, label: "Ajuda", path: "/ajuda", external: "https://ajuda.farmacias.shop?UTM_SOURCE=MANAGER" },
 ];
 
@@ -64,7 +65,8 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { clearAuth } = useAuth();
+  const { clearAuth, session } = useAuth();
+  const bottomItems = bottomNavItems.filter((item) => !item.masterOnly || isMasterSession(session));
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -117,7 +119,7 @@ export function AppSidebar() {
 
       {/* Bottom Navigation */}
       <div className="py-6 px-2 border-t border-sidebar-border space-y-2">
-        {bottomNavItems.map((item) => {
+        {bottomItems.map((item) => {
           const isActive = location.pathname === item.path || 
             location.pathname.startsWith(item.path + "/");
           

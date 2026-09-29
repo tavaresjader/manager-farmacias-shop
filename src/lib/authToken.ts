@@ -20,11 +20,42 @@ export interface AuthSessionData {
     id: string;
     name?: string;
     email?: string;
+    master?: boolean;
   };
   merchants?: Array<{
     id: string;
     name?: string;
   }>;
+}
+
+function readBooleanClaim(value: unknown): boolean {
+  return value === true || value === "true" || value === "True" || value === "1" || value === 1;
+}
+
+function getTokenFromSession(session: AuthSessionData | null): string | undefined {
+  return session?.accessToken || session?.token;
+}
+
+export function isMasterSession(session: AuthSessionData | null): boolean {
+  if (!session) return false;
+
+  if (session.employee?.master === true) return true;
+
+  const token = getTokenFromSession(session);
+  if (!token) return false;
+
+  const payload = getTokenPayload(token);
+  if (!payload) return false;
+
+  const claims = payload as Record<string, unknown>;
+  return [
+    claims.master,
+    claims.Master,
+    claims.isMaster,
+    claims.IsMaster,
+    claims.employee_master,
+    claims.EmployeeMaster,
+  ].some(readBooleanClaim);
 }
 
 /** Lê o campo `exp` do JWT (em ms) sem confiar no conteúdo do token. */

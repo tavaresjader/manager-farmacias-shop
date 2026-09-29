@@ -96,6 +96,7 @@ interface ValidateSignUpCodeResponse {
     id: string;
     name?: string;
     email?: string;
+    master?: boolean;
   };
   merchants?: Array<{
     id: string;

@@ -14,6 +14,8 @@ import {
   Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { isMasterSession } from "@/lib/authToken";
 
 export const configuracoesMenuItems = [
   { path: "/configuracoes/unidades", label: "Unidades", icon: Building2 },
@@ -23,7 +25,7 @@ export const configuracoesMenuItems = [
   { path: "/configuracoes/conta", label: "Minha conta", icon: User },
   { path: "/configuracoes/faturas", label: "Minhas faturas", icon: CreditCard },
   { path: "/configuracoes/integracoes", label: "Integrações", icon: Puzzle },
-  { path: "/configuracoes/colaboradores", label: "Colaboradores", icon: Users },
+  { path: "/configuracoes/colaboradores", label: "Colaboradores", icon: Users, masterOnly: true },
 ];
 
 interface ConfiguracoesLayoutProps {
@@ -32,6 +34,8 @@ interface ConfiguracoesLayoutProps {
 
 export const ConfiguracoesLayout = ({ children }: ConfiguracoesLayoutProps) => {
   const isLoading = usePageLoading();
+  const { session } = useAuth();
+  const menuItems = configuracoesMenuItems.filter((item) => !item.masterOnly || isMasterSession(session));
 
   if (isLoading) {
     return (
@@ -48,7 +52,7 @@ export const ConfiguracoesLayout = ({ children }: ConfiguracoesLayoutProps) => {
         <aside className="w-48 shrink-0 border-r border-border p-4">
           <h1 className="text-lg font-semibold text-foreground mb-4">Configurações</h1>
           <nav className="space-y-1">
-            {configuracoesMenuItems.map((item) => (
+            {menuItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
