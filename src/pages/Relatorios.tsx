@@ -58,12 +58,14 @@ interface ReportSummaryApi {
   orders?: ReportMetricApi | number;
   cancellations?: ReportMetricApi | number;
   averageTicket?: ReportMetricApi | number;
+  convertionRate?: ReportMetricApi | number;
   conversionRate?: ReportMetricApi | number;
   customers?: ReportMetricApi | number;
   Revenue?: ReportMetricApi | number;
   Orders?: ReportMetricApi | number;
   Cancellations?: ReportMetricApi | number;
   AverageTicket?: ReportMetricApi | number;
+  ConvertionRate?: ReportMetricApi | number;
   ConversionRate?: ReportMetricApi | number;
   Customers?: ReportMetricApi | number;
 }
@@ -71,23 +73,39 @@ interface ReportSummaryApi {
 interface ReportChartPointApi {
   label?: string | null;
   day?: string | null;
+  dayOfWeek?: string | number | null;
+  weekDay?: string | number | null;
   date?: string | null;
-  hour?: string | null;
+  hour?: string | number | null;
   value?: number;
   sales?: number;
   amount?: number;
   revenue?: number;
+  total?: number;
+  totalSales?: number;
+  quantity?: number;
+  orderCount?: number;
   vendas?: number;
   Label?: string | null;
   Day?: string | null;
+  DayOfWeek?: string | number | null;
+  WeekDay?: string | number | null;
   Date?: string | null;
-  Hour?: string | null;
+  Hour?: string | number | null;
   Value?: number;
   Sales?: number;
   Amount?: number;
   Revenue?: number;
+  Total?: number;
+  TotalSales?: number;
+  Quantity?: number;
+  OrderCount?: number;
   Vendas?: number;
 }
+
+type ReportChartCollectionApi =
+  | ReportChartPointApi[]
+  | Record<string, ReportChartPointApi | number | null | undefined>;
 
 interface ReportProductApi {
   name?: string | null;
@@ -108,21 +126,29 @@ interface ReportProductApi {
 
 interface ReportsResponse {
   summary?: ReportSummaryApi;
-  dailySales?: ReportChartPointApi[];
-  salesByDay?: ReportChartPointApi[];
-  hourlySales?: ReportChartPointApi[];
-  salesByHour?: ReportChartPointApi[];
+  salesDayOfWeek?: ReportChartCollectionApi;
+  salesHours?: ReportChartCollectionApi;
+  dailySales?: ReportChartCollectionApi;
+  salesByDay?: ReportChartCollectionApi;
+  hourlySales?: ReportChartCollectionApi;
+  salesByHour?: ReportChartCollectionApi;
+  productsTopPurchased?: ReportProductApi[];
   topPurchasedProducts?: ReportProductApi[];
   topProducts?: ReportProductApi[];
+  productsWithoutStock?: ReportProductApi[];
   topUnavailableProducts?: ReportProductApi[];
   topVisitedOutOfStockProducts?: ReportProductApi[];
   Summary?: ReportSummaryApi;
-  DailySales?: ReportChartPointApi[];
-  SalesByDay?: ReportChartPointApi[];
-  HourlySales?: ReportChartPointApi[];
-  SalesByHour?: ReportChartPointApi[];
+  SalesDayOfWeek?: ReportChartCollectionApi;
+  SalesHours?: ReportChartCollectionApi;
+  DailySales?: ReportChartCollectionApi;
+  SalesByDay?: ReportChartCollectionApi;
+  HourlySales?: ReportChartCollectionApi;
+  SalesByHour?: ReportChartCollectionApi;
+  ProductsTopPurchased?: ReportProductApi[];
   TopPurchasedProducts?: ReportProductApi[];
   TopProducts?: ReportProductApi[];
+  ProductsWithoutStock?: ReportProductApi[];
   TopUnavailableProducts?: ReportProductApi[];
   TopVisitedOutOfStockProducts?: ReportProductApi[];
 }
@@ -234,6 +260,71 @@ const resolveMetric = (metric?: ReportMetricApi | number) => {
   };
 };
 
+const dayOfWeekLabels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+const resolveDayOfWeekIndex = (value?: string | number | null): number | null => {
+  if (typeof value === "number") {
+    if (value >= 0 && value <= 6) return value;
+    if (value >= 1 && value <= 7) return value % 7;
+    return null;
+  }
+
+  const normalized = normalizeText(String(value));
+  if (!normalized) return null;
+
+  const dayMap: Record<string, number> = {
+    sunday: 0,
+    domingo: 0,
+    dom: 0,
+    monday: 1,
+    segunda: 1,
+    "segunda-feira": 1,
+    seg: 1,
+    tuesday: 2,
+    terca: 2,
+    "terca-feira": 2,
+    ter: 2,
+    wednesday: 3,
+    quarta: 3,
+    "quarta-feira": 3,
+    qua: 3,
+    thursday: 4,
+    quinta: 4,
+    "quinta-feira": 4,
+    qui: 4,
+    friday: 5,
+    sexta: 5,
+    "sexta-feira": 5,
+    sex: 5,
+    saturday: 6,
+    sabado: 6,
+    sab: 6,
+  };
+
+  return dayMap[normalized] ?? null;
+};
+
+const resolveChartValue = (point: ReportChartPointApi) =>
+  point.vendas ??
+  point.Vendas ??
+  point.value ??
+  point.Value ??
+  point.sales ??
+  point.Sales ??
+  point.amount ??
+  point.Amount ??
+  point.revenue ??
+  point.Revenue ??
+  point.total ??
+  point.Total ??
+  point.totalSales ??
+  point.TotalSales ??
+  point.quantity ??
+  point.Quantity ??
+  point.orderCount ??
+  point.OrderCount ??
+  0;
+
 const formatChartLabel = (point: ReportChartPointApi, fallback: string) => {
   const label = point.label ?? point.Label ?? point.day ?? point.Day ?? point.hour ?? point.Hour;
   if (label) return label;
@@ -251,8 +342,66 @@ const formatChartLabel = (point: ReportChartPointApi, fallback: string) => {
 
 const toChartPoint = (point: ReportChartPointApi, index: number): ChartPoint => ({
   label: formatChartLabel(point, String(index + 1)),
-  vendas: point.vendas ?? point.Vendas ?? point.value ?? point.Value ?? point.sales ?? point.Sales ?? point.amount ?? point.Amount ?? point.revenue ?? point.Revenue ?? 0,
+  vendas: resolveChartValue(point),
 });
+
+const toSalesDayOfWeekPoint = (point: ReportChartPointApi, index: number): ChartPoint & { dayIndex: number | null } => {
+  const dayValue = point.dayOfWeek ?? point.DayOfWeek ?? point.weekDay ?? point.WeekDay ?? point.day ?? point.Day ?? point.label ?? point.Label;
+  const dayIndex = resolveDayOfWeekIndex(dayValue);
+
+  return {
+    label: dayIndex === null ? formatChartLabel(point, String(index + 1)) : dayOfWeekLabels[dayIndex],
+    vendas: resolveChartValue(point),
+    dayIndex,
+  };
+};
+
+const resolveHourIndex = (value?: string | number | null): number | null => {
+  if (typeof value === "number") {
+    return value >= 0 && value <= 23 ? value : null;
+  }
+
+  if (!value) return null;
+
+  const match = String(value).match(/\d{1,2}/);
+  if (!match) return null;
+
+  const hour = Number(match[0]);
+  return hour >= 0 && hour <= 23 ? hour : null;
+};
+
+const toSalesHoursPoint = (point: ReportChartPointApi, index: number): ChartPoint & { hourIndex: number | null } => {
+  const hourValue = point.hour ?? point.Hour ?? point.label ?? point.Label;
+  const hourIndex = resolveHourIndex(hourValue);
+
+  return {
+    label: hourIndex === null ? formatChartLabel(point, String(index + 1)) : `${String(hourIndex).padStart(2, "0")}h`,
+    vendas: resolveChartValue(point),
+    hourIndex,
+  };
+};
+
+const normalizeChartCollection = (
+  collection?: ReportChartCollectionApi,
+  keyProperty: "dayOfWeek" | "hour" = "dayOfWeek",
+): ReportChartPointApi[] => {
+  if (!collection) return [];
+  if (Array.isArray(collection)) return collection;
+
+  return Object.entries(collection).map(([key, value]) => {
+    if (typeof value === "number") {
+      return {
+        [keyProperty]: key,
+        value,
+      };
+    }
+
+    return {
+      [keyProperty]: key,
+      ...(value ?? {}),
+    };
+  });
+};
 
 const toProductRanking = (product: ReportProductApi): ProductRanking => ({
   name: (product.name ?? product.Name ?? product.productName ?? product.ProductName)?.trim() || "Produto não informado",
@@ -260,18 +409,57 @@ const toProductRanking = (product: ReportProductApi): ProductRanking => ({
 });
 
 const getDailySales = (report: ReportsResponse | null) =>
-  (report?.dailySales ?? report?.DailySales ?? report?.salesByDay ?? report?.SalesByDay ?? []).map(toChartPoint);
+  normalizeChartCollection(
+    report?.salesDayOfWeek ??
+      report?.SalesDayOfWeek ??
+      report?.dailySales ??
+      report?.DailySales ??
+      report?.salesByDay ??
+      report?.SalesByDay,
+  )
+    .map(toSalesDayOfWeekPoint)
+    .sort((current, next) => {
+      if (current.dayIndex === null && next.dayIndex === null) return 0;
+      if (current.dayIndex === null) return 1;
+      if (next.dayIndex === null) return -1;
+      return current.dayIndex - next.dayIndex;
+    })
+    .map(({ dayIndex, ...point }) => point);
 
 const getHourlySales = (report: ReportsResponse | null) =>
-  (report?.hourlySales ?? report?.HourlySales ?? report?.salesByHour ?? report?.SalesByHour ?? []).map(toChartPoint);
+  normalizeChartCollection(
+    report?.salesHours ??
+      report?.SalesHours ??
+      report?.hourlySales ??
+      report?.HourlySales ??
+      report?.salesByHour ??
+      report?.SalesByHour,
+    "hour",
+  )
+    .map(toSalesHoursPoint)
+    .sort((current, next) => {
+      if (current.hourIndex === null && next.hourIndex === null) return 0;
+      if (current.hourIndex === null) return 1;
+      if (next.hourIndex === null) return -1;
+      return current.hourIndex - next.hourIndex;
+    })
+    .map(({ hourIndex, ...point }) => point);
 
 const getTopPurchasedProducts = (report: ReportsResponse | null) =>
-  (report?.topPurchasedProducts ?? report?.TopPurchasedProducts ?? report?.topProducts ?? report?.TopProducts ?? [])
+  (report?.productsTopPurchased ??
+    report?.ProductsTopPurchased ??
+    report?.topPurchasedProducts ??
+    report?.TopPurchasedProducts ??
+    report?.topProducts ??
+    report?.TopProducts ??
+    [])
     .map(toProductRanking)
     .slice(0, 10);
 
 const getTopUnavailableProducts = (report: ReportsResponse | null) =>
-  (report?.topUnavailableProducts ??
+  (report?.productsWithoutStock ??
+    report?.ProductsWithoutStock ??
+    report?.topUnavailableProducts ??
     report?.TopUnavailableProducts ??
     report?.topVisitedOutOfStockProducts ??
     report?.TopVisitedOutOfStockProducts ??
@@ -353,7 +541,12 @@ const Relatorios = () => {
     orders: resolveMetric(summary?.orders ?? summary?.Orders),
     cancellations: resolveMetric(summary?.cancellations ?? summary?.Cancellations),
     averageTicket: resolveMetric(summary?.averageTicket ?? summary?.AverageTicket),
-    conversionRate: resolveMetric(summary?.conversionRate ?? summary?.ConversionRate),
+    conversionRate: resolveMetric(
+      summary?.convertionRate ??
+        summary?.ConvertionRate ??
+        summary?.conversionRate ??
+        summary?.ConversionRate,
+    ),
     customers: resolveMetric(summary?.customers ?? summary?.Customers),
   };
   const dailySalesData = getDailySales(report);
@@ -363,6 +556,7 @@ const Relatorios = () => {
 
   const handlePrint = () => {
     const params = new URLSearchParams({ unidade: unidadeLabel });
+    if (unidade !== "todas") params.set("merchantId", unidade);
     if (dateFrom) params.set("de", format(dateFrom, "yyyy-MM-dd"));
     if (dateTo) params.set("ate", format(dateTo, "yyyy-MM-dd"));
     window.open(
@@ -636,7 +830,7 @@ const Relatorios = () => {
 
           <div className="card-elevated p-6">
             <h3 className="font-heading text-lg font-semibold mb-4">
-              Top 10 Produtos Visitados Sem Estoque
+              Top 10 Produtos Sem Estoque
             </h3>
             {topUnavailableProducts.length > 0 ? (
               <div className="space-y-2">
