@@ -88,6 +88,11 @@ const formatCurrency = (value: number) =>
     currency: "BRL",
   });
 
+const parseCurrencyInput = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+  return digits ? Number(digits) / 100 : 0;
+};
+
 const toNumber = (value: number | undefined) =>
   typeof value === "number" && Number.isFinite(value) ? value : 0;
 
@@ -369,16 +374,15 @@ export function ProdutoDetailsModal({
                         <td className="px-3 py-2">
                           {isEditing ? (
                             <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              className="h-8 w-24"
-                              value={unidade.precoOriginal}
+                              type="text"
+                              inputMode="decimal"
+                              className="h-8 w-32"
+                              value={formatCurrency(unidade.precoOriginal)}
                               onChange={(e) =>
                                 handleUnidadeChange(
                                   unidade.id,
                                   "precoOriginal",
-                                  parseFloat(e.target.value) || 0
+                                  parseCurrencyInput(e.target.value)
                                 )
                               }
                             />
@@ -391,16 +395,15 @@ export function ProdutoDetailsModal({
                         <td className="px-3 py-2">
                           {isEditing ? (
                             <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              className="h-8 w-24"
-                              value={unidade.preco}
+                              type="text"
+                              inputMode="decimal"
+                              className="h-8 w-32"
+                              value={formatCurrency(unidade.preco)}
                               onChange={(e) =>
                                 handleUnidadeChange(
                                   unidade.id,
                                   "preco",
-                                  parseFloat(e.target.value) || 0
+                                  parseCurrencyInput(e.target.value)
                                 )
                               }
                             />
