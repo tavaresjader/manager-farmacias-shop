@@ -392,7 +392,7 @@ export class ManagerBackendBff {
       const response = await fetchWithTimeout(url, {
         method: "POST",
         headers: this.mergeHeaders(options?.headers),
-        body: body ? JSON.stringify(body) : undefined,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
       });
 
       const data = await response.json().catch(() => ({}));
@@ -438,7 +438,7 @@ export class ManagerBackendBff {
       const response = await fetchWithTimeout(url, {
         method: "PUT",
         headers: this.mergeHeaders(options?.headers),
-        body: body ? JSON.stringify(body) : undefined,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
       });
 
       const data = await response.json().catch(() => ({}));
@@ -484,7 +484,7 @@ export class ManagerBackendBff {
       const response = await fetchWithTimeout(url, {
         method: "PATCH",
         headers: this.mergeHeaders(options?.headers),
-        body: body ? JSON.stringify(body) : undefined,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
       });
 
       const data = await response.json().catch(() => ({}));

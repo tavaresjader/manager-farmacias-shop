@@ -1,15 +1,17 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import type { ElementType } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Truck, Banknote } from "lucide-react";
+import { Banknote, Loader2, Truck } from "lucide-react";
+import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { toast } from "sonner";
 
 interface PaymentOption {
   id: string;
   name: string;
   description: string;
-  icon: React.ElementType;
+  icon: ElementType;
   enabled: boolean;
   hasConfig?: boolean;
 }
@@ -24,37 +26,154 @@ const initialPaymentOptions: PaymentOption[] = [
   },
 ];
 
-const initialCashEnabled = false;
+type PaymentStatusApiResponse =
+  | boolean
+  | {
+      active?: boolean | null;
+      enabled?: boolean | null;
+      status?: boolean | string | null;
+      value?: boolean | null;
+      payAtDeliveryStatus?: boolean | null;
+      payCashAtDeliveryStatus?: boolean | null;
+    };
+
+const PAY_AT_DELIVERY_ENDPOINT = "/v1/payments/PayAtDeliveryStatus";
+const PAY_CASH_AT_DELIVERY_ENDPOINT = "/v1/payments/PayCashAtDeliveryStatus";
+
+function toPaymentStatus(data: PaymentStatusApiResponse | null | undefined): boolean {
+  if (typeof data === "boolean") return data;
+  if (!data || typeof data !== "object") return false;
+
+  const status =
+    data.enabled ??
+    data.active ??
+    data.value ??
+    data.payAtDeliveryStatus ??
+    data.payCashAtDeliveryStatus ??
+    data.status;
+
+  if (typeof status === "boolean") return status;
+  if (typeof status === "string") {
+    return ["true", "active", "enabled", "ativo", "habilitado"].includes(status.trim().toLowerCase());
+  }
+
+  return false;
+}
 
 export function PagamentosTab() {
-  const navigate = useNavigate();
   const [paymentOptions, setPaymentOptions] = useState<PaymentOption[]>(initialPaymentOptions);
-  const [cashEnabled, setCashEnabled] = useState(initialCashEnabled);
+  const [cashEnabled, setCashEnabled] = useState(false);
+  const [loadingPayments, setLoadingPayments] = useState(true);
+  const [savingDelivery, setSavingDelivery] = useState(false);
+  const [savingCash, setSavingCash] = useState(false);
 
-  const togglePaymentOption = (id: string) => {
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadPaymentSettings = async () => {
+      setLoadingPayments(true);
+
+      const [deliveryResponse, cashResponse] = await Promise.all([
+        managerBackendBff.get<PaymentStatusApiResponse>(PAY_AT_DELIVERY_ENDPOINT),
+        managerBackendBff.get<PaymentStatusApiResponse>(PAY_CASH_AT_DELIVERY_ENDPOINT),
+      ]);
+
+      if (cancelled) return;
+
+      if (deliveryResponse.data !== null) {
+        const deliveryEnabled = toPaymentStatus(deliveryResponse.data);
+        setPaymentOptions((prev) =>
+          prev.map((option) =>
+            option.id === "delivery" ? { ...option, enabled: deliveryEnabled } : option
+          )
+        );
+      } else {
+        toast.error(`Erro ao carregar pagamento na entrega: ${deliveryResponse.error ?? "Tente novamente."}`);
+      }
+
+      if (cashResponse.data !== null) {
+        setCashEnabled(toPaymentStatus(cashResponse.data));
+      } else {
+        toast.error(`Erro ao carregar pagamento em dinheiro: ${cashResponse.error ?? "Tente novamente."}`);
+      }
+
+      setLoadingPayments(false);
+    };
+
+    loadPaymentSettings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const setDeliveryEnabled = (enabled: boolean) => {
     setPaymentOptions((prev) =>
       prev.map((option) =>
-        option.id === id ? { ...option, enabled: !option.enabled } : option
+        option.id === "delivery" ? { ...option, enabled } : option
       )
     );
-    // Reset cash option when delivery is disabled
-    if (id === "delivery") {
-      const deliveryOption = paymentOptions.find(o => o.id === "delivery");
-      if (deliveryOption?.enabled) {
-        setCashEnabled(false);
-      }
+  };
+
+  const togglePaymentOption = async (id: string, enabled: boolean) => {
+    if (id !== "delivery") return;
+
+    const previousDeliveryEnabled = isDeliveryEnabled;
+    const previousCashEnabled = cashEnabled;
+
+    setSavingDelivery(true);
+    setDeliveryEnabled(enabled);
+    if (!enabled) setCashEnabled(false);
+
+    const response = await managerBackendBff.patch<unknown>(PAY_AT_DELIVERY_ENDPOINT, { Active: enabled });
+
+    if (response.error) {
+      setDeliveryEnabled(previousDeliveryEnabled);
+      setCashEnabled(previousCashEnabled);
+      toast.error(`Erro ao atualizar pagamento na entrega: ${response.error}`);
+    } else {
+      toast.success("Pagamento na entrega atualizado com sucesso.");
     }
+
+    setSavingDelivery(false);
+  };
+
+  const toggleCashPayment = async (enabled: boolean) => {
+    const previousCashEnabled = cashEnabled;
+
+    setSavingCash(true);
+    setCashEnabled(enabled);
+
+    const response = await managerBackendBff.patch<unknown>(PAY_CASH_AT_DELIVERY_ENDPOINT, { Active: enabled });
+
+    if (response.error) {
+      setCashEnabled(previousCashEnabled);
+      toast.error(`Erro ao atualizar pagamento em dinheiro: ${response.error}`);
+    } else {
+      toast.success("Pagamento em dinheiro atualizado com sucesso.");
+    }
+
+    setSavingCash(false);
   };
 
   const isDeliveryEnabled = paymentOptions.find(o => o.id === "delivery")?.enabled ?? false;
+  const controlsDisabled = loadingPayments || savingDelivery || savingCash;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-foreground">Pagamentos</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Configure as formas de pagamento aceitas
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">Pagamentos</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Configure as formas de pagamento aceitas
+          </p>
+        </div>
+        {loadingPayments && (
+          <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Carregando pagamentos...
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -90,21 +209,19 @@ export function PagamentosTab() {
                     <p className="text-xs text-muted-foreground">
                       {option.description}
                     </p>
-                    {option.hasConfig && option.enabled && (
-                      <button
-                        onClick={() => navigate("/configuracoes/pagamento-online")}
-                        className="text-xs text-primary hover:underline mt-1"
-                      >
-                        Configurar pagamento online
-                      </button>
-                    )}
                   </div>
                 </div>
-                <Switch
-                  id={option.id}
-                  checked={option.enabled}
-                  onCheckedChange={() => togglePaymentOption(option.id)}
-                />
+                <div className="flex items-center gap-2">
+                  {savingDelivery && option.id === "delivery" && (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
+                  <Switch
+                    id={option.id}
+                    checked={option.enabled}
+                    disabled={controlsDisabled}
+                    onCheckedChange={(checked) => togglePaymentOption(option.id, checked)}
+                  />
+                </div>
               </div>
               {/* Cash option nested under delivery */}
               {option.id === "delivery" && option.enabled && (
@@ -132,11 +249,15 @@ export function PagamentosTab() {
                         </p>
                       </div>
                     </div>
-                    <Switch
-                      id="cash"
-                      checked={cashEnabled}
-                      onCheckedChange={setCashEnabled}
-                    />
+                    <div className="flex items-center gap-2">
+                      {savingCash && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                      <Switch
+                        id="cash"
+                        checked={cashEnabled}
+                        disabled={controlsDisabled}
+                        onCheckedChange={toggleCashPayment}
+                      />
+                    </div>
                   </div>
                 </div>
               )}

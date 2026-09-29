@@ -75,7 +75,7 @@ const DEFAULT_APARENCIA: Aparencia = {
   facebook: "",
   youtube: "",
   dominioPersonalizado: "",
-  urlAtual: "https://sua-loja.lovable.app",
+  urlAtual: "",
   fileName: "",
 };
 
