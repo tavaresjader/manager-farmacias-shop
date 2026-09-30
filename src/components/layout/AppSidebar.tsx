@@ -49,10 +49,10 @@ const mainNavItems = [
   { icon: LayoutDashboard, label: "Início", path: "/" },
   { icon: ShoppingCart, label: "Pedidos", path: "/pedidos" },
   { icon: Package, label: "Produtos", path: "/produtos" },
-  { icon: Users, label: "Clientes", path: "/clientes" },
-  { icon: Ticket, label: "Cupons", path: "/cupons" },
+  { icon: Users, label: "Clientes", path: "/clientes", masterOnly: true },
+  { icon: Ticket, label: "Cupons", path: "/cupons", masterOnly: true },
   { icon: Motorcycle, label: "Entregas", path: "/entregas" },
-  { icon: AppWindow, label: "Aplicativos", path: "/aplicativos" },
+  { icon: AppWindow, label: "Aplicativos", path: "/aplicativos", masterOnly: true },
   { icon: BarChart3, label: "Insights", path: "/relatorios" },
 ];
 
@@ -66,6 +66,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { clearAuth, session } = useAuth();
+  const mainItems = mainNavItems.filter((item) => !item.masterOnly || isMasterSession(session));
   const bottomItems = bottomNavItems.filter((item) => !item.masterOnly || isMasterSession(session));
 
   const toggleTheme = () => {
@@ -91,7 +92,7 @@ export function AppSidebar() {
 
       {/* Main Navigation */}
       <nav className="flex-1 py-4 px-2 space-y-1">
-        {mainNavItems.map((item) => {
+        {mainItems.map((item) => {
           const isActive = location.pathname === item.path || 
             (item.path === "/" && location.pathname === "/");
           return (
