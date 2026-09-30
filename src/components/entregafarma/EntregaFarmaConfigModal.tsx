@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { CreditCard, QrCode, Wallet, Copy } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 
@@ -22,6 +23,7 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
   const [saldo, setSaldo] = useState(128.5);
   const [valor, setValor] = useState<number>(100);
   const [metodo, setMetodo] = useState<"cartao" | "pix">("pix");
+  const [modoUso, setModoUso] = useState<"todos" | "avulsos">("todos");
   const [cartao, setCartao] = useState({ numero: "", nome: "", validade: "", cvv: "" });
   const [pixGerado, setPixGerado] = useState(false);
 
@@ -71,6 +73,24 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
             <p className="text-sm text-muted-foreground">{ativo ? "Ativo" : "Inativo"}</p>
           </div>
           <Switch checked={ativo} onCheckedChange={handleToggle} />
+        </div>
+
+        <div className="rounded-lg border p-4 space-y-2">
+          <Label>Modo de uso</Label>
+          <Select value={modoUso} onValueChange={(v) => setModoUso(v as "todos" | "avulsos")}>
+            <SelectTrigger className="bg-background w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Em todos os pedidos</SelectItem>
+              <SelectItem value="avulsos">Somente pedidos avulsos</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-muted-foreground">
+            {modoUso === "todos"
+              ? "Entrega Farma será oferecido em todos os pedidos da loja."
+              : "Entrega Farma será oferecido somente em pedidos avulsos."}
+          </p>
         </div>
 
         <div className="rounded-lg border p-4 space-y-4">
