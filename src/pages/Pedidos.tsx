@@ -98,7 +98,8 @@ interface PedidoApi {
   createdAt?: string;
   status?: string | null;
   type?: string | null;
-  itens?: number;
+  itens?: number | PedidoItemApi[] | null;
+
   amount?: number;
   shippingValue?: number;
   hasPrescription?: boolean;
@@ -113,7 +114,7 @@ interface PedidoApi {
   CreatedAt?: string;
   Status?: string | null;
   Type?: string | null;
-  Itens?: number;
+  Itens?: number | PedidoItemApi[] | null;
   Amount?: number;
   ShippingValue?: number;
   HasPrescription?: boolean;

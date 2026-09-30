@@ -313,7 +313,7 @@ const resolveChartValue = (point: ReportChartPointApi) =>
 
 const formatChartLabel = (point: ReportChartPointApi, fallback: string) => {
   const label = point.label ?? point.Label ?? point.day ?? point.Day ?? point.hour ?? point.Hour;
-  if (label) return label;
+  if (label) return String(label);
 
   const dateValue = point.date ?? point.Date;
   if (dateValue) {
