@@ -13,6 +13,7 @@ import Clientes from "./pages/Clientes";
 import Cupons from "./pages/Cupons";
 import Aplicativos from "./pages/Aplicativos";
 import Entregas from "./pages/Entregas";
+import NovaEntrega from "./pages/NovaEntrega";
 import Relatorios from "./pages/Relatorios";
 import RelatorioImpressao from "./pages/RelatorioImpressao";
 
