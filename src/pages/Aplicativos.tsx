@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -11,6 +12,7 @@ import { UltramaxConfigModal } from "@/components/ultramax/UltramaxConfigModal";
 import { Plus, ExternalLink, BarChart3, MessageCircle, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ultramaxLogo from "@/assets/ultramax-logo.png";
+import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import ifoodLogo from "@/assets/channels/ifood.webp";
 import keetaLogo from "@/assets/channels/keeta.png";
 import mercadoLivreLogo from "@/assets/channels/mercado-livre.png";
