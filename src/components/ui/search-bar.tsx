@@ -1,5 +1,5 @@
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface SearchBarProps {
@@ -7,6 +7,7 @@ interface SearchBarProps {
   value?: string;
   onSearch?: (value: string) => void;
   onFilter?: () => void;
+  action?: ReactNode;
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export function SearchBar({
   value: controlledValue,
   onSearch,
   onFilter,
+  action,
   className,
 }: SearchBarProps) {
   const [internalValue, setInternalValue] = useState("");
@@ -56,6 +58,7 @@ export function SearchBar({
           <span>Filtros</span>
         </button>
       )}
+      {action}
     </div>
   );
 }

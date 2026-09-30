@@ -11,8 +11,12 @@ import { usePageLoading } from "@/hooks/usePageLoading";
 import { PedidoDetailsModal } from "@/components/pedidos/PedidoDetailsModal";
 import { PedidoFilterModal, PedidoFilters } from "@/components/pedidos/PedidoFilterModal";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import {
+  PackageCheck,
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -560,6 +564,12 @@ const Pedidos = () => {
             onSearch={handleSearch}
             onFilter={() => setFilterModalOpen(true)}
             className="flex-1 max-w-md"
+            action={
+              <Button className="shrink-0">
+                <PackageCheck className="w-4 h-4" />
+                Gestor de pedidos
+              </Button>
+            }
           />
         </div>
 
