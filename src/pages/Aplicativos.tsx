@@ -9,6 +9,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
 import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
 import { UltramaxConfigModal } from "@/components/ultramax/UltramaxConfigModal";
+import { EntregaFarmaConfigModal } from "@/components/entregafarma/EntregaFarmaConfigModal";
 import { Plus, ExternalLink, BarChart3, MessageCircle, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ultramaxLogo from "@/assets/ultramax-logo.png";
@@ -50,6 +51,7 @@ const Aplicativos = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   const [showUltramaxModal, setShowUltramaxModal] = useState(false);
+  const [showEntregaFarmaModal, setShowEntregaFarmaModal] = useState(false);
 
   const filteredApps = mockAplicativos.filter(
     (app) =>
@@ -71,6 +73,7 @@ const Aplicativos = () => {
         open={showWhatsAppModal} 
         onOpenChange={setShowWhatsAppModal} 
       />
+      <EntregaFarmaConfigModal open={showEntregaFarmaModal} onOpenChange={setShowEntregaFarmaModal} />
       <UltramaxConfigModal
         open={showUltramaxModal}
         onOpenChange={setShowUltramaxModal}
@@ -112,7 +115,7 @@ const Aplicativos = () => {
 
           {/* Entrega Farma Card */}
           <div
-            onClick={() => navigate("/entregas")}
+            onClick={() => setShowEntregaFarmaModal(true)}
             className={cn(
               "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
             )}
