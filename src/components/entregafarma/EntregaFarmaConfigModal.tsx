@@ -76,7 +76,7 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
         </div>
 
         <div className="rounded-lg border p-4 space-y-2">
-          <Label>Modo de uso</Label>
+          <Label className="font-bold">Modo de uso</Label>
           <Select value={modoUso} onValueChange={(v) => setModoUso(v as "todos" | "avulsos")}>
             <SelectTrigger className="bg-background w-full">
               <SelectValue />
