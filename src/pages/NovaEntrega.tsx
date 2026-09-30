@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,15 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Bike } from "lucide-react";
+import { Bike, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import type { Entrega } from "@/types/entrega";
-
-interface NovaEntregaModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onCreate: (entrega: Entrega) => void;
-}
 
 const unidades = ["Unidade Centro", "Unidade Jardins", "Unidade Zona Sul"];
 
@@ -45,18 +34,13 @@ const emptyForm = {
 
 const onlyDigits = (v: string) => v.replace(/\D/g, "");
 
-export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaModalProps) {
+const NovaEntrega = () => {
+  usePageTitle("Nova entrega avulsa");
+  const navigate = useNavigate();
   const [form, setForm] = useState(emptyForm);
   const [buscandoCep, setBuscandoCep] = useState(false);
   const [valorEntrega, setValorEntrega] = useState<number | null>(null);
   const [calculando, setCalculando] = useState(false);
-
-  useEffect(() => {
-    if (open) {
-      setForm(emptyForm);
-      setValorEntrega(null);
-    }
-  }, [open]);
 
   const setField = (key: keyof typeof emptyForm, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -115,7 +99,6 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
     };
   }, [form.cep, form.numero, form.endereco]);
 
-
   const handleSubmit = () => {
     if (!form.cliente.trim() || !form.telefone.trim() || !form.endereco.trim()) {
       toast.error("Preencha cliente, telefone e endereço de entrega.");
@@ -146,23 +129,23 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
       progresso: 5,
     };
 
-    onCreate(entrega);
     toast.success(`Entrega avulsa ${entrega.codigo} solicitada com sucesso!`);
-    onOpenChange(false);
+    navigate("/entregas", { state: { novaEntrega: entrega } });
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Bike className="w-5 h-5 text-primary" />
+    <MainLayout>
+      <div className="p-6 max-w-2xl space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
+            <Bike className="w-6 h-6 text-primary" />
             Nova entrega avulsa
-          </DialogTitle>
-          <DialogDescription>
-            Solicite um entregador para um pedido que não foi criado pelos canais de venda.
-          </DialogDescription>
-        </DialogHeader>
+          </h1>
+        </div>
+
+        <p className="text-muted-foreground text-sm">
+          Solicite um entregador para um pedido que não foi criado pelos canais de venda.
+        </p>
 
         <div className="space-y-4">
           <div className="space-y-2">
@@ -291,7 +274,6 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
             </div>
           </div>
 
-
           <div className="space-y-2">
             <Label htmlFor="observacoes">Observações</Label>
             <Textarea
@@ -304,13 +286,16 @@ export function NovaEntregaModal({ open, onOpenChange, onCreate }: NovaEntregaMo
           </div>
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => navigate("/entregas")}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar
           </Button>
           <Button onClick={handleSubmit}>Solicitar entrega</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </div>
+    </MainLayout>
   );
-}
+};
+
+export default NovaEntrega;

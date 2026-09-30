@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
@@ -8,7 +9,6 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EntregaCard } from "@/components/entregas/EntregaCard";
-import { NovaEntregaModal } from "@/components/entregas/NovaEntregaModal";
 import { EntregaTrackingModal } from "@/components/entregas/EntregaTrackingModal";
 import type { Entrega, EntregaSituacao } from "@/types/entrega";
 
@@ -109,11 +109,20 @@ const filtros: { key: EntregaSituacao | "todas"; label: string; dot?: string }[]
 const Entregas = () => {
   usePageTitle("Entregas");
   const isLoading = usePageLoading();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [entregas, setEntregas] = useState<Entrega[]>(mockEntregas);
+  const novaEntrega = (location.state as { novaEntrega?: Entrega } | null)?.novaEntrega;
+  if (novaEntrega) {
+    // Consome o estado para não duplicar em navegações futuras
+    window.history.replaceState({}, "");
+  }
+
+  const [entregas, setEntregas] = useState<Entrega[]>(() =>
+    novaEntrega ? [novaEntrega, ...mockEntregas] : mockEntregas,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [filtro, setFiltro] = useState<EntregaSituacao | "todas">("todas");
-  const [novaOpen, setNovaOpen] = useState(false);
   const [selecionada, setSelecionada] = useState<Entrega | null>(null);
   const [trackingOpen, setTrackingOpen] = useState(false);
 
@@ -149,7 +158,7 @@ const Entregas = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold text-foreground">Entregas</h1>
-          <Button onClick={() => setNovaOpen(true)} className="gap-2">
+          <Button onClick={() => navigate("/entregas/nova")} className="gap-2">
             <Plus className="w-4 h-4" />
             Nova entrega avulsa
           </Button>
@@ -194,11 +203,6 @@ const Entregas = () => {
         )}
       </div>
 
-      <NovaEntregaModal
-        open={novaOpen}
-        onOpenChange={setNovaOpen}
-        onCreate={(entrega) => setEntregas((prev) => [entrega, ...prev])}
-      />
 
       <EntregaTrackingModal
         entrega={selecionada}

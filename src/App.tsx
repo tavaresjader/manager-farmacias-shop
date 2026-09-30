@@ -13,6 +13,7 @@ import Clientes from "./pages/Clientes";
 import Cupons from "./pages/Cupons";
 import Aplicativos from "./pages/Aplicativos";
 import Entregas from "./pages/Entregas";
+import NovaEntrega from "./pages/NovaEntrega";
 import Relatorios from "./pages/Relatorios";
 import RelatorioImpressao from "./pages/RelatorioImpressao";
 
@@ -57,6 +58,7 @@ const App = () => (
               <Route path="/clientes" element={<ProtectedRoute requireMaster><Clientes /></ProtectedRoute>} />
               <Route path="/cupons" element={<ProtectedRoute requireMaster><Cupons /></ProtectedRoute>} />
               <Route path="/entregas" element={<ProtectedRoute><Entregas /></ProtectedRoute>} />
+              <Route path="/entregas/nova" element={<ProtectedRoute><NovaEntrega /></ProtectedRoute>} />
               <Route path="/aplicativos" element={<ProtectedRoute requireMaster><Aplicativos /></ProtectedRoute>} />
               <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
               <Route path="/relatorios/impressao" element={<ProtectedRoute><RelatorioImpressao /></ProtectedRoute>} />
