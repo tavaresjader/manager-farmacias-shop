@@ -23,6 +23,7 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
   const [saldo, setSaldo] = useState(128.5);
   const [valor, setValor] = useState<number>(100);
   const [metodo, setMetodo] = useState<"cartao" | "pix">("pix");
+  const [modoUso, setModoUso] = useState<"todos" | "avulsos">("todos");
   const [cartao, setCartao] = useState({ numero: "", nome: "", validade: "", cvv: "" });
   const [pixGerado, setPixGerado] = useState(false);
 
