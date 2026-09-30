@@ -75,6 +75,24 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
           <Switch checked={ativo} onCheckedChange={handleToggle} />
         </div>
 
+        <div className="rounded-lg border p-4 space-y-2">
+          <Label>Modo de uso</Label>
+          <Select value={modoUso} onValueChange={(v) => setModoUso(v as "todos" | "avulsos")}>
+            <SelectTrigger className="bg-background w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Em todos os pedidos</SelectItem>
+              <SelectItem value="avulsos">Somente pedidos avulsos</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-muted-foreground">
+            {modoUso === "todos"
+              ? "Entrega Farma será oferecido em todos os pedidos da loja."
+              : "Entrega Farma será oferecido somente em pedidos avulsos."}
+          </p>
+        </div>
+
         <div className="rounded-lg border p-4 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
