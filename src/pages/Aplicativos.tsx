@@ -44,6 +44,7 @@ const getAppIcon = (icon?: Aplicativo["icon"]) => {
 };
 
 const Aplicativos = () => {
+  const navigate = useNavigate();
   usePageTitle("Aplicativos");
   const isLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
