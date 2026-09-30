@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
@@ -8,7 +9,6 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EntregaCard } from "@/components/entregas/EntregaCard";
-import { NovaEntregaModal } from "@/components/entregas/NovaEntregaModal";
 import { EntregaTrackingModal } from "@/components/entregas/EntregaTrackingModal";
 import type { Entrega, EntregaSituacao } from "@/types/entrega";
 
@@ -109,8 +109,18 @@ const filtros: { key: EntregaSituacao | "todas"; label: string; dot?: string }[]
 const Entregas = () => {
   usePageTitle("Entregas");
   const isLoading = usePageLoading();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [entregas, setEntregas] = useState<Entrega[]>(mockEntregas);
+  const novaEntrega = (location.state as { novaEntrega?: Entrega } | null)?.novaEntrega;
+  if (novaEntrega) {
+    // Consome o estado para não duplicar em navegações futuras
+    window.history.replaceState({}, "");
+  }
+
+  const [entregas, setEntregas] = useState<Entrega[]>(() =>
+    novaEntrega ? [novaEntrega, ...mockEntregas] : mockEntregas,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [filtro, setFiltro] = useState<EntregaSituacao | "todas">("todas");
   const [novaOpen, setNovaOpen] = useState(false);
