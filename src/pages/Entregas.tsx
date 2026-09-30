@@ -123,7 +123,6 @@ const Entregas = () => {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [filtro, setFiltro] = useState<EntregaSituacao | "todas">("todas");
-  const [novaOpen, setNovaOpen] = useState(false);
   const [selecionada, setSelecionada] = useState<Entrega | null>(null);
   const [trackingOpen, setTrackingOpen] = useState(false);
 
@@ -159,7 +158,7 @@ const Entregas = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold text-foreground">Entregas</h1>
-          <Button onClick={() => setNovaOpen(true)} className="gap-2">
+          <Button onClick={() => navigate("/entregas/nova")} className="gap-2">
             <Plus className="w-4 h-4" />
             Nova entrega avulsa
           </Button>
@@ -204,11 +203,6 @@ const Entregas = () => {
         )}
       </div>
 
-      <NovaEntregaModal
-        open={novaOpen}
-        onOpenChange={setNovaOpen}
-        onCreate={(entrega) => setEntregas((prev) => [entrega, ...prev])}
-      />
 
       <EntregaTrackingModal
         entrega={selecionada}
