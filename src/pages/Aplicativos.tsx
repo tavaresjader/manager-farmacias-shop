@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageLoading } from "@/components/layout/PageLoading";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -8,9 +9,10 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { usePageLoading } from "@/hooks/usePageLoading";
 import { WhatsAppConfigModal } from "@/components/whatsapp/WhatsAppConfigModal";
 import { UltramaxConfigModal } from "@/components/ultramax/UltramaxConfigModal";
-import { Plus, ExternalLink, BarChart3, MessageCircle, Monitor, ShoppingBag } from "lucide-react";
+import { Plus, ExternalLink, BarChart3, MessageCircle, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ultramaxLogo from "@/assets/ultramax-logo.png";
+import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 import ifoodLogo from "@/assets/channels/ifood.webp";
 import keetaLogo from "@/assets/channels/keeta.png";
 import mercadoLivreLogo from "@/assets/channels/mercado-livre.png";
@@ -42,6 +44,7 @@ const getAppIcon = (icon?: Aplicativo["icon"]) => {
 };
 
 const Aplicativos = () => {
+  const navigate = useNavigate();
   usePageTitle("Aplicativos");
   const isLoading = usePageLoading();
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,30 +110,27 @@ const Aplicativos = () => {
             </div>
           </div>
 
-          {/* Integrador Card */}
+          {/* Entrega Farma Card */}
           <div
-            onClick={() => window.open("https://integrador.farmacias.shop?utm_source=MANAGER", "_blank")}
+            onClick={() => navigate("/entregas")}
             className={cn(
               "card-elevated p-5 hover:shadow-elevated transition-shadow cursor-pointer group flex flex-col"
             )}
           >
             <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Monitor className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center overflow-hidden">
+                <img src={logoFarmaciaShop} alt="Entrega Farma" className="w-10 h-10 object-cover rounded-lg" />
               </div>
             </div>
             <h3 className="font-heading font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-              Integrador
+              Entrega Farma
             </h3>
-            <p className="text-sm text-muted-foreground mb-1">
-              Integrador instalado em seu computador para sincronizar produtos, estoque e pedidos
-            </p>
-            <p className="text-xs text-amber-600 mb-3">
-              *Verifique se seu sistema já está integrado com a Farmácias Shop
+            <p className="text-sm text-muted-foreground mb-3">
+              Solicite e acompanhe entregas em tempo real
             </p>
             <div className="flex items-center justify-between mt-auto">
               <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
-                Sincronização
+                Entregas
               </span>
               <button className="text-muted-foreground hover:text-primary transition-colors">
                 <ExternalLink className="w-4 h-4" />
