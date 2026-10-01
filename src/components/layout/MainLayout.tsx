@@ -7,11 +7,21 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="flex min-h-screen w-full bg-background">
-      <AppSidebar />
-      <main className="flex-1 overflow-auto bg-background ml-16">
-        <div className="p-6 lg:p-8">{children}</div>
-      </main>
+    <div className="flex min-h-screen w-full bg-background flex-col">
+      {/* Barra superior de ativação da conta */}
+      <div
+        className="w-full px-4 py-2 text-center text-sm font-medium"
+        style={{ backgroundColor: "#f39c12", color: "#3d2b00" }}
+      >
+        Ative sua conta
+      </div>
+
+      <div className="flex flex-1 w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-auto bg-background ml-16">
+          <div className="p-6 lg:p-8">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }
