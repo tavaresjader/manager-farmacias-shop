@@ -5,9 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { QrCode, Wallet, Copy } from "lucide-react";
+import { Wallet, Copy } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import logoFarmaciaShop from "@/assets/logo-farmacia-shop.png";
 
 interface Props {
@@ -23,6 +22,7 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
   const [saldo, setSaldo] = useState(128.5);
   const [valor, setValor] = useState<number>(100);
   const [pixGerado, setPixGerado] = useState(false);
+  const [modoUso, setModoUso] = useState<"todos" | "avulsos">("todos");
 
   const pixCode = `00020126580014br.gov.bcb.pix0136farmacias-shop-entregafarma520400005303986540${valor.toFixed(2)}5802BR`;
 
@@ -105,7 +105,7 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
           </div>
         </div>
 
-          {metodo === "pix" && pixGerado && (
+          {pixGerado && (
             <div className="space-y-3 rounded-lg bg-muted p-3">
               <p className="text-sm">Copie o código Pix abaixo e pague no app do seu banco:</p>
               <div className="flex gap-2">
@@ -118,9 +118,9 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
             </div>
           )}
 
-          {!(metodo === "pix" && pixGerado) && (
+          {!pixGerado && (
             <Button className="w-full" onClick={handleComprar}>
-              {metodo === "pix" ? "Gerar Pix" : "Pagar"} {valor ? brl(valor) : ""}
+              Gerar Pix {valor ? brl(valor) : ""}
             </Button>
           )}
         </div>
