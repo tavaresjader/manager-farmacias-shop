@@ -62,6 +62,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     authTokenStorage.set(newToken);
     authTokenStorage.setSession(newSession);
     managerBackendBff.setAuthToken(newToken);
+    // Each sign-in re-shows the "Ative sua conta" bar, even if it was dismissed before.
+    sessionStorage.removeItem(ACTIVATION_BAR_DISMISS_KEY);
   };
 
   const setAuthToken = (newToken: string) => {
