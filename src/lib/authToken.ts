@@ -1,5 +1,8 @@
 const AUTH_TOKEN_KEY = "FarmaciasShopManagerAccessToken";
 const AUTH_SESSION_KEY = "FarmaciasShopManagerSession";
+// Key that marks the "Ative sua conta" bar as dismissed; cleared on every
+// sign-in so the bar shows again after each login.
+export const ACTIVATION_BAR_DISMISS_KEY = "FarmaciasShopActivationBarDismissed";
 
 interface TokenPayload {
   exp?: number;

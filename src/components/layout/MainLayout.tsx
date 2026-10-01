@@ -1,8 +1,7 @@
 import { ReactNode, useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
 import { AppSidebar } from "./AppSidebar";
-
-const DISMISS_KEY = "FarmaciasShopActivationBarDismissed";
+import { ACTIVATION_BAR_DISMISS_KEY as DISMISS_KEY } from "@/lib/authToken";
 
 interface MainLayoutProps {
   children: ReactNode;

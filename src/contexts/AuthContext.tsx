@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
-import { authTokenStorage, AuthSessionData, isMockToken, isTokenExpired } from "@/lib/authToken";
+import { authTokenStorage, AuthSessionData, isMockToken, isTokenExpired, ACTIVATION_BAR_DISMISS_KEY } from "@/lib/authToken";
 
 interface AuthContextType {
   token: string | null;
@@ -62,6 +62,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     authTokenStorage.set(newToken);
     authTokenStorage.setSession(newSession);
     managerBackendBff.setAuthToken(newToken);
+    // Each sign-in re-shows the "Ative sua conta" bar, even if it was dismissed before.
+    sessionStorage.removeItem(ACTIVATION_BAR_DISMISS_KEY);
   };
 
   const setAuthToken = (newToken: string) => {
