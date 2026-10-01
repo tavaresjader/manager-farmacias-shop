@@ -123,7 +123,6 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
               Gerar Pix {valor ? brl(valor) : ""}
             </Button>
           )}
-        </div>
       </DialogContent>
     </Dialog>
   );
