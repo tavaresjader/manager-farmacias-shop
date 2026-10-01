@@ -100,8 +100,6 @@ export function EntregaFarmaConfigModal({ open, onOpenChange }: Props) {
                 </Button>
               ))}
             </div>
-            <Input type="number" min={10} value={valor || ""} className="bg-background"
-              onChange={(e) => { setValor(Number(e.target.value)); setPixGerado(false); }} placeholder="Outro valor" />
           </div>
         </div>
 
