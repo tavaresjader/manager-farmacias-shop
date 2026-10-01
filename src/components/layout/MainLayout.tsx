@@ -26,7 +26,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           style={{ backgroundColor: "#f1c40f", color: "#3d2b00" }}
         >
           <AlertTriangle size={16} className="shrink-0" />
-          <span className="font-semibold">Efetive sua fatura</span>
+          <span className="font-semibold">Antecipe sua fatura</span>
           <span>— o acesso a sua conta será restrita em 10 dias.</span>
           <button
             type="button"
