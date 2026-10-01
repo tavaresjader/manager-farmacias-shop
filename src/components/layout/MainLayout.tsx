@@ -27,7 +27,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         >
           <AlertTriangle size={16} className="shrink-0" />
           <span className="font-semibold">Efetue o pagamento da sua fatura</span>
-          <span>— o acesso a sua conta será restrita em 10 dias.</span>
+          <span>— o acesso a sua conta será restrita em 7 dias.</span>
           <button
             type="button"
             onClick={handleDismiss}
