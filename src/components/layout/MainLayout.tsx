@@ -11,7 +11,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       {/* Barra superior de ativação da conta */}
       <div
         className="w-full px-4 py-2 text-center text-sm font-medium"
-        style={{ backgroundColor: "#f39c12", color: "#3d2b00" }}
+        style={{ backgroundColor: "#f1c40f", color: "#3d2b00" }}
       >
         Ative sua conta
       </div>
