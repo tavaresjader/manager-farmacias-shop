@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { AlertTriangle } from "lucide-react";
 import { AppSidebar } from "./AppSidebar";
 
 interface MainLayoutProps {
