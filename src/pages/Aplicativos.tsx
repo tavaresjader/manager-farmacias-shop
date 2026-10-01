@@ -129,7 +129,7 @@ const Aplicativos = () => {
               Entrega Farma
             </h3>
             <p className="text-sm text-muted-foreground mb-3">
-              Solicite e acompanhe entregas em tempo real
+              Solicite entregadores e acompanhe suas entregas em tempo real
             </p>
             <div className="flex items-center justify-between mt-auto">
               <span className="text-xs font-medium px-2 py-1 bg-secondary rounded-md">
