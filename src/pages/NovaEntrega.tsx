@@ -13,7 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Bike, ArrowLeft } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Bike, ArrowLeft, Store, User, MapPin, Banknote } from "lucide-react";
 import { toast } from "sonner";
 import type { Entrega } from "@/types/entrega";
 
@@ -148,142 +154,183 @@ const NovaEntrega = () => {
         </p>
 
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>Unidade de coleta</Label>
-            <Select value={form.unidade} onValueChange={(v) => setField("unidade", v)}>
-              <SelectTrigger className="bg-card">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {unidades.map((u) => (
-                  <SelectItem key={u} value={u}>
-                    {u}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Store className="w-4 h-4 text-primary" />
+                Coleta
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Unidade de coleta</Label>
+                <Select value={form.unidade} onValueChange={(v) => setField("unidade", v)}>
+                  <SelectTrigger className="bg-background">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {unidades.map((u) => (
+                      <SelectItem key={u} value={u}>
+                        {u}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="numeroPedido">Número do pedido</Label>
-            <Input
-              id="numeroPedido"
-              className="bg-card"
-              value={form.numeroPedido}
-              onChange={(e) => setField("numeroPedido", e.target.value)}
-              placeholder="Ex: 12345"
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="numeroPedido">Número do pedido</Label>
+                <Input
+                  id="numeroPedido"
+                  className="bg-background"
+                  value={form.numeroPedido}
+                  onChange={(e) => setField("numeroPedido", e.target.value)}
+                  placeholder="Ex: 12345"
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="cliente">Cliente</Label>
-              <Input
-                id="cliente"
-                className="bg-card"
-                value={form.cliente}
-                onChange={(e) => setField("cliente", e.target.value)}
-                placeholder="Nome do cliente"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="telefone">Telefone</Label>
-              <Input
-                id="telefone"
-                className="bg-card"
-                value={form.telefone}
-                onChange={(e) => setField("telefone", e.target.value)}
-                placeholder="(11) 99999-9999"
-              />
-            </div>
-          </div>
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <User className="w-4 h-4 text-primary" />
+                Cliente
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="cliente">Cliente</Label>
+                  <Input
+                    id="cliente"
+                    className="bg-background"
+                    value={form.cliente}
+                    onChange={(e) => setField("cliente", e.target.value)}
+                    placeholder="Nome do cliente"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telefone">Telefone</Label>
+                  <Input
+                    id="telefone"
+                    className="bg-background"
+                    value={form.telefone}
+                    onChange={(e) => setField("telefone", e.target.value)}
+                    placeholder="(11) 99999-9999"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="cep">CEP</Label>
-              <Input
-                id="cep"
-                className="bg-card"
-                value={form.cep}
-                onChange={(e) => setField("cep", e.target.value)}
-                placeholder="00000-000"
-              />
-            </div>
-            <div className="col-span-2 space-y-2">
-              <Label htmlFor="endereco">Endereço de entrega</Label>
-              <Input
-                id="endereco"
-                readOnly
-                tabIndex={-1}
-                className="bg-muted text-muted-foreground cursor-not-allowed"
-                value={buscandoCep ? "Buscando endereço..." : form.endereco}
-                placeholder="Preenchido automaticamente pelo CEP"
-              />
-            </div>
-          </div>
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <MapPin className="w-4 h-4 text-primary" />
+                Endereço de entrega
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="cep">CEP</Label>
+                  <Input
+                    id="cep"
+                    className="bg-background"
+                    value={form.cep}
+                    onChange={(e) => setField("cep", e.target.value)}
+                    placeholder="00000-000"
+                  />
+                </div>
+                <div className="col-span-2 space-y-2">
+                  <Label htmlFor="endereco">Endereço</Label>
+                  <Input
+                    id="endereco"
+                    readOnly
+                    tabIndex={-1}
+                    className="bg-muted text-muted-foreground cursor-not-allowed"
+                    value={buscandoCep ? "Buscando endereço..." : form.endereco}
+                    placeholder="Preenchido automaticamente pelo CEP"
+                  />
+                </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="numero">Número do endereço</Label>
-            <Input
-              id="numero"
-              className="bg-card"
-              value={form.numero}
-              onChange={(e) => setField("numero", e.target.value)}
-              placeholder="Ex: 1234"
-            />
-          </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="numero">Número do endereço</Label>
+                  <Input
+                    id="numero"
+                    className="bg-background"
+                    value={form.numero}
+                    onChange={(e) => setField("numero", e.target.value)}
+                    placeholder="Ex: 1234"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="complemento">Complemento / Ponto de referência</Label>
+                  <Input
+                    id="complemento"
+                    className="bg-background"
+                    value={form.complemento}
+                    onChange={(e) => setField("complemento", e.target.value)}
+                    placeholder="Apto, bloco, ponto de referência (opcional)"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="space-y-2">
-            <Label htmlFor="complemento">Complemento / Ponto de referência</Label>
-            <Input
-              id="complemento"
-              className="bg-card"
-              value={form.complemento}
-              onChange={(e) => setField("complemento", e.target.value)}
-              placeholder="Apto, bloco, ponto de referência (opcional)"
-            />
-          </div>
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Banknote className="w-4 h-4 text-primary" />
+                Valores e observações
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="valorEntrega">Valor da entrega (R$)</Label>
+                  <Input
+                    id="valorEntrega"
+                    readOnly
+                    tabIndex={-1}
+                    className="bg-muted text-muted-foreground cursor-not-allowed"
+                    value={
+                      calculando
+                        ? "Calculando..."
+                        : valorEntrega !== null
+                          ? valorEntrega.toFixed(2).replace(".", ",")
+                          : ""
+                    }
+                    placeholder="Informe CEP e número"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="valor">Valor do pedido (R$)</Label>
+                  <Input
+                    id="valor"
+                    className="bg-background"
+                    value={form.valor}
+                    onChange={(e) => setField("valor", e.target.value)}
+                    placeholder="0,00"
+                  />
+                </div>
+              </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="valorEntrega">Valor da entrega (R$)</Label>
-              <Input
-                id="valorEntrega"
-                readOnly
-                tabIndex={-1}
-                className="bg-muted text-muted-foreground cursor-not-allowed"
-                value={
-                  calculando
-                    ? "Calculando..."
-                    : valorEntrega !== null
-                      ? valorEntrega.toFixed(2).replace(".", ",")
-                      : ""
-                }
-                placeholder="Informe CEP e número"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="valor">Valor do pedido (R$)</Label>
-              <Input
-                id="valor"
-                className="bg-card"
-                value={form.valor}
-                onChange={(e) => setField("valor", e.target.value)}
-                placeholder="0,00"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="observacoes">Observações</Label>
-            <Textarea
-              id="observacoes"
-              className="bg-card"
-              value={form.observacoes}
-              onChange={(e) => setField("observacoes", e.target.value)}
-              placeholder="Instruções para o entregador (opcional)"
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="observacoes">Observações</Label>
+                <Textarea
+                  id="observacoes"
+                  className="bg-background"
+                  value={form.observacoes}
+                  onChange={(e) => setField("observacoes", e.target.value)}
+                  placeholder="Instruções para o entregador (opcional)"
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="flex gap-2">
