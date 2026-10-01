@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { managerBackendBff } from "@/services/ManagerBackendBff";
-import { authTokenStorage, AuthSessionData, isMockToken, isTokenExpired } from "@/lib/authToken";
+import { authTokenStorage, AuthSessionData, isMockToken, isTokenExpired, ACTIVATION_BAR_DISMISS_KEY } from "@/lib/authToken";
 
 interface AuthContextType {
   token: string | null;
